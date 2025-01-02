@@ -21,10 +21,11 @@
                 </div>
                 {{ $orders->links() }}
                 <div class="table-responsive">
-                    <table class="table table-striped table-hover" >
+                    <table class="table table-striped table-hover" id="myTable">
                         <thead>
                             <tr>
                                 <th>Tanggal</th>
+                                <th>Nota</th>
                                 <th>Konsumen</th>
                                 <th>Order</th>
                                 <th>Total</th>
@@ -36,6 +37,7 @@
                             @foreach ($orders as $order)
                                 <tr data-entry-id="{{ $order->id }}">
                                     <td>{{ date('d-m-Y', strtotime($order->created_at)) }}</td>
+                                    <td>{{ $order->nota }}</td>
                                     <td>{{ $order->kontak->nama ?? '' }}</td>
                                     <td><a href="{{ route('order.detail', $order->id) }}">{{ $order->listproduk }}</a></td>
                                     <td>{{ number_format($order->total, 0, ',', '.') }}</td>

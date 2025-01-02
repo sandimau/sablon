@@ -24,11 +24,12 @@
                         <thead>
                             <tr>
                                 <th>tanggal</th>
-                                <th>kontak</th>
                                 <th>nota</th>
+                                <th>kontak</th>
                                 <th>total tagihan</th>
                                 <th>dp</th>
                                 <th>kekurangan</th>
+                                <th>order</th>
                                 <th>action</th>
                             </tr>
                         </thead>
@@ -36,11 +37,12 @@
                             @foreach ($orders as $item)
                                 <tr>
                                     <td>{{ date('d-m-Y', strtotime($item->created_at)) }}</td>
+                                    <td>{{ $item->nota }}</td>
                                     <td><a href="{{ route('kontaks.show', $item->kontak_id) }}">{{ $item->kontak->nama }}</a></td>
-                                    <td>#{{ $item->id }}</td>
                                     <td>{{ number_format($item->total, 0, ',', '.') }}</td>
                                     <td>{{ number_format($item->bayar, 0, ',', '.') }}</td>
                                     <td>{{ number_format($item->kekurangan, 0, ',', '.') }}</td>
+                                    <td>{{ $item->listproduk }}</td>
                                     <td>
                                         <a href="{{ route('order.bayar',$item->id) }}"
                                             class="btn btn-info btn-sm me-1 text-white"><i class='bx bx-dollar-circle'></i>

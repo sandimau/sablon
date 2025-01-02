@@ -83,10 +83,12 @@
 
                                                 $konsumen = $order->kontak;
 
-                                                $model_ar = $konsumen->ar->kode ?? 'kosong';
+                                                $model_ar = $konsumen->ar ?? null;
+                                                $kode = $model_ar ? $model_ar->kode : '';
+                                                $test = $model_ar ? $model_ar->warna : '';
                                                 $tampilan .= "<a class='popup d-flex'  href='" . url('admin/order/' . $detail->order_id . '/detail') . "' ><p style='font-weight:600' class='text-default'>";
 
-                                                $tampilan .= " <span class='label label-rounded' style='background-color: " . $konsumen->ar->warna . "'> " . $konsumen->ar->kode . '  </span>';
+                                                $tampilan .= " <span class='label label-rounded' style='background-color: " . $test . "'> " . $kode . '  </span>';
 
                                                 $tampilan .= " <span class='label label-rounded mr-1' style='background-color: " . $warna . "'> " . $nominal . '  </span> ';
 

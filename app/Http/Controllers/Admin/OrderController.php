@@ -49,7 +49,7 @@ class OrderController extends Controller
 
     public function index()
     {
-        $orders = Order::orderBy('id','desc')->paginate(12);
+        $orders = Order::orderBy('id','desc')->paginate(10);
 
         return view('admin.orders.index', compact('orders'));
     }
@@ -83,6 +83,7 @@ class OrderController extends Controller
         $order['ket_kirim'] = $request->ket_kirim;
         $order['deathline'] = $request->deathline;
         $order['username'] = $request->username;
+        $order['nota'] = $request->nota;
 
         // ambil order flow setiap perusahaan
         $produksi = Produksi::where('nama', 'persiapan')->first();
@@ -143,7 +144,7 @@ class OrderController extends Controller
 
     public function unpaid()
     {
-        $orders = Order::belumLunas(date('Y'))->orderBy('id','desc')->paginate(12);
+        $orders = Order::belumLunas()->orderBy('id','desc')->paginate(10);
         return view('admin.orders.unpaid', compact('orders'));
     }
 

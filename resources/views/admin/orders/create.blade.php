@@ -48,9 +48,13 @@
                     @endif
                 </div>
                 <div class="form-group mb-3">
+                    <label for="nota">nota</label>
+                    <input class="form-control" type="text" name="nota" id="nota" value="{{ old('nota', '') }}">
+                </div>
+                <div class="form-group mb-3">
                     <label for="username">Username</label>
-                    <input class="form-control" type="text" name="username"
-                        id="username" value="{{ old('username', '') }}">
+                    <input class="form-control" type="text" name="username" id="username"
+                        value="{{ old('username', '') }}">
                 </div>
                 <div class="form-group mb-3">
                     <label for="tema">Tema</label>
@@ -114,8 +118,8 @@
                         <div class="row">
                             <div class="col-lg-3 col-sm-12">
                                 <div class="form-check ms-3">
-                                    <input class="form-check-input" type="radio" name="pengiriman" id="flexRadioDefault"
-                                        value="diambil">
+                                    <input class="form-check-input" type="radio" name="pengiriman"
+                                        id="flexRadioDefault" value="diambil">
                                     <label class="form-check-label" for="flexRadioDefault">
                                         diambil
                                     </label>

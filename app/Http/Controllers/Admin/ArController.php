@@ -80,6 +80,14 @@ class ArController extends Controller
         return view('admin.ars.edit', compact('ar','members'));
     }
 
+    public function destroy(Ar $ar)
+    {
+        $ar->delete();
+
+        return redirect()->route('ars.index')
+            ->withSuccess(__('Ar deleted successfully.'));
+    }
+
     public function update(Request $request, Ar $ar)
     {
         $request->validate([

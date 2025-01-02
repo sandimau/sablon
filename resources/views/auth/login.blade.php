@@ -36,13 +36,13 @@
                             @enderror
                         </div>
                         <div class="row">
-                            @if (Route::has('password.request'))
+                            {{-- @if (Route::has('password.request'))
                                 <div class="col-6">
                                     <a href="{{ route('register') }}"
                                         class="btn btn-outline-dark w-100">{{ __('Register') }}</a>
                                 </div>
-                            @endif
-                            <div class="col-6">
+                            @endif --}}
+                            <div class="col-12">
                                 <button class="btn btn-primary w-100" type="submit">{{ __('Login') }}</button>
                             </div>
                             <a href="{{ route('password.request') }}" class="btn btn-link px-0"

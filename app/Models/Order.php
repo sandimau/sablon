@@ -58,11 +58,10 @@ class Order extends Model
         return $this->hasMany(OrderDetail::class);
     }
 
-    public function scopeBelumLunas($query, $var)
+    public function scopeBelumLunas($query)
     {
-        $query->whereRaw('total  > bayar');
-        $query->whereYear('created_at', $var);
-
+        $query->whereRaw('total > bayar');
+        $query->orderBy('id','desc');
         return $query;
     }
 
