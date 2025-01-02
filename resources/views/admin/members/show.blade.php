@@ -13,10 +13,6 @@
         @if ($member->status != 0)
             @can('member_show')
                 <li class="nav-item" role="presentation">
-                    <button class="nav-link" id="user-tab" data-bs-toggle="tab" data-bs-target="#user" type="button"
-                        role="tab" aria-controls="user" aria-selected="false">User</button>
-                </li>
-                <li class="nav-item" role="presentation">
                     <button class="nav-link" id="cuti-tab" data-bs-toggle="tab" data-bs-target="#cuti" type="button"
                         role="tab" aria-controls="cuti" aria-selected="false">Cuti/Ijin</button>
                 </li>
@@ -128,47 +124,6 @@
             </div>
         </div>
         <!-- end information -->
-
-        <!-- start tour user -->
-        <div class="tab-pane fade" id="user" role="tabpanel" aria-labelledby="user-tab">
-            <div class="tab-content mt-4">
-                <div class="card">
-                    <div class="card-body">
-                        <div class="table-responsive">
-                            <table class=" table table-bordered table-striped table-hover">
-                                <thead>
-                                    <tr>
-                                        <th>
-                                            email
-                                        </th>
-                                        <th>
-                                            action
-                                        </th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    <tr>
-                                        @if ($member->user_id)
-                                            <td>
-                                                {{ $member->user()->first()->email }}
-                                            </td>
-                                            <td>
-                                                <div class="d-flex">
-                                                    <a href="{{ route('users.edit', $member->user()->first()->id) }}"
-                                                        class="btn btn-info btn-sm me-1"><i class='bx bxs-edit'></i>
-                                                        Edit</a>
-                                                </div>
-                                            </td>
-                                        @endif
-                                    </tr>
-                                </tbody>
-                            </table>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-        <!-- end tour user -->
 
         <!-- start tour cuti -->
         <div class="tab-pane fade" id="cuti" role="tabpanel" aria-labelledby="cuti-tab">

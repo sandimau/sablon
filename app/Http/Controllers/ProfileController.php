@@ -2,8 +2,11 @@
 
 namespace App\Http\Controllers;
 
-use App\Http\Requests\ProfileUpdateRequest;
+use App\Models\Cuti;
+use App\Models\Member;
+use App\Models\Penggajian;
 use Illuminate\Support\Facades\Hash;
+use App\Http\Requests\ProfileUpdateRequest;
 
 class ProfileController extends Controller
 {
@@ -29,5 +32,25 @@ class ProfileController extends Controller
         ]);
 
         return redirect()->back()->with('success', 'Profile updated.');
+    }
+
+    public function gaji($id)
+    {
+        $member = Member::where('user_id', $id)->first();
+        if ($member) {
+            $gajis = Penggajian::where('member_id', $member->id)->paginate(10);
+            return view('admin.members.gaji', compact('member', 'gajis'));
+        }
+        return redirect()->back()->with('error', 'Member not found.');
+    }
+
+    public function cuti($id)
+    {
+        $member = Member::where('user_id', $id)->first();
+        if ($member) {
+            $cutis = Cuti::where('member_id', $member->id)->paginate(10);
+            return view('admin.members.cuti', compact('member', 'cutis'));
+        }
+        return redirect()->back()->with('error', 'Member not found.');
     }
 }

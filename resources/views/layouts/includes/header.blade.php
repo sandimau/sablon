@@ -29,12 +29,28 @@
                             <use xlink:href="{{ asset('icons/coreui.svg#cil-airplay') }}"></use>
                         </svg> What To Do
                     </a>
+
+                    <a class="dropdown-item" href="{{ route('profile.cuti', Auth::user()->id) }}">
+                        <svg class="icon me-2">
+                            <use xlink:href="{{ asset('icons/coreui.svg#cil-user') }}"></use>
+                        </svg>
+                        {{ __('Cuti') }}
+                    </a>
+
+                    <a class="dropdown-item" href="{{ route('profile.gaji', Auth::user()->id) }}">
+                        <svg class="icon me-2">
+                            <use xlink:href="{{ asset('icons/coreui.svg#cil-user') }}"></use>
+                        </svg>
+                        {{ __('Gaji') }}
+                    </a>
+
                     <a class="dropdown-item" href="{{ route('profile.show', Auth::user()->id) }}">
                         <svg class="icon me-2">
                             <use xlink:href="{{ asset('icons/coreui.svg#cil-user') }}"></use>
                         </svg>
-                        {{ __('My profile') }}
+                        {{ __('Ganti Password') }}
                     </a>
+
                     <form method="POST" action="{{ route('logout') }}">
                         @csrf
                         <a class="dropdown-item" href="{{ route('logout') }}"

@@ -30,6 +30,8 @@ Route::group(['namespace' => 'App\Http\Controllers'], function()
 
         Route::get('/whattodo', 'HomeController@index')->name('whattodo');
         Route::get('/profile', 'ProfileController@show')->name('profile.show');
+        Route::get('/profile/{id}/cuti', 'ProfileController@cuti')->name('profile.cuti');
+        Route::get('/profile/{id}/gaji', 'ProfileController@gaji')->name('profile.gaji');
         Route::patch('/profile/{id}/update', 'ProfileController@update')->name('profile.update');
 
         //whattodo
