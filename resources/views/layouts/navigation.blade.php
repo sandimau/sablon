@@ -127,6 +127,28 @@
     <li class="nav-group" aria-expanded="false">
         <a class="nav-link nav-group-toggle" href="#">
             <svg class="nav-icon">
+                <use xlink:href="{{ asset('icons/coreui.svg#cil-cash') }}"></use>
+            </svg>
+            Marketplace
+        </a>
+        <ul class="nav-group-items" style="height: 0px;">
+            @can('akun_detail_access')
+                <li class="nav-item">
+                    <a class="nav-link {{ request()->is('marketplaces*') ? 'active' : '' }}"
+                        href="{{ route('marketplaces.index') }}">
+                        <svg class="nav-icon">
+                            <use xlink:href="{{ asset('icons/coreui.svg#cil-cash') }}"></use>
+                        </svg>
+                        {{ __('Config') }}
+                    </a>
+                </li>
+            @endcan
+        </ul>
+    </li>
+
+    <li class="nav-group" aria-expanded="false">
+        <a class="nav-link nav-group-toggle" href="#">
+            <svg class="nav-icon">
                 <use xlink:href="{{ asset('icons/coreui.svg#cil-user') }}"></use>
             </svg>
             Pegawai
@@ -190,6 +212,16 @@
                             <use xlink:href="{{ asset('icons/coreui.svg#cil-user') }}"></use>
                         </svg>
                         {{ __('Bulanan') }}
+                    </a>
+                </li>
+
+                <li class="nav-item">
+                    <a class="nav-link {{ request()->is('produk*') ? 'active' : '' }}"
+                        href="{{ route('produk.aset') }}">
+                        <svg class="nav-icon">
+                            <use xlink:href="{{ asset('icons/coreui.svg#cil-user') }}"></use>
+                        </svg>
+                        {{ __('Aset') }}
                     </a>
                 </li>
             @endcan

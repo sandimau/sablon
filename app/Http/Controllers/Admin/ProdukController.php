@@ -4,7 +4,9 @@ namespace App\Http\Controllers\Admin;
 
 use App\Models\Produk;
 use App\Models\Kategori;
+use App\Models\LastStok;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use App\Http\Controllers\Controller;
 use Intervention\Image\Facades\Image;
 
@@ -108,5 +110,21 @@ class ProdukController extends Controller
         ]);
 
         return redirect()->route('produks.index',$produk->kategori_id)->withSuccess(__('Produk updated successfully.'));
+    }
+
+    public function aset()
+    {
+        $asets = DB::table('produk_last_stoks as t')
+            ->join(
+                DB::raw('(SELECT produk_id FROM produk_last_stoks GROUP BY produk_id) as subquery'),
+                't.produk_id',
+                '=',
+                'subquery.produk_id'
+            )
+            ->join('produks as p', 'p.id', '=', 't.produk_id')
+            ->join('kategoris as k', 'k.id', '=', 'p.kategori_id')
+            ->select('t.saldo', 'p.harga_beli','p.nama', 'k.nama as namaKategori')
+            ->get();
+        return view('admin.produks.aset', compact('asets'));
     }
 }
