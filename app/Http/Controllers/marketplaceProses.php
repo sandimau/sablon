@@ -280,15 +280,15 @@ trait marketplaceProses
 
                 //////update project_id ke table project_details (pas pertama input msh kosong)
                 DB::statement("UPDATE project_details
-SET project_id = (
-    SELECT id
-    FROM projects
-    WHERE projects.nota=project_details.nota
-		and kontak_id=" . $id_shopee . "
-		and cabang_id=" . $toko . "
-		and company_id=" . session('company') . "
-		limit 1
-) where id>=" . $orderdetil_awal . " and project_details.nota is not Null and company_id=" . session('company') . " ");
+        SET project_id = (
+            SELECT id
+            FROM projects
+            WHERE projects.nota=project_details.nota
+                and kontak_id=" . $id_shopee . "
+                and cabang_id=" . $toko . "
+                and company_id=" . session('company') . "
+                limit 1
+        ) where id>=" . $orderdetil_awal . " and project_details.nota is not Null and company_id=" . session('company') . " ");
 
 
                 //////ngurangi stok yg terjual/////////////////////////////////////////////////////////

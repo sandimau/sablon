@@ -118,6 +118,7 @@ Route::group(['namespace' => 'App\Http\Controllers'], function()
             Route::post('/produk', 'ProdukController@store')->name('produks.store');
             Route::get('/produk/{produk}/edit', 'ProdukController@edit')->name('produks.edit');
             Route::patch('/produk/{produk}/update', 'ProdukController@update')->name('produks.update');
+            Route::get('/aset', 'ProdukController@aset')->name('produk.aset');
 
             //produkStoks
             Route::get('/produk/{produk}/produkStok', 'ProdukStokController@index')->name('produkStok.index');
@@ -186,6 +187,12 @@ Route::group(['namespace' => 'App\Http\Controllers'], function()
             Route::patch('/orderDetail/{detail}/update', 'OrderDetailController@update')->name('orderDetail.update');
             Route::get('/orderDetail/{detail}/editGambar', 'OrderDetailController@editGambar')->name('orderDetail.editGambar');
             Route::patch('/orderDetail/{detail}/updateGambar', 'OrderDetailController@updateGambar')->name('orderDetail.updateGambar');
+
+            //marketplaces
+            Route::resource('marketplaces', 'MarketplaceController');
+            Route::post('/marketplaces/{id}/uploadKeuangan', 'MarketplaceController@uploadKeuangan')->name('marketplaces.uploadKeuangan');
+            Route::post('/marketplaces/{id}/uploadOrder', 'MarketplaceController@uploadOrder')->name('marketplaces.uploadOrder');
         });
     });
 });
+
