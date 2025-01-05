@@ -5,6 +5,9 @@
 @endsection
 
 @section('content')
+    <div class="mt-2">
+        @include('layouts.includes.messages')
+    </div>
     <div class="card">
         <div class="card-header">
             <b>Upload Order</b>
@@ -33,7 +36,7 @@
                     @endif
                 </div>
                 <div class="form-group mb-3">
-                    <label class="required" for="order">file harus berformat .xlsx</label>
+                    <label class="required" for="order">file harus berformat .csv</label>
                     <input class="form-control {{ $errors->has('order') ? 'is-invalid' : '' }}" type="file"
                         name="order" id="order" value="{{ old('order', '') }}">
                     @if ($errors->has('order'))
@@ -41,6 +44,7 @@
                             {{ $errors->first('order') }}
                         </div>
                     @endif
+                    <label class="required text-danger" for="order">terakhir upload {{$marketplace->tglUploadOrder}}</label>
                 </div>
                 <div class="form-group">
                     <button class="btn btn-primary mt-1" type="submit">
@@ -64,7 +68,8 @@
                     <select class="form-select" name="kas_id" name="kas_id">
                         <option value="{{ null }}">pilih kas marketplace</option>
                         @foreach ($kasMarketplace as $item)
-                            <option {{ $item->id == $marketplace->kas_id ? 'selected' : '' }} value="{{ $item->id }}">{{ $item->nama }}</option>
+                            <option {{ $item->id == $marketplace->kas_id ? 'selected' : '' }} value="{{ $item->id }}">
+                                {{ $item->nama }}</option>
                         @endforeach
                     </select>
                     @if ($errors->has('kas_id'))
@@ -78,7 +83,8 @@
                     <select class="form-select" name="penarikan_id" name="penarikan_id">
                         <option value="{{ null }}">pilih kas penarikan</option>
                         @foreach ($kasPenarikan as $item)
-                            <option {{ $item->id == $marketplace->penarikan_id ? 'selected' : '' }} value="{{ $item->id }}">{{ $item->nama }}</option>
+                            <option {{ $item->id == $marketplace->penarikan_id ? 'selected' : '' }}
+                                value="{{ $item->id }}">{{ $item->nama }}</option>
                         @endforeach
                     </select>
                     @if ($errors->has('penarikan_id'))
@@ -88,7 +94,7 @@
                     @endif
                 </div>
                 <div class="form-group mb-3">
-                    <label class="required" for="keuangan">file harus berformat .xlsx</label>
+                    <label class="required" for="keuangan">file harus berformat .csv</label>
                     <input class="form-control {{ $errors->has('keuangan') ? 'is-invalid' : '' }}" type="file"
                         name="keuangan" id="keuangan" value="{{ old('keuangan', '') }}">
                     @if ($errors->has('keuangan'))
@@ -96,6 +102,7 @@
                             {{ $errors->first('keuangan') }}
                         </div>
                     @endif
+                    <label class="required text-danger" for="order">terakhir upload {{$marketplace->tglUploadKeuangan}}</label>
                 </div>
                 <div class="form-group">
                     <button class="btn btn-primary mt-1" type="submit">

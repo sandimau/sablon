@@ -23,7 +23,7 @@
                     @include('layouts.includes.messages')
                 </div>
                 <div class="table-responsive">
-                    <table class="table table-striped" id="myTable">
+                    <table class="table table-striped">
                         <thead>
                             <tr>
                                 <th scope="col">nama</th>
@@ -31,25 +31,31 @@
                                 <th scope="col">kas marketplace</th>
                                 <th scope="col">kas penarikan</th>
                                 <th scope="col">konsumen</th>
-                                <th scope="col">actions</th>
+                                @can('marketplace_edit')
+                                    <th scope="col">actions</th>
+                                @endcan
                             </tr>
                         </thead>
                         <tbody>
                             @foreach ($marketplaces as $marketplace)
                                 <tr>
-                                    <td><a href="{{ route('marketplaces.show', $marketplace->id) }}">{{ $marketplace->nama }}</a></td>
+                                    <td><a
+                                            href="{{ route('marketplaces.show', $marketplace->id) }}">{{ $marketplace->nama }}</a>
+                                    </td>
                                     <td>{{ $marketplace->marketplace }}</td>
                                     <td>{{ $marketplace->kas->nama }}</td>
                                     <td>{{ $marketplace->kasPenarikan->nama }}</td>
                                     <td>{{ $marketplace->kontak->nama }}</td>
-                                    <td>
-                                        <div class="d-flex">
-                                            <a href="{{ route('marketplaces.edit', $marketplace->id) }}" class="btn btn-info btn-sm me-1"><i
-                                                    class='bx bxs-edit'></i> Edit</a>
-                                            <a href="{{ route('marketplaces.destroy', $marketplace->id) }}" class="btn btn-danger btn-sm me-1"><i
-                                                    class='bx bxs-trash'></i> Delete</a>
-                                        </div>
-                                    </td>
+                                    @can('marketplace_edit')
+                                        <td>
+                                            <div class="d-flex">
+                                                <a href="{{ route('marketplaces.edit', $marketplace->id) }}"
+                                                    class="btn btn-info btn-sm me-1"><i class='bx bxs-edit'></i> Edit</a>
+                                                <a href="{{ route('marketplaces.destroy', $marketplace->id) }}"
+                                                    class="btn btn-danger btn-sm me-1"><i class='bx bxs-trash'></i> Delete</a>
+                                            </div>
+                                        </td>
+                                    @endcan
                                 </tr>
                             @endforeach
                         </tbody>
@@ -59,8 +65,3 @@
         </div>
     </div>
 @endsection
-@push('after-scripts')
-    <script>
-        let table = new DataTable('#myTable');
-    </script>
-@endpush

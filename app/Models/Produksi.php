@@ -37,4 +37,9 @@ class Produksi extends Model
     {
         return $this->hasMany(OrderDetail::class);
     }
+
+    public static function ambilFlow($grup)
+    {
+        return self::where('nama', $grup)->first()->id;
+    }
 }

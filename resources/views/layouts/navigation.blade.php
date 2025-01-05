@@ -132,7 +132,7 @@
             Marketplace
         </a>
         <ul class="nav-group-items" style="height: 0px;">
-            @can('akun_detail_access')
+            @can('marketplace_access')
                 <li class="nav-item">
                     <a class="nav-link {{ request()->is('marketplaces*') ? 'active' : '' }}"
                         href="{{ route('marketplaces.index') }}">

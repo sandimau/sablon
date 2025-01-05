@@ -47,4 +47,9 @@ class ProdukStok extends Model
     {
         return $this->belongsTo(Produk::class);
     }
+
+    static function lastStok($produk)
+    {
+        return self::where('produk_id', $produk)->orderBy('id', 'desc')->first()->saldo ?? 0;
+    }
 }

@@ -25,7 +25,7 @@
                         </div>
                     @endif
                 </div>
-                {{-- <div class="form-group mb-3">
+                <div class="form-group mb-3">
                     <label for="akun_kategori_id">akun kategori</label>
                     <select class="form-select select2 {{ $errors->has('akun_kategori') ? 'is-invalid' : '' }}"
                         name="akun_kategori_id" id="akun_kategori_id">
@@ -40,7 +40,7 @@
                             {{ $errors->first('akun_kategori') }}
                         </div>
                     @endif
-                </div> --}}
+                </div>
                 <div class="form-group mb-3">
                     <button class="btn btn-danger" type="submit">
                         {{ trans('save') }}

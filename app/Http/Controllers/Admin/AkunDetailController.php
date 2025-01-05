@@ -69,7 +69,7 @@ class AkunDetailController extends Controller
 
     public function bukubesar(AkunDetail $akunDetail)
     {
-        $bukubesars = BukuBesar::where('akun_detail_id', $akunDetail->id)->orderBy('created_at', 'desc')->paginate(15);
+        $bukubesars = BukuBesar::where('akun_detail_id', $akunDetail->id)->orderBy('id', 'desc')->paginate(15);
         return view('admin.akundetails.bukubesar', compact('bukubesars', 'akunDetail'));
     }
 
