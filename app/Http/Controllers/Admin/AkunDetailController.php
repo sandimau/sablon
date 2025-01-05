@@ -86,7 +86,7 @@ class AkunDetailController extends Controller
             'jumlah' => 'required',
         ]);
 
-        DB::transaction(function () {
+        DB::transaction(function () use ($request) {
             $akunDetailDari = akunDetail::find($request->akun_detail_dari);
             $akunDetailKe = akunDetail::find($request->akun_detail_tujuan);
 
