@@ -33,7 +33,7 @@ class CutiController extends Controller
             'member_id' => $request->member_id,
         ]);
 
-        return redirect()->route('members.show', $request->member_id)->withSuccess(__('Cuti created successfully.'));
+        return redirect()->route('members.index')->withSuccess(__('Cuti created successfully.'));
     }
 
     public function edit(Cuti $cuti)

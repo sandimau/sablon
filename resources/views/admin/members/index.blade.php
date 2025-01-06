@@ -41,16 +41,57 @@
                             @foreach ($members as $member)
                                 <tr data-entry-id="{{ $member->id }}">
                                     <td>
-                                        <a href="{{ route('members.show', $member->id) }}">{{ $member->nama_lengkap ?? '' }}</a>
+                                        <a
+                                            href="{{ route('members.show', $member->id) }}">{{ $member->nama_lengkap ?? '' }}</a>
                                     </td>
-                                    <td>{{ $member->countCuti }}</td>
-                                    <td>{{ $member->countIjin }}</td>
-                                    <td>{{ number_format($member->countKasbon) }}</td>
-                                    <td>{{ $member->countLembur }}</td>
-                                    <td>{{ number_format($member->countTunjangan) }}</td>
-                                    <td>{{ $member->umur ?? '' }}</td>
-                                    <td>{{ $member->lamaKerja ?? '' }}</td>
-                                    <td>{{ $member->tgl_gajian}}</td>
+                                    <td>
+                                        @can('cuti_access')
+                                            <a href={{ route('members.cuti', $member->id) }}>{{ $member->countCuti }}</a>
+                                        @elsecan('member_access')
+                                            {{ $member->countCuti }}
+                                        @endcan
+                                    </td>
+                                    <td>
+                                        @can('cuti_access')
+                                            <a href={{ route('members.cuti', $member->id) }}>{{ $member->countIjin }}</a>
+                                        @elsecan('member_access')
+                                            {{ $member->countIjin }}
+                                        @endcan
+                                    </td>
+                                    <td>
+                                        @can('kasbon_access')
+                                            <a href={{ route('members.kasbon', $member->id) }}>{{ number_format($member->countKasbon) }}</a>
+                                        @elsecan('member_access')
+                                            {{ number_format($member->countKasbon) }}
+                                        @endcan
+                                    </td>
+                                    <td>
+                                        @can('lembur_access')
+                                            <a href={{ route('members.lembur', $member->id) }}>{{ $member->countLembur }}</a>
+                                        @elsecan('member_access')
+                                            {{ $member->countLembur }}
+                                        @endcan
+                                    </td>
+                                    <td>
+                                        @can('tunjangan_access')
+                                            <a href={{ route('members.tunjangan', $member->id) }}>{{ number_format($member->countTunjangan) }}</a>
+                                        @elsecan('member_access')
+                                            {{ number_format($member->countTunjangan) }}
+                                        @endcan
+                                    </td>
+                                    <td>
+                                        {{ $member->umur ?? '' }}
+                                    </td>
+                                    <td>
+                                        {{ $member->lamaKerja ?? '' }}
+                                    </td>
+                                    <td>
+                                        @can('penggajian_access')
+                                            <a href={{ route('members.penggajian', $member->id) }}>{{ $member->tgl_gajian }}</a>
+                                        @elsecan('member_access')
+                                            {{ $member->tgl_gajian }}
+                                        @endcan
+                                    </td>
                                 </tr>
                             @endforeach
                         </tbody>

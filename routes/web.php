@@ -70,6 +70,12 @@ Route::group(['namespace' => 'App\Http\Controllers'], function()
             // member
             Route::resource('members', 'MemberController');
             Route::get('/nonaktif', 'MemberController@nonaktif')->name('members.nonaktif');
+            Route::get('/cuti/{member}', 'MemberController@cuti')->name('members.cuti');
+            Route::get('/kasbon/{member}', 'MemberController@kasbon')->name('members.kasbon');
+            Route::get('/lembur/{member}', 'MemberController@lembur')->name('members.lembur');
+            Route::get('/tunjangan/{member}', 'MemberController@tunjangan')->name('members.tunjangan');
+            Route::get('/penggajian/{member}', 'MemberController@penggajian')->name('members.penggajian');
+            Route::get('/gaji/{member}', 'MemberController@gaji')->name('members.gaji');
 
             //cuti
             Route::get('/members/{member}/cuti', 'CutiController@create')->name('cuti.create');

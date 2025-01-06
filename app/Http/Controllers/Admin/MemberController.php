@@ -100,4 +100,11 @@ class MemberController extends Controller
 
         return back();
     }
+
+    public function cuti(Member $member)
+    {
+        $cutis = Cuti::where('member_id', $member->id)->orderBy('created_at', 'desc')->orderBy('id','desc')->paginate(10);
+        return view('admin.members.cuti', compact('cutis','member'));
+    }
+
 }

@@ -6,94 +6,50 @@
 
 @section('content')
     <div class="bg-light rounded">
-        <div class="card">
+        <div class="card mt-4">
             <div class="card-header">
-                <div class="d-flex justify-content-between align-items-center">
-                    <div>
-                        <h5 class="card-title">Gaji</h5>
-                    </div>
-                </div>
+                <a href="{{ route('gaji.create', $member->id) }}" class="btn btn-success text-white me-1"><i
+                        class='bx bxs-edit'></i> add gaji</a>
             </div>
             <div class="card-body">
                 {{ $gajis->links() }}
                 <div class="table-responsive">
-                    <table class="table table-bordered table-striped table-hover" >
+                    <table class="table table-bordered table-striped table-hover">
                         <thead>
                             <tr>
                                 <th>
-                                    tanggal
+                                    Tanggal
                                 </th>
                                 <th>
-                                    bulan
+                                    Bagian
                                 </th>
                                 <th>
-                                    tahun
+                                    Level
                                 </th>
                                 <th>
-                                    gapok
+                                    Performance
                                 </th>
                                 <th>
-                                    lama kerja
+                                    Transportasi
                                 </th>
                                 <th>
-                                    bagian
+                                    Tunjangan Lain
                                 </th>
                                 <th>
-                                    performance
-                                </th>
-                                <th>
-                                    transportasi
-                                </th>
-                                <th>
-                                    komunikasi
-                                </th>
-                                <th>
-                                    kehadiran
-                                </th>
-                                <th>
-                                    jumlah lain
-                                </th>
-                                <th>
-                                    ket lain
-                                </th>
-                                <th>
-                                    jam lembur
-                                </th>
-                                <th>
-                                    lembur
-                                </th>
-                                <th>
-                                    kasbon
-                                </th>
-                                <th>
-                                    bonus
-                                </th>
-                                <th>
-                                    print
+                                    Nilai Tunjangan Lain
                                 </th>
                             </tr>
                         </thead>
                         <tbody>
                             @foreach ($gajis as $item)
                                 <tr>
-                                    <td>{{ date('d-m-Y', strtotime($item->created_at)) }}</td>
-                                    <td>{{ $item->bulanAsli }}</td>
-                                    <td>{{ $item->tahun }}</td>
-                                    <td>{{ number_format($item->pokok) }}</td>
-                                    <td>{{ number_format($item->lama_kerja) }}</td>
-                                    <td>{{ number_format($item->bagian) }}</td>
-                                    <td>{{ number_format($item->performance) }}</td>
-                                    <td>{{ number_format($item->transportasi) }}</td>
-                                    <td>{{ number_format($item->komunikasi) }}</td>
-                                    <td>{{ number_format($item->kehadiran) }}</td>
-                                    <td>{{ number_format($item->jumlah_lain) }}</td>
+                                    <td>{{ $item->created_at }}</td>
+                                    <td>{{ $item->bagian->nama }}</td>
+                                    <td>{{ $item->level->nama }}</td>
+                                    <td>{{ $item->performance }}</td>
+                                    <td>{{ $item->transportasi == 1 ? 'ya' : 'tidak' }}</td>
                                     <td>{{ $item->lain_lain }}</td>
-                                    <td>{{ $item->jam_lembur }}</td>
-                                    <td>{{ number_format($item->lembur) }}</td>
-                                    <td>{{ number_format($item->kasbon) }}</td>
-                                    <td>{{ number_format($item->bonus) }}</td>
-                                    <td><a href="{{ route('penggajian.slip', $item->id) }}"
-                                            class="btn btn-primary btn-sm">slip gaji</a></td>
+                                    <td>{{ $item->jumlah_lain }}</td>
                                 </tr>
                             @endforeach
                         </tbody>
