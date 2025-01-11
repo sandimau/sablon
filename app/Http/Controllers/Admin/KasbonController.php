@@ -67,7 +67,7 @@ class KasbonController extends Controller
             ]);
         });
 
-        return redirect()->route('members.show', $request->member_id)->withSuccess(__('Kasbon created successfully.'));
+        return redirect()->route('members.kasbon', $request->member_id)->withSuccess(__('Kasbon created successfully.'));
     }
 
     public function bayar(Member $member)

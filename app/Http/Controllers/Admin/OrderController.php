@@ -47,10 +47,25 @@ class OrderController extends Controller
         return response()->json($produk);
     }
 
-    public function index()
+    public function index(Request $request)
     {
-        $orders = Order::orderBy('id','desc')->paginate(10);
-
+        if ($request->dari == null && $request->sampai == null && $request->nota == null && $request->kontak_id == null) {
+            $orders = Order::orderBy('id','desc')->paginate(10);
+        } else {
+            $orders = Order::query()
+                ->when($request->dari && $request->sampai, function($query) use ($request) {
+                    $query->whereBetween('created_at', [$request->dari, $request->sampai]);
+                })
+                ->when($request->nota, function($query) use ($request) {
+                    $query->where('nota', 'LIKE', '%' . $request->nota . '%');
+                })
+                ->when($request->kontak_id, function($query) use ($request) {
+                    $query->where('kontak_id', $request->kontak_id);
+                })
+                ->orderBy('id', 'desc')
+                ->paginate(10)
+                ->appends(['dari' => $request->dari, 'sampai' => $request->sampai, 'nota' => $request->nota, 'kontak_id' => $request->kontak_id]);
+        }
         return view('admin.orders.index', compact('orders'));
     }
 
@@ -142,9 +157,26 @@ class OrderController extends Controller
         return view('admin.orders.invoice', compact('order', 'sistems', 'member'));
     }
 
-    public function unpaid()
+    public function unpaid(Request $request)
     {
-        $orders = Order::belumLunas()->orderBy('id','desc')->paginate(10);
+        if ($request->dari == null && $request->sampai == null && $request->nota == null && $request->kontak_id == null) {
+            $orders = Order::belumLunas()->orderBy('id','desc')->paginate(10);
+        } else {
+            $orders = Order::query()
+                ->when($request->dari && $request->sampai, function($query) use ($request) {
+                    $query->whereBetween('created_at', [$request->dari, $request->sampai]);
+                })
+                ->when($request->nota, function($query) use ($request) {
+                    $query->where('nota', 'LIKE', '%' . $request->nota . '%');
+                })
+                ->when($request->kontak_id, function($query) use ($request) {
+                    $query->where('kontak_id', $request->kontak_id);
+                })
+                ->whereRaw('total > bayar')
+                ->orderBy('id', 'desc')
+                ->paginate(10)
+                ->appends(['dari' => $request->dari, 'sampai' => $request->sampai, 'nota' => $request->nota, 'kontak_id' => $request->kontak_id]);
+        }
         return view('admin.orders.unpaid', compact('orders'));
     }
 

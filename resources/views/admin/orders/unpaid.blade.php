@@ -12,6 +12,23 @@
                     <div>
                         <h5 class="card-title">Belum Lunas</h5>
                     </div>
+                    <form action="{{ route('order.unpaid') }}" method="get" class="d-flex gap-2 align-items-center">
+                        <label for="nota" class="form-label mb-0">Nota</label>
+                        <input type="text" name="nota" class="form-control">
+                        <label for="nota" class="form-label mb-0">Konsumen</label>
+                        <div id="autocomplete" class="autocomplete">
+                            <input class="autocomplete-input {{ $errors->has('kontak_id') ? 'is-invalid' : '' }}"
+                                placeholder="cari kontak" aria-label="cari kontak">
+                            <span id="closeBrg"></span>
+                            <ul class="autocomplete-result-list"></ul>
+                            <input type="hidden" id="kontakId" name="kontak_id">
+                        </div>
+                        <label for="tanggal" class="form-label mb-0">Dari</label>
+                        <input type="date" name="dari" class="form-control">
+                        <label for="tanggal" class="form-label mb-0">Sampai</label>
+                        <input type="date" name="sampai" class="form-control">
+                        <button type="submit" class="btn btn-primary">Filter</button>
+                    </form>
                 </div>
             </div>
             <div class="card-body">
@@ -59,7 +76,79 @@
 @endsection
 
 @push('after-scripts')
+    <script src="https://unpkg.com/@trevoreyre/autocomplete-js"></script>
+    <link rel="stylesheet" href="https://unpkg.com/@trevoreyre/autocomplete-js/dist/style.css" />
     <script>
-        let table = new DataTable('#myTable');
+        new Autocomplete('#autocomplete', {
+            search: input => {
+                const url = "{{ url('admin/konsumen/api?q=') }}" + `${escape(input)}`;
+                return new Promise(resolve => {
+                    if (input.length < 1) {
+                        return resolve([])
+                    }
+
+                    fetch(url)
+                        .then(response => response.json())
+                        .then(data => {
+                            resolve(data);
+                        })
+                })
+            },
+            getResultValue: result => result.nama,
+            onSubmit: result => {
+                let kontak = document.getElementById('kontakId');
+                kontak.value = result.id;
+
+                let btn = document.getElementById("closeBrg");
+                btn.style.display = "block";
+                btn.innerHTML =
+                    `<button onclick="clearData()" type="button" class="btnClose btn-warning"><i class='bx bx-x-circle' ></i></button>`;
+
+            },
+        })
+
+        function clearData() {
+            let btn = document.getElementById("closeBrg");
+            btn.style.display = "none";
+            let auto = document.querySelector(".autocomplete-input");
+            auto.value = null;
+            let idProduk = document.getElementById('kontakId');
+            idProduk.value = null;
+        }
     </script>
+    <style>
+        #autocomplete,
+        #autocompleteProduk {
+            max-width: 600px;
+        }
+
+        #closeBrg,
+        #closeBrgProduk {
+            position: relative;
+        }
+
+        #closeBrg button,
+        #closeBrgProduk button {
+            position: absolute;
+            right: -15px;
+            top: -40px;
+        }
+
+        .autocomplete-input {
+            width: 300px !important;
+            margin-right: 10px;
+        }
+
+        .btnClose {
+            padding: 4px 8px;
+            border: 0;
+            border-radius: 50px;
+            background: #fdc54c;
+        }
+
+        .autocomplete-input.is-invalid,
+        .autocomplete-input.invalid {
+            border: solid 1px red;
+        }
+    </style>
 @endpush

@@ -76,10 +76,13 @@ Route::group(['namespace' => 'App\Http\Controllers'], function()
             Route::get('/tunjangan/{member}', 'MemberController@tunjangan')->name('members.tunjangan');
             Route::get('/penggajian/{member}', 'MemberController@penggajian')->name('members.penggajian');
             Route::get('/gaji/{member}', 'MemberController@gaji')->name('members.gaji');
+            Route::get('/ijin/{member}', 'MemberController@ijin')->name('members.ijin');
 
             //cuti
             Route::get('/members/{member}/cuti', 'CutiController@create')->name('cuti.create');
+            Route::get('/members/{member}/ijin', 'CutiController@createIjin')->name('ijin.create');
             Route::post('/cuti/create', 'CutiController@store')->name('cuti.store');
+            Route::post('/ijin/create', 'CutiController@storeIjin')->name('ijin.store');
             Route::get('/cuti/{cuti}/edit', 'CutiController@edit')->name('cuti.edit');
             Route::patch('/cuti/{cuti}/update', 'CutiController@update')->name('cuti.update');
 
@@ -181,6 +184,7 @@ Route::group(['namespace' => 'App\Http\Controllers'], function()
             Route::post('/order/{order}/chat', 'OrderController@storeChat')->name('order.chatStore');
             Route::get('/order/omzet', 'OrderController@omzet')->name('order.omzet');
             Route::get('/order/omzetBulan', 'OrderController@omzetBulan')->name('order.omzetBulan');
+            Route::get('/order/arsip', 'OrderController@arsip')->name('order.arsip');
 
             //order detail
             Route::get('/order/{order}/detail', 'OrderDetailController@index')->name('order.detail');

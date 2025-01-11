@@ -19,21 +19,43 @@ class CutiController extends Controller
         return view('admin.cutis.create', compact('member'));
     }
 
-    function store(Request $request){
+    public function createIjin(Member $member)
+    {
+        return view('admin.cutis.createIjin', compact('member'));
+    }
+
+    function store(Request $request)
+    {
         $request->validate([
             'tanggal' => 'required',
             'keterangan' => 'required',
-            'cuti' => 'required',
         ]);
 
         Cuti::create([
             'tanggal' => $request->tanggal,
             'keterangan' => $request->keterangan,
-            'cuti' => $request->cuti,
+            'cuti' => 1,
             'member_id' => $request->member_id,
         ]);
 
-        return redirect()->route('members.index')->withSuccess(__('Cuti created successfully.'));
+        return redirect()->route('members.cuti', $request->member_id)->withSuccess(__('Cuti created successfully.'));
+    }
+
+    function storeIjin(Request $request)
+    {
+        $request->validate([
+            'tanggal' => 'required',
+            'keterangan' => 'required',
+        ]);
+
+        Cuti::create([
+            'tanggal' => $request->tanggal,
+            'keterangan' => $request->keterangan,
+            'cuti' => 0,
+            'member_id' => $request->member_id,
+        ]);
+
+        return redirect()->route('members.ijin', $request->member_id)->withSuccess(__('Ijin created successfully.'));
     }
 
     public function edit(Cuti $cuti)

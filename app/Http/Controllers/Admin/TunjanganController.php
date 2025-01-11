@@ -65,6 +65,7 @@ class TunjanganController extends Controller
             ]);
         });
 
-        return redirect()->route('members.show', $request->member_id)->withSuccess(__('Tunjangan created successfully.'));
+        return redirect()->route('members.tunjangan', $request->member_id)->withSuccess(__('Tunjangan created successfully.'));
     }
 }
+

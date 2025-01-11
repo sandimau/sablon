@@ -1,7 +1,7 @@
 @extends('layouts.app')
 
 @section('title')
-    Create Cuti
+    Create Ijin
 @endsection
 
 @section('content')
@@ -9,14 +9,14 @@
         <div class="card-header">
             <div class="d-flex justify-content-between align-items-center">
                 <div>
-                    <h5 class="card-title">add Cuti</h5>
+                    <h5 class="card-title">add Ijin</h5>
                 </div>
                 <a href="{{ route('members.show', $member->id) }}" class="btn btn-primary ">back</a>
             </div>
         </div>
 
         <div class="card-body">
-            <form method="POST" action="{{ route('cuti.store') }}" enctype="multipart/form-data">
+            <form method="POST" action="{{ route('ijin.store') }}" enctype="multipart/form-data">
                 @csrf
                 <input type="hidden" name="member_id" value="{{ $member->id }}">
                 <div class="form-group">

@@ -6,6 +6,9 @@
 
 @section('content')
     <div class="bg-light rounded">
+        <div class="mt-2">
+            @include('layouts.includes.messages')
+        </div>
         <div class="card mt-4">
             <div class="card-header">
                 <a href="{{ route('gaji.create', $member->id) }}" class="btn btn-success text-white me-1"><i

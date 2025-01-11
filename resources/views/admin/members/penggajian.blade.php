@@ -6,18 +6,39 @@
 
 @section('content')
     <div class="bg-light rounded">
-        <div class="card">
+        <div class="mt-2">
+            @include('layouts.includes.messages')
+        </div>
+        <div class="card mt-4">
             <div class="card-header">
                 <div class="d-flex justify-content-between align-items-center">
                     <div>
                         <h5 class="card-title">Penggajian</h5>
+                        <h6 class="card-subtitle mb-2 text-muted">Manage your penggajians here.</h6>
+                    </div>
+                    <div>
+                        <a href="{{ route('members.gaji', $member->id) }}" class="btn btn-primary">format gaji</a>
+                        @if ($gajis->where('member_id', $member->id)->first())
+                            @if ($gajian)
+                                @if ($gajian->bulan != date('n'))
+                                    <a href="{{ route('penggajian.create', $member->id) }}"
+                                        class="btn btn-success text-white me-1"><i class='bx bxs-edit'></i> add
+                                        penggajian</a>
+                                @endif
+                            @else
+                                <a href="{{ route('penggajian.create', $member->id) }}"
+                                    class="btn btn-success text-white me-1"><i class='bx bxs-edit'></i> add
+                                    penggajian</a>
+                            @endif
+                        @endif
                     </div>
                 </div>
+
             </div>
             <div class="card-body">
-                {{ $penggajian->links() }}
+                {{ $penggajians->links() }}
                 <div class="table-responsive">
-                    <table class="table table-bordered table-striped table-hover" >
+                    <table class="table table-bordered table-striped table-hover">
                         <thead>
                             <tr>
                                 <th>
@@ -74,7 +95,7 @@
                             </tr>
                         </thead>
                         <tbody>
-                            @foreach ($gajis as $item)
+                            @foreach ($penggajians as $item)
                                 <tr>
                                     <td>{{ date('d-m-Y', strtotime($item->created_at)) }}</td>
                                     <td>{{ $item->bulanAsli }}</td>

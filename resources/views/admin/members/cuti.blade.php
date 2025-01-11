@@ -6,6 +6,9 @@
 
 @section('content')
     <div class="bg-light rounded">
+        <div class="mt-2">
+            @include('layouts.includes.messages')
+        </div>
         <div class="card">
             <div class="card-header">
                 <div class="d-flex justify-content-between align-items-center">
@@ -31,7 +34,7 @@
                                     keterangan
                                 </th>
                                 <th>
-                                    cuti/ijin
+                                    cuti
                                 </th>
                                 <th>
                                     action

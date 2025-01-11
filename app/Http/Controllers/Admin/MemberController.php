@@ -103,8 +103,46 @@ class MemberController extends Controller
 
     public function cuti(Member $member)
     {
-        $cutis = Cuti::where('member_id', $member->id)->orderBy('created_at', 'desc')->orderBy('id','desc')->paginate(10);
+        $cutis = Cuti::where('member_id', $member->id)->where('cuti', 1)->orderBy('created_at', 'desc')->orderBy('id','desc')->paginate(10);
         return view('admin.members.cuti', compact('cutis','member'));
+    }
+
+    public function ijin(Member $member)
+    {
+        $cutis = Cuti::where('member_id', $member->id)->where('cuti', 0)->orderBy('created_at', 'desc')->orderBy('id','desc')->paginate(10);
+        return view('admin.members.ijin', compact('cutis','member'));
+    }
+
+    public function kasbon(Member $member)
+    {
+        $kasbons = Kasbon::where('member_id', $member->id)->orderBy('created_at', 'desc')->orderBy('id','desc')->paginate(10);
+        return view('admin.members.kasbon', compact('kasbons','member'));
+    }
+
+    public function lembur(Member $member)
+    {
+        $lemburs = Lembur::where('member_id', $member->id)->orderBy('created_at', 'desc')->orderBy('id','desc')->paginate(10);
+        return view('admin.members.lembur', compact('lemburs','member'));
+    }
+
+    public function tunjangan(Member $member)
+    {
+        $tunjangans = Tunjangan::where('member_id', $member->id)->orderBy('created_at', 'desc')->orderBy('id','desc')->paginate(10);
+        return view('admin.members.tunjangan', compact('tunjangans','member'));
+    }
+
+    public function penggajian(Member $member)
+    {
+        $gajis = Gaji::where('member_id', $member->id)->with(['member', 'bagian', 'level'])->orderBy('id','desc')->paginate(10);
+        $penggajians = Penggajian::where('member_id', $member->id)->orderBy('id','desc')->paginate(10);
+        $gajian = Penggajian::where('member_id', $member->id)->latest('id')->first();
+        return view('admin.members.penggajian', compact('gajis','penggajians','gajian','member'));
+    }
+
+    public function gaji(Member $member)
+    {
+        $gajis = Gaji::where('member_id', $member->id)->with(['member', 'bagian', 'level'])->orderBy('id','desc')->paginate(10);
+        return view('admin.members.gaji', compact('gajis','member'));
     }
 
 }

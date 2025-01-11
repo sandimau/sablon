@@ -3,16 +3,11 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
-use App\Http\Requests\MassDestroyGajiRequest;
-use App\Http\Requests\StoreGajiRequest;
-use App\Http\Requests\UpdateGajiRequest;
 use App\Models\Bagian;
 use App\Models\Gaji;
 use App\Models\Level;
 use App\Models\Member;
-use Gate;
 use Illuminate\Http\Request;
-use Symfony\Component\HttpFoundation\Response;
 
 class GajiController extends Controller
 {

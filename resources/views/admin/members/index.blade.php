@@ -35,6 +35,7 @@
                                 <th>umur</th>
                                 <th>lama kerja</th>
                                 <th>tanggal gajian</th>
+                                <th>whattodo</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -53,14 +54,15 @@
                                     </td>
                                     <td>
                                         @can('cuti_access')
-                                            <a href={{ route('members.cuti', $member->id) }}>{{ $member->countIjin }}</a>
+                                            <a href={{ route('members.ijin', $member->id) }}>{{ $member->countIjin }}</a>
                                         @elsecan('member_access')
                                             {{ $member->countIjin }}
                                         @endcan
                                     </td>
                                     <td>
                                         @can('kasbon_access')
-                                            <a href={{ route('members.kasbon', $member->id) }}>{{ number_format($member->countKasbon) }}</a>
+                                            <a
+                                                href={{ route('members.kasbon', $member->id) }}>{{ number_format($member->countKasbon) }}</a>
                                         @elsecan('member_access')
                                             {{ number_format($member->countKasbon) }}
                                         @endcan
@@ -74,7 +76,8 @@
                                     </td>
                                     <td>
                                         @can('tunjangan_access')
-                                            <a href={{ route('members.tunjangan', $member->id) }}>{{ number_format($member->countTunjangan) }}</a>
+                                            <a
+                                                href={{ route('members.tunjangan', $member->id) }}>{{ number_format($member->countTunjangan) }}</a>
                                         @elsecan('member_access')
                                             {{ number_format($member->countTunjangan) }}
                                         @endcan
@@ -87,11 +90,15 @@
                                     </td>
                                     <td>
                                         @can('penggajian_access')
-                                            <a href={{ route('members.penggajian', $member->id) }}>{{ $member->tgl_gajian }}</a>
+                                            <a
+                                                href={{ route('members.penggajian', $member->id) }}>{{ $member->tgl_gajian }}</a>
                                         @elsecan('member_access')
                                             {{ $member->tgl_gajian }}
                                         @endcan
                                     </td>
+                                    <td><a href="{{ route('whattodo.create', $member->id) }}"
+                                            class="btn btn-info btn-sm me-1 text-white"><i class='bx bxs-add-to-queue'></i>
+                                            add</a></a></td>
                                 </tr>
                             @endforeach
                         </tbody>

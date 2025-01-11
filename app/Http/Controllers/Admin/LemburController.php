@@ -44,7 +44,7 @@ class LemburController extends Controller
             'dibayar' => 'belum',
         ]);
 
-        return redirect()->route('members.show', $request->member_id)->withSuccess(__('Lembur created successfully.'));
+        return redirect()->route('members.lembur', $request->member_id)->withSuccess(__('Lembur created successfully.'));
     }
 
     public function edit(Lembur $lembur)

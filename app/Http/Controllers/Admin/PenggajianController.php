@@ -149,7 +149,7 @@ class PenggajianController extends Controller
             ]);
         });
 
-        return redirect()->route('members.show', $request->member_id)->withSuccess(__('Penggajian created successfully.'));
+        return redirect()->route('members.penggajian', $request->member_id)->withSuccess(__('Penggajian created successfully.'));
     }
 
     public function slip(Penggajian $penggajian)
