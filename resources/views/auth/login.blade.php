@@ -45,8 +45,8 @@
                             <div class="col-12">
                                 <button class="btn btn-primary w-100" type="submit">{{ __('Login') }}</button>
                             </div>
-                            <a href="{{ route('password.request') }}" class="btn btn-link px-0"
-                                type="button">{{ __('Forgot Your Password?') }}</a>
+                            {{-- <a href="{{ route('password.request') }}" class="btn btn-link px-0"
+                                type="button">{{ __('Forgot Your Password?') }}</a> --}}
 
                         </div>
                     </form>
