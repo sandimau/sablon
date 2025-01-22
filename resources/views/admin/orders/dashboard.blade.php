@@ -50,6 +50,10 @@
                                                 $order_id = 0;
 
                                                 foreach ($item->orderDetail()->get() as $detail) {
+                                                    if (!$detail->order) {
+                                                        continue;
+                                                    }
+
                                                     if ($order_id != $detail->order_id) {
                                                         if ($order_id != 0) {
                                                             $tampilan .= '<div class=pull-right></div></a>';
@@ -190,14 +194,6 @@
         let table = new DataTable('#myTable');
     </script>
     <style>
-        .nav-nonaktif {
-            font-weight: 600;
-            background-color: #cecece !important;
-        }
-
-        .navl-link.aktif .nonaktif{
-            background-color: #ffffff !important;
-        }
 
         a {
             text-decoration: none;
