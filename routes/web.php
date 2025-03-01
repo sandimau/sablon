@@ -133,6 +133,7 @@ Route::group(['namespace' => 'App\Http\Controllers'], function()
             Route::get('/produk/{produk}/produkStok', 'ProdukStokController@index')->name('produkStok.index');
             Route::get('/produk/{produk}/produk/create', 'ProdukStokController@create')->name('produkStok.create');
             Route::post('/produkStok', 'ProdukStokController@store')->name('produkStok.store');
+            Route::get('/opnames', 'ProdukStokController@opname')->name('opnames.index');
 
             // kontak
             Route::resource('kontaks', 'KontakController');
@@ -202,6 +203,24 @@ Route::group(['namespace' => 'App\Http\Controllers'], function()
             Route::resource('marketplaces', 'MarketplaceController');
             Route::post('/marketplaces/{id}/uploadKeuangan', 'MarketplaceController@uploadKeuangan')->name('marketplaces.uploadKeuangan');
             Route::post('/marketplaces/{id}/uploadOrder', 'MarketplaceController@uploadOrder')->name('marketplaces.uploadOrder');
+
+            // laporan
+            Route::get('/neraca', 'LaporanController@neraca')->name('laporan.neraca');
+            Route::get('/labarugi', 'LaporanController@labarugi')->name('laporan.labarugi');
+            Route::get('/labakotor', 'LaporanController@labakotor')->name('laporan.labakotor');
+            Route::get('/labakotordetail', 'LaporanController@labakotordetail')->name('laporan.labakotordetail');
+            Route::get('/tunjangan', 'LaporanController@tunjangan')->name('laporan.tunjangan');
+            Route::get('/penggajian', 'LaporanController@penggajian')->name('laporan.penggajian');
+            Route::get('/operasional', 'LaporanController@operasional')->name('laporan.operasional');
+            Route::get('/operasionaldetail', 'LaporanController@operasionaldetail')->name('laporan.operasionaldetail');
+
+            // hutang
+            Route::get('/hutang', 'HutangController@index')->name('hutang.index');
+            Route::get('/hutang/create/{jenis}', 'HutangController@create')->name('hutang.create');
+            Route::post('/hutang', 'HutangController@store')->name('hutang.store');
+            Route::get('/hutang/{hutang}/detail', 'HutangController@detail')->name('hutang.detail');
+            Route::get('/hutang/{hutang}/bayar', 'HutangController@bayar')->name('hutang.bayar');
+            Route::post('/hutang/bayar', 'HutangController@bayarStore')->name('hutang.bayarStore');
         });
     });
 });

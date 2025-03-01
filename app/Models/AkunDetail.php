@@ -21,6 +21,26 @@ class AkunDetail extends Model
 
     protected $guarded = [];
 
+    public static function TotalKas()
+    {
+        return self::selectRaw('SUM(saldo) as saldo')
+            ->whereHas('akun_kategori', function($q) {
+                $q->whereIn('id', [1, 8]);
+            })
+            ->first()
+            ->saldo ?? 0;
+    }
+
+    public static function modal()
+    {
+        return self::selectRaw('SUM(saldo) as saldo')
+            ->whereHas('akun_kategori', function($q) {
+                $q->whereIn('id', [5]);
+            })
+            ->first()
+            ->saldo ?? 0;
+    }
+
     protected function serializeDate(DateTimeInterface $date)
     {
         return $date->format('Y-m-d H:i:s');
@@ -29,5 +49,12 @@ class AkunDetail extends Model
     public function akun_kategori()
     {
         return $this->belongsTo(AkunKategori::class, 'akun_kategori_id');
+    }
+
+    public function scopeKas($query)
+    {
+        return $query->whereHas('akun_kategori', function($q) {
+            $q->whereIn('id', [1]);
+        });
     }
 }

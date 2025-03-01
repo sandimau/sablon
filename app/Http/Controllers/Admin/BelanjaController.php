@@ -84,10 +84,23 @@ class BelanjaController extends Controller
                         ]);
 
                         $produk = Produk::find($request->barang_beli_id[$item]);
-                        $produk->update([
-                            'harga_beli' => $request->harga[$item],
-                        ]);
                         if ($produk->stok == 1) {
+                            // Get current stock and HPP
+                            $currentStock = ProdukStok::where('produk_id', $produk->id)
+                                ->sum(DB::raw('COALESCE(tambah, 0) - COALESCE(kurang, 0)'));
+
+                            $lastHpp = ProdukStok::where('produk_id', $produk->id)
+                                ->whereNotNull('hpp')
+                                ->latest()
+                                ->first();
+
+                            $currentHpp = $lastHpp ? $lastHpp->hpp : 0;
+
+                            // Calculate new HPP
+                            $newHpp = (($currentStock * $currentHpp) +
+                                     ($request->jumlah[$item] * $request->harga[$item])) /
+                                     ($currentStock + $request->jumlah[$item]);
+
                             ProdukStok::create([
                                 'tanggal' => Carbon::now(),
                                 'produk_id' => $request->barang_beli_id[$item],
@@ -95,8 +108,13 @@ class BelanjaController extends Controller
                                 'kurang' => 0,
                                 'keterangan' => $request->keterangan[$item],
                                 'kode' => 'blj',
+                                'hpp' => $newHpp
                             ]);
                         }
+                        $produk->update([
+                            'harga_beli' => $request->harga[$item],
+                            'hpp' => $newHpp
+                        ]);
                     }
 
                 }

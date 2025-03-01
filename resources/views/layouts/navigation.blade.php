@@ -46,6 +46,15 @@
                         {{ __('Produk') }}
                     </a>
                 </li>
+                <li class="nav-item">
+                    <a class="nav-link {{ request()->is('opnames*') ? 'active' : '' }}"
+                        href="{{ route('opnames.index') }}">
+                        <svg class="nav-icon">
+                            <use xlink:href="{{ asset('icons/coreui.svg#cil-basket') }}"></use>
+                        </svg>
+                        {{ __('Opname') }}
+                    </a>
+                </li>
             @endcan
             @can('kontak_access')
                 <li class="nav-item">
@@ -121,6 +130,14 @@
                     Belanja
                 </a>
             </li>
+            <li class="nav-item">
+                <a class="nav-link {{ request()->is('hutang*') ? 'active' : '' }}" href="{{ route('hutang.index') }}">
+                    <svg class="nav-icon">
+                        <use xlink:href="{{ asset('icons/coreui.svg#cil-cash') }}"></use>
+                    </svg>
+                    Hutang/Piutang
+                </a>
+            </li>
         </ul>
     </li>
 
@@ -180,6 +197,55 @@
                             <use xlink:href="{{ asset('icons/coreui.svg#cil-user') }}"></use>
                         </svg>
                         {{ __('cs') }}
+                    </a>
+                </li>
+            @endcan
+        </ul>
+    </li>
+
+    <li class="nav-group" aria-expanded="false">
+        <a class="nav-link nav-group-toggle" href="#">
+            <svg class="nav-icon">
+                <use xlink:href="{{ asset('icons/coreui.svg#cil-cash') }}"></use>
+            </svg>
+            Laporan
+        </a>
+        <ul class="nav-group-items" style="height: 0px;">
+            @can('laporan_access')
+            <li class="nav-item">
+                <a class="nav-link {{ request()->is('laporan*') ? 'active' : '' }}"
+                    href="{{ route('laporan.tunjangan') }}">
+                    <svg class="nav-icon">
+                        <use xlink:href="{{ asset('icons/coreui.svg#cil-cash') }}"></use>
+                    </svg>
+                    {{ __('Tunjangan') }}
+                </a>
+            </li>
+                <li class="nav-item">
+                    <a class="nav-link {{ request()->is('laporan*') ? 'active' : '' }}"
+                        href="{{ route('laporan.penggajian') }}">
+                        <svg class="nav-icon">
+                            <use xlink:href="{{ asset('icons/coreui.svg#cil-cash') }}"></use>
+                        </svg>
+                        {{ __('Penggajian') }}
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link {{ request()->is('laporan*') ? 'active' : '' }}"
+                        href="{{ route('laporan.neraca') }}">
+                        <svg class="nav-icon">
+                            <use xlink:href="{{ asset('icons/coreui.svg#cil-cash') }}"></use>
+                        </svg>
+                        {{ __('Neraca') }}
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link {{ request()->is('laporan*') ? 'active' : '' }}"
+                        href="{{ route('laporan.labarugi') }}">
+                        <svg class="nav-icon">
+                            <use xlink:href="{{ asset('icons/coreui.svg#cil-cash') }}"></use>
+                        </svg>
+                        {{ __('Laba Rugi') }}
                     </a>
                 </li>
             @endcan

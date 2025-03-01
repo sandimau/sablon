@@ -34,6 +34,7 @@
                                 <th scope="col">Harga</th>
                                 <th scope="col">jual</th>
                                 <th scope="col">beli</th>
+                                <th scope="col">hpp</th>
                                 <th scope="col">stok</th>
                                 <th scope="col">action</th>
                             </tr>
@@ -65,6 +66,7 @@
                                             <i class='bx bxs-check-square'></i>
                                         @endif
                                     </td>
+                                    <td>{{ $produk->hpp }}</td>
                                     <td><a href="{{ route('produkStok.index', $produk->id) }}">{{ $produk->lastStok }}</a>
                                     </td>
                                     <td>
