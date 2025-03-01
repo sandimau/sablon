@@ -126,6 +126,18 @@ class OrderDetailController extends Controller
                 }
 
                 if ($awal == 'awal' and $perubahan != 'awal' and $perubahan != 'batal') {
+                    // Get current stock and HPP
+                    $currentStock = ProdukStok::where('produk_id', $detail->produk->id)
+                        ->sum(DB::raw('COALESCE(tambah, 0) - COALESCE(kurang, 0)'));
+                    if ($currentStock === null) $currentStock = 0;
+
+                    // Get last HPP
+                    $lastHpp = ProdukStok::where('produk_id', $detail->produk->id)
+                        ->whereNotNull('hpp')
+                        ->latest()
+                        ->first();
+                    $currentHpp = $lastHpp ? $lastHpp->hpp : 0;
+
                     //ngurangi stok
                     ProdukStok::create([
                         'tanggal' => Carbon::now(),
@@ -134,9 +146,22 @@ class OrderDetailController extends Controller
                         'keterangan' => 'barang dijual ke ' .$detail->order->kontak->nama.' '.$username,
                         'kode' => 'btl',
                         'produk_id' => $detail->produk->id,
+                        'hpp' => $currentHpp ?? $detail->produk->hpp
                     ]);
                 }
                 if ($awal == 'selesai' and $perubahan == 'batal') {
+                    // Get current stock and HPP
+                    $currentStock = ProdukStok::where('produk_id', $detail->produk->id)
+                        ->sum(DB::raw('COALESCE(tambah, 0) - COALESCE(kurang, 0)'));
+                    if ($currentStock === null) $currentStock = 0;
+
+                    // Get last HPP
+                    $lastHpp = ProdukStok::where('produk_id', $detail->produk->id)
+                        ->whereNotNull('hpp')
+                        ->latest()
+                        ->first();
+                    $currentHpp = $lastHpp ? $lastHpp->hpp : 0;
+
                     //tambah stok
                     ProdukStok::create([
                         'tanggal' => Carbon::now(),
@@ -145,6 +170,7 @@ class OrderDetailController extends Controller
                         'keterangan' => $request->keterangan,
                         'kode' => 'jual',
                         'produk_id' => $detail->produk->id,
+                        'hpp' => $currentHpp ?? $detail->produk->hpp
                     ]);
                 }
 
@@ -153,6 +179,7 @@ class OrderDetailController extends Controller
             //update status produksi
             $detail->update([
                 'produksi_id' => $request->produksi_id,
+                'hpp' => $currentHpp ?? $detail->produk->hpp,
             ]);
         });
 
