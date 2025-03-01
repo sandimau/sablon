@@ -86,20 +86,25 @@ class BelanjaController extends Controller
                         $produk = Produk::find($request->barang_beli_id[$item]);
                         if ($produk->stok == 1) {
                             // Get current stock and HPP
+                            // Get current stock
                             $currentStock = ProdukStok::where('produk_id', $produk->id)
                                 ->sum(DB::raw('COALESCE(tambah, 0) - COALESCE(kurang, 0)'));
+                            if ($currentStock === null) $currentStock = 0;
 
+                            // Get last HPP
                             $lastHpp = ProdukStok::where('produk_id', $produk->id)
                                 ->whereNotNull('hpp')
                                 ->latest()
                                 ->first();
-
                             $currentHpp = $lastHpp ? $lastHpp->hpp : 0;
 
                             // Calculate new HPP
-                            $newHpp = (($currentStock * $currentHpp) +
-                                     ($request->jumlah[$item] * $request->harga[$item])) /
-                                     ($currentStock + $request->jumlah[$item]);
+                            $newHpp = 0;
+                            if ($currentStock + $request->jumlah[$item] > 0) {
+                                $newHpp = (($currentStock * $currentHpp) +
+                                        ($request->jumlah[$item] * $request->harga[$item])) /
+                                        ($currentStock + $request->jumlah[$item]);
+                            }
 
                             ProdukStok::create([
                                 'tanggal' => Carbon::now(),
