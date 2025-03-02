@@ -1,7 +1,8 @@
 <?php
 
-use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Route;
+use Illuminate\Support\Facades\Artisan;
 
 /*
 |--------------------------------------------------------------------------
@@ -27,6 +28,15 @@ Auth::routes();
 Route::group(['namespace' => 'App\Http\Controllers'], function()
 {
     Route::middleware('auth')->group(function () {
+
+        // Clear application cache
+        Route::get('/clear-cache', function() {
+            Artisan::call('cache:clear');
+            Artisan::call('config:clear');
+            Artisan::call('config:cache');
+            Artisan::call('view:clear');
+            return "Cache cleared successfully";
+        })->name('clear.cache');
 
         Route::get('/whattodo', 'HomeController@index')->name('whattodo');
         Route::get('/profile', 'ProfileController@show')->name('profile.show');
