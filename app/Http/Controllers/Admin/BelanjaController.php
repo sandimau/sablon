@@ -18,12 +18,31 @@ use Symfony\Component\HttpFoundation\Response;
 
 class BelanjaController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
         abort_if(Gate::denies('belanja_access'), Response::HTTP_FORBIDDEN, '403 Forbidden');
 
-        $belanjas = Belanja::orderBy('id','desc')->paginate(12);
+        $belanjas = Belanja::orderBy('id', 'desc')->paginate(12);
 
+        if ($request->dari == null && $request->sampai == null && $request->kontak_id == null && $request->produk_id == null) {
+            $belanjas = Belanja::orderBy('id', 'desc')->paginate(10);
+        } else {
+            $belanjas = Belanja::query()
+                ->when($request->dari && $request->sampai, function ($query) use ($request) {
+                    $query->whereBetween('created_at', [$request->dari, $request->sampai]);
+                })
+                ->when($request->kontak_id, function ($query) use ($request) {
+                    $query->where('kontak_id', $request->kontak_id);
+                })
+                ->when($request->produk_id, function ($query) use ($request) {
+                    $query->whereHas('belanjaDetail', function ($query) use ($request) {
+                        $query->where('produk_id', $request->produk_id);
+                    });
+                })
+                ->orderBy('id', 'desc')
+                ->paginate(10)
+                ->appends(['dari' => $request->dari, 'sampai' => $request->sampai, 'kontak_id' => $request->kontak_id, 'produk_id' => $request->produk_id]);
+        }
         return view('admin.belanjas.index', compact('belanjas'));
     }
 
@@ -101,10 +120,8 @@ class BelanjaController extends Controller
                             'hpp' => $hpp
                         ]);
                     }
-
                 }
             }
-
         });
 
         return redirect()->route('belanja.index')->withSuccess(__('Belanja created successfully.'));
@@ -114,9 +131,9 @@ class BelanjaController extends Controller
     {
         abort_if(Gate::denies('belanja_access'), Response::HTTP_FORBIDDEN, '403 Forbidden');
 
-        $belanjaDetail = BelanjaDetail::where('belanja_id',$belanja)->get();
+        $belanjaDetail = BelanjaDetail::where('belanja_id', $belanja)->get();
         $belanja = Belanja::find($belanja);
 
-        return view('admin.belanjas.detail', compact('belanjaDetail','belanja'));
+        return view('admin.belanjas.detail', compact('belanjaDetail', 'belanja'));
     }
 }

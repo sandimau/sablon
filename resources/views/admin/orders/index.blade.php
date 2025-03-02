@@ -15,21 +15,33 @@
             <div class="card-header">
                 <div class="d-flex justify-content-between align-items-center">
                     <form action="{{ route('order.index') }}" method="get" class="d-flex gap-2 align-items-center">
-                        <label for="nota" class="form-label mb-0">Nota</label>
-                        <input type="text" name="nota" class="form-control">
-                        <label for="nota" class="form-label mb-0">Konsumen</label>
-                        <div id="autocomplete" class="autocomplete">
-                            <input class="autocomplete-input {{ $errors->has('kontak_id') ? 'is-invalid' : '' }}"
-                                placeholder="cari kontak" aria-label="cari kontak">
-                            <span id="closeBrg"></span>
-                            <ul class="autocomplete-result-list"></ul>
-                            <input type="hidden" id="kontakId" name="kontak_id">
+                        <div class="d-flex gap-2 align-items-center">
+                            <label for="nota" class="form-label mb-0">Nota</label>
+                            <input type="text" name="nota" class="form-control">
+                            <label for="nota" class="form-label mb-0">Konsumen</label>
+                            <div id="autocomplete" class="autocomplete">
+                                <input class="autocomplete-input {{ $errors->has('kontak_id') ? 'is-invalid' : '' }}"
+                                    placeholder="cari kontak" aria-label="cari kontak">
+                                <span id="closeBrg"></span>
+                                <ul class="autocomplete-result-list"></ul>
+                                <input type="hidden" id="kontakId" name="kontak_id">
+                            </div>
+                            <label for="nama" class="mb-2">Produk</label>
+                            <div id="autocompleteProduk" class="autocomplete">
+                                <input class="autocomplete-input produk {{ $errors->has('produk_id') ? 'invalid' : '' }}"
+                                    placeholder="cari produk" aria-label="cari produk">
+                                <span id="closeBrgProduk"></span>
+                                <ul class="autocomplete-result-list"></ul>
+                                <input type="hidden" id="produkId" name="produk_id">
+                            </div>
                         </div>
-                        <label for="tanggal" class="form-label mb-0">Dari</label>
-                        <input type="date" name="dari" class="form-control">
-                        <label for="tanggal" class="form-label mb-0">Sampai</label>
-                        <input type="date" name="sampai" class="form-control">
-                        <button type="submit" class="btn btn-primary">Filter</button>
+                        <div class="d-flex gap-2 align-items-center">
+                            <label for="tanggal" class="form-label mb-0">Dari</label>
+                            <input type="date" name="dari" class="form-control">
+                            <label for="tanggal" class="form-label mb-0">Sampai</label>
+                            <input type="date" name="sampai" class="form-control">
+                            <button type="submit" class="btn btn-primary">Filter</button>
+                        </div>
                     </form>
                 </div>
             </div>
@@ -119,12 +131,48 @@
             },
         })
 
+        new Autocomplete('#autocompleteProduk', {
+            search: input => {
+                const url = "{{ url('admin/produk/api?q=') }}" + `${escape(input)}`;
+                return new Promise(resolve => {
+                    if (input.length < 1) {
+                        return resolve([])
+                    }
+
+                    fetch(url)
+                        .then(response => response.json())
+                        .then(data => {
+                            resolve(data);
+                        })
+                })
+            },
+            getResultValue: result => result.nama,
+            onSubmit: result => {
+                let idProduk = document.getElementById('produkId');
+                idProduk.value = result.id;
+
+                let btn = document.getElementById("closeBrgProduk");
+                btn.style.display = "block";
+                btn.innerHTML =
+                    `<button onclick="clearProduk()" type="button" class="btnClose btn-warning"><i class='bx bx-x-circle' ></i></button>`;
+            },
+        })
+
         function clearData() {
             let btn = document.getElementById("closeBrg");
             btn.style.display = "none";
             let auto = document.querySelector(".autocomplete-input");
             auto.value = null;
             let idProduk = document.getElementById('kontakId');
+            idProduk.value = null;
+        }
+
+        function clearProduk() {
+            let btn = document.getElementById("closeBrgProduk");
+            btn.style.display = "none";
+            let auto = document.querySelector(".autocomplete-input.produk");
+            auto.value = null;
+            let idProduk = document.getElementById('produkId');
             idProduk.value = null;
         }
     </script>
@@ -139,16 +187,16 @@
             position: relative;
         }
 
+        .autocomplete-input {
+            width: 300px !important;
+            margin-right: 10px;
+        }
+
         #closeBrg button,
         #closeBrgProduk button {
             position: absolute;
             right: -15px;
             top: -40px;
-        }
-
-        .autocomplete-input {
-            width: 300px !important;
-            margin-right: 10px;
         }
 
         .btnClose {

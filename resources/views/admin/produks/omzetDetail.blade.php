@@ -40,7 +40,7 @@
                             @php
                                 $daysInMonth = cal_days_in_month(CAL_GREGORIAN, $selectedMonth, $selectedYear);
                             @endphp
-                            @for ($i = $daysInMonth; $i >= 1; $i--)
+                            @for ($i = 1; $i <= $daysInMonth; $i++)
                                 <th class="text-center">{{ $i }}</th>
                             @endfor
                         </tr>

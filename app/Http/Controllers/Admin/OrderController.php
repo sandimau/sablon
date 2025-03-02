@@ -49,7 +49,7 @@ class OrderController extends Controller
 
     public function index(Request $request)
     {
-        if ($request->dari == null && $request->sampai == null && $request->nota == null && $request->kontak_id == null) {
+        if ($request->dari == null && $request->sampai == null && $request->nota == null && $request->kontak_id == null && $request->produk_id == null) {
             $orders = Order::orderBy('id','desc')->paginate(10);
         } else {
             $orders = Order::query()
@@ -62,9 +62,14 @@ class OrderController extends Controller
                 ->when($request->kontak_id, function($query) use ($request) {
                     $query->where('kontak_id', $request->kontak_id);
                 })
+                ->when($request->produk_id, function($query) use ($request) {
+                    $query->whereHas('orderDetail', function($query) use ($request) {
+                        $query->where('produk_id', $request->produk_id);
+                    });
+                })
                 ->orderBy('id', 'desc')
                 ->paginate(10)
-                ->appends(['dari' => $request->dari, 'sampai' => $request->sampai, 'nota' => $request->nota, 'kontak_id' => $request->kontak_id]);
+                ->appends(['dari' => $request->dari, 'sampai' => $request->sampai, 'nota' => $request->nota, 'kontak_id' => $request->kontak_id, 'produk_id' => $request->produk_id]);
         }
         return view('admin.orders.index', compact('orders'));
     }

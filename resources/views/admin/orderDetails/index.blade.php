@@ -26,7 +26,7 @@
                                 <div class="row">
                                     <div class="col-lg-2 col-sm-4">
                                         <h6 class="mb-0">Konsumen</h6>
-                                        <p>{{ $order->kontak->nama }}</p>
+                                        <p>{{ $order->kontak->nama }} - {{ $order->username }}</p>
                                     </div>
                                     <div class="col-lg-2 col-sm-4">
                                         <h6 class="mb-0">Ongkir</h6>
