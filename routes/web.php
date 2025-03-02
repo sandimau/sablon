@@ -34,6 +34,8 @@ Route::group(['namespace' => 'App\Http\Controllers'], function()
         Route::get('/profile/{id}/gaji', 'ProfileController@gaji')->name('profile.gaji');
         Route::patch('/profile/{id}/update', 'ProfileController@update')->name('profile.update');
 
+        Route::get('/deleteOrders', 'HomeController@DeleteOrders')->name('deleteOrders');
+
         //whattodo
         Route::get('/whattodo/create', 'HomeController@create')->name('whattodo.create');
         Route::post('/whattodo/create', 'HomeController@store')->name('whattodo.store');
@@ -128,6 +130,8 @@ Route::group(['namespace' => 'App\Http\Controllers'], function()
             Route::get('/produk/{produk}/edit', 'ProdukController@edit')->name('produks.edit');
             Route::patch('/produk/{produk}/update', 'ProdukController@update')->name('produks.update');
             Route::get('/aset', 'ProdukController@aset')->name('produk.aset');
+            Route::get('/produk/omzet', 'ProdukController@omzet')->name('produk.omzet');
+            Route::get('/produk/omzet/{kategori}', 'ProdukController@omzetDetail')->name('produk.omzetDetail');
 
             //produkStoks
             Route::get('/produk/{produk}/produkStok', 'ProdukStokController@index')->name('produkStok.index');

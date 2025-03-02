@@ -127,4 +127,137 @@ class ProdukController extends Controller
             ->get();
         return view('admin.produks.aset', compact('asets'));
     }
+
+    public function omzet(Request $request)
+    {
+        // Get selected year, default to current year if not specified
+        $selectedYear = $request->input('year', date('Y'));
+
+        // Get all available years for the dropdown
+        $years = DB::table('orders')
+            ->select(DB::raw('DISTINCT YEAR(created_at) as year'))
+            ->orderBy('year', 'desc')
+            ->pluck('year');
+
+        $asets = DB::table('produk_last_stoks as t')
+            ->join(
+                DB::raw('(SELECT produk_id FROM produk_last_stoks GROUP BY produk_id) as subquery'),
+                't.produk_id',
+                '=',
+                'subquery.produk_id'
+            )
+            ->join('produks as p', 'p.id', '=', 't.produk_id')
+            ->join('kategoris as k', 'k.id', '=', 'p.kategori_id')
+            ->select(
+                'k.id as kategori_id',
+                'k.nama as namaKategori',
+                DB::raw('SUM(t.saldo * p.harga) as nilai_aset')
+            )
+            ->groupBy('k.id', 'k.nama')
+            ->orderBy('k.nama')
+            ->get();
+
+        // Get categories first
+        $categories = DB::table('kategoris as k')
+            ->select(
+                'k.id as kategori_id',
+                'k.nama as namaKategori'
+            )
+            ->where('k.jual', 1)
+            ->orderBy('k.nama')
+            ->get();
+
+        // Get omzet data for the selected year
+        $omzetData = DB::table('order_details as od')
+            ->join('orders as o', 'o.id', '=', 'od.order_id')
+            ->join('produks as p', 'p.id', '=', 'od.produk_id')
+            ->join('kategoris as k', 'k.id', '=', 'p.kategori_id')
+            ->whereYear('o.created_at', $selectedYear)
+            ->select(
+                'k.id as kategori_id',
+                'k.nama as namaKategori',
+                DB::raw('MONTH(o.created_at) as bulan'),
+                DB::raw('SUM(od.jumlah * od.harga) as omzet')
+            )
+            ->groupBy('k.id', 'k.nama', DB::raw('MONTH(o.created_at)'))
+            ->get();
+
+        // Create complete dataset with all months
+        $omzet = collect();
+        foreach ($categories as $category) {
+            for ($month = 1; $month <= 12; $month++) {
+                $monthlyData = $omzetData
+                    ->where('kategori_id', $category->kategori_id)
+                    ->where('bulan', $month)
+                    ->first();
+
+                $omzet->push((object)[
+                    'kategori_id' => $category->kategori_id,
+                    'namaKategori' => $category->namaKategori,
+                    'bulan' => $month,
+                    'tahun' => $selectedYear,
+                    'omzet' => $monthlyData ? $monthlyData->omzet : 0
+                ]);
+            }
+        }
+
+        return view('admin.produks.omzet', compact('omzet', 'asets', 'years', 'selectedYear'));
+    }
+
+    public function omzetDetail(Kategori $kategori, Request $request)
+    {
+        // Get selected year and month, default to current if not specified
+        $selectedYear = $request->input('year', date('Y'));
+        $selectedMonth = $request->input('month', date('m'));
+
+        // Get all available years for the dropdown
+        $years = DB::table('orders')
+            ->select(DB::raw('DISTINCT YEAR(created_at) as year'))
+            ->orderBy('year', 'desc')
+            ->pluck('year');
+
+        // Get products with their daily sales for the selected month
+        $products = DB::table('produks as p')
+            ->join('kategoris as k', 'k.id', '=', 'p.kategori_id')
+            ->leftJoin('produk_last_stoks as pls', 'pls.produk_id', '=', 'p.id')
+            ->where('k.id', $kategori->id)
+            ->select(
+                'p.id',
+                'p.nama as varian',
+                'k.nama as nama_kategori',
+                'pls.saldo as stok'
+            )
+            ->get();
+
+        // Get daily sales data
+        foreach ($products as $product) {
+            // Calculate average sales for the last 3 months
+            $avgSales = DB::table('order_details as od')
+                ->join('orders as o', 'o.id', '=', 'od.order_id')
+                ->where('od.produk_id', $product->id)
+                ->whereRaw('o.created_at >= DATE_SUB(NOW(), INTERVAL 3 MONTH)')
+                ->avg('od.jumlah');
+
+            $product->rata_penjualan = round($avgSales ?: 0, 1);
+
+            // Get daily sales for the selected month
+            $dailySales = DB::table('order_details as od')
+                ->join('orders as o', 'o.id', '=', 'od.order_id')
+                ->where('od.produk_id', $product->id)
+                ->whereYear('od.created_at', $selectedYear)
+                ->whereMonth('od.created_at', $selectedMonth)
+                ->select(
+                    DB::raw('DATE(od.created_at) as date'),
+                    DB::raw('SUM(od.jumlah) as total_sales'),
+                    DB::raw('DAY(od.created_at) as day')
+                )
+                ->groupBy('date', 'day')
+                ->get();
+
+            // Convert ke array dengan day sebagai key
+            $product->daily_sales = $dailySales->pluck('total_sales', 'day')->toArray();
+        }
+
+        return view('admin.produks.omzetDetail', compact('products', 'kategori', 'years', 'selectedYear', 'selectedMonth'));
+    }
 }

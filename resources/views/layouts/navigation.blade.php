@@ -290,6 +290,15 @@
                         {{ __('Aset') }}
                     </a>
                 </li>
+                <li class="nav-item">
+                    <a class="nav-link {{ request()->is('produk*') ? 'active' : '' }}"
+                        href="{{ route('produk.omzet') }}">
+                        <svg class="nav-icon">
+                            <use xlink:href="{{ asset('icons/coreui.svg#cil-user') }}"></use>
+                        </svg>
+                        {{ __('Produk Omzet') }}
+                    </a>
+                </li>
             @endcan
         </ul>
     </li>
