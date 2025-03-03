@@ -32,7 +32,6 @@ class ProdukController extends Controller
     {
         $request->validate([
             'nama' => 'required',
-            'gambar' => 'required|mimes:jpeg,png,jpg'
         ]);
 
         $gambar = null;
@@ -68,18 +67,18 @@ class ProdukController extends Controller
 
     public function edit(Produk $produk)
     {
+        $listKategori = Kategori::where('jual',1)->get();
         $satuan = [
             'kilo' => 'kilo', 'lembar' => 'lembar', 'rim' => 'rim', 'koli' => 'koli', 'jasa' => 'jasa', 'meter' => 'meter', 'roll' => 'roll', 'gross' => 'gross', 'liter' => 'liter', 'buah' => 'buah',
             'pak(25)' => 'pak(25)', 'pak(50)' => 'pak(50)', 'pak(100)' => 'pak(100)', 'pak(120)' => 'pak(120)', 'pak(200)' => 'pak(200)', 'pak(250)' => 'pak(250)', 'pak(500)' => 'pak(500)', 'pak(1000)' => 'pak(1000)', 'pak(2000)' => 'pak(2000)',
         ];
-        return view('admin.produks.edit', compact('produk','satuan'));
+        return view('admin.produks.edit', compact('produk','satuan','listKategori'));
     }
 
     public function update(Request $request, Produk $produk)
     {
         $request->validate([
             'nama' => 'required',
-            'gambar' => 'required|mimes:jpeg,png,jpg'
         ]);
 
         $gambar = $produk->gambar;
@@ -107,6 +106,7 @@ class ProdukController extends Controller
             'jual' => $request->jual,
             'stok' => $request->stok,
             'gambar' => $gambar,
+            'kategori_id' => $request->kategori_id,
         ]);
 
         return redirect()->route('produks.index',$produk->kategori_id)->withSuccess(__('Produk updated successfully.'));
@@ -259,5 +259,11 @@ class ProdukController extends Controller
         }
 
         return view('admin.produks.omzetDetail', compact('products', 'kategori', 'years', 'selectedYear', 'selectedMonth'));
+    }
+
+    public function destroy(Produk $produk)
+    {
+        $produk->delete();
+        return redirect()->route('produks.index',$produk->kategori_id)->withDanger(__('Produk deleted successfully.'));
     }
 }

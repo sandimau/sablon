@@ -142,7 +142,7 @@ Route::group(['namespace' => 'App\Http\Controllers'], function()
             Route::get('/aset', 'ProdukController@aset')->name('produk.aset');
             Route::get('/produk/omzet', 'ProdukController@omzet')->name('produk.omzet');
             Route::get('/produk/omzet/{kategori}', 'ProdukController@omzetDetail')->name('produk.omzetDetail');
-
+            Route::delete('/produk/{produk}', 'ProdukController@destroy')->name('produks.destroy');
             //produkStoks
             Route::get('/produk/{produk}/produkStok', 'ProdukStokController@index')->name('produkStok.index');
             Route::get('/produk/{produk}/produk/create', 'ProdukStokController@create')->name('produkStok.create');

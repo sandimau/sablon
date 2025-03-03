@@ -21,7 +21,15 @@
                         <svg class="nav-icon">
                             <use xlink:href="{{ asset('icons/coreui.svg#cil-3d') }}"></use>
                         </svg>
-                        Arsip Order
+                        Arsip Offline
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link {{ request()->is('order*') ? 'active' : '' }}" href="{{ route('order.arsip') }}">
+                        <svg class="nav-icon">
+                            <use xlink:href="{{ asset('icons/coreui.svg#cil-3d') }}"></use>
+                        </svg>
+                        Arsip Online
                     </a>
                 </li>
             @endcan

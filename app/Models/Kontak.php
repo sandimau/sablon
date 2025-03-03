@@ -82,24 +82,13 @@ class Kontak extends Model
 
     public function getJenisAttribute($value)
     {
-        if ($this->attributes['konsumen'] == 1) {
-            $konsumen = 'konsumen';
-        } else {
-            $konsumen = null;
-        }
-        if ($this->attributes['supplier'] == 1) {
-            $supplier = 'supplier';
-        } else {
-            $supplier = null;
-        }
-        $test = '';
-        if ($konsumen) {
-            $test .= '<li>'.$konsumen.'</li>';
-        }
-        if ($supplier) {
-            $test .= '<li>'.$supplier.'</li>';
-        }
-        return $test;
+        $jenis = [];
+
+        if ($this->attributes['konsumen']) $jenis[] = 'konsumen';
+        if ($this->attributes['supplier']) $jenis[] = 'supplier';
+        if ($this->attributes['marketplace']) $jenis[] = 'marketplace';
+
+        return implode('', array_map(fn($j) => "<li>$j</li>", $jenis));
     }
 
     public function order()

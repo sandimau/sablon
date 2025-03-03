@@ -59,6 +59,7 @@ class KontakController extends Controller
             'email' => $request->email,
             'alamat' => $request->alamat,
             'supplier' => $request->supplier,
+            'marketplace' => $request->marketplace,
             'konsumen' => $request->konsumen,
             'kontak' => $request->kontak,
             'ar_id' => $request->ar_id,

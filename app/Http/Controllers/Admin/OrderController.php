@@ -50,9 +50,9 @@ class OrderController extends Controller
     public function index(Request $request)
     {
         if ($request->dari == null && $request->sampai == null && $request->nota == null && $request->kontak_id == null && $request->produk_id == null) {
-            $orders = Order::orderBy('id','desc')->paginate(10);
+            $orders = Order::offline()->paginate(10);
         } else {
-            $orders = Order::query()
+            $orders = Order::offline()
                 ->when($request->dari && $request->sampai, function($query) use ($request) {
                     $query->whereBetween('created_at', [$request->dari, $request->sampai]);
                 })
@@ -72,6 +72,34 @@ class OrderController extends Controller
                 ->appends(['dari' => $request->dari, 'sampai' => $request->sampai, 'nota' => $request->nota, 'kontak_id' => $request->kontak_id, 'produk_id' => $request->produk_id]);
         }
         return view('admin.orders.index', compact('orders'));
+    }
+
+    public function arsip(Request $request)
+    {
+        $marketplace = Kontak::where('marketplace', 1)->pluck('nama', 'id');
+        if ($request->dari == null && $request->sampai == null && $request->nota == null && $request->kontak_id == null && $request->produk_id == null) {
+            $orders = Order::online()->paginate(10);
+        } else {
+            $orders = Order::online()
+                ->when($request->dari && $request->sampai, function($query) use ($request) {
+                    $query->whereBetween('created_at', [$request->dari, $request->sampai]);
+                })
+                ->when($request->nota, function($query) use ($request) {
+                    $query->where('nota', 'LIKE', '%' . $request->nota . '%');
+                })
+                ->when($request->kontak_id, function($query) use ($request) {
+                    $query->where('kontak_id', $request->kontak_id);
+                })
+                ->when($request->produk_id, function($query) use ($request) {
+                    $query->whereHas('orderDetail', function($query) use ($request) {
+                        $query->where('produk_id', $request->produk_id);
+                    });
+                })
+                ->orderBy('id', 'desc')
+                ->paginate(10)
+                ->appends(['dari' => $request->dari, 'sampai' => $request->sampai, 'nota' => $request->nota, 'kontak_id' => $request->kontak_id, 'produk_id' => $request->produk_id]);
+        }
+        return view('admin.orders.online', compact('orders', 'marketplace'));
     }
 
     public function create()
@@ -103,7 +131,7 @@ class OrderController extends Controller
         $order['ket_kirim'] = $request->ket_kirim;
         $order['deathline'] = $request->deathline;
         $order['username'] = $request->username;
-        $order['nota'] = $request->nota;
+        $order['nota'] = $request->nota ?? 'ORD-' . strtoupper(substr(md5(uniqid()), 0, 8));
 
         // ambil order flow setiap perusahaan
         $produksi = Produksi::where('nama', 'persiapan')->first();
@@ -165,9 +193,9 @@ class OrderController extends Controller
     public function unpaid(Request $request)
     {
         if ($request->dari == null && $request->sampai == null && $request->nota == null && $request->kontak_id == null) {
-            $orders = Order::belumLunas()->orderBy('id','desc')->paginate(10);
+            $orders = Order::belumLunas()->paginate(10);
         } else {
-            $orders = Order::query()
+            $orders = Order::belumLunas()
                 ->when($request->dari && $request->sampai, function($query) use ($request) {
                     $query->whereBetween('created_at', [$request->dari, $request->sampai]);
                 })

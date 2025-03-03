@@ -19,6 +19,21 @@
                     <input class="form-control" type="file" id="formFile" name="gambar">
                 </div>
                 <div class="form-group mb-3">
+                    <label for="kategori_id">Kategori</label>
+                    <select class="form-select {{ $errors->has('kategori_id') ? 'is-invalid' : '' }}" name="kategori_id" id="kategori_id">
+                        @foreach($listKategori as $k)
+                            <option value="{{ $k->id }}" {{ $produk->kategori_id == $k->id ? 'selected' : '' }}>
+                                {{ $k->nama }}
+                            </option>
+                        @endforeach
+                    </select>
+                    @if($errors->has('kategori_id'))
+                        <div class="invalid-feedback">
+                            {{ $errors->first('kategori_id') }}
+                        </div>
+                    @endif
+                </div>
+                <div class="form-group mb-3">
                     <label for="nama">Nama</label>
                     <input class="form-control {{ $errors->has('nama') ? 'is-invalid' : '' }}" type="text" name="nama"
                         id="nama" value="{{ old('nama', $produk->nama) }}">

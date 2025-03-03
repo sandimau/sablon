@@ -70,6 +70,17 @@
                                     <td><a href="{{ route('produkStok.index', $produk->id) }}">{{ $produk->lastStok }}</a>
                                     </td>
                                     <td>
+                                        @can('produk_delete')
+                                            <form action="{{ route('produks.destroy', $produk->id) }}" method="POST"
+                                                class="d-inline">
+                                                @csrf
+                                                @method('DELETE')
+                                                <button type="submit" class="btn btn-danger btn-sm me-1"
+                                                    onclick="return confirm('Are you sure you want to delete this item?')">
+                                                    <i class='bx bxs-trash'></i> Delete
+                                                </button>
+                                            </form>
+                                        @endcan
                                         <a href="{{ route('produks.edit', $produk->id) }}"
                                             class="btn btn-info btn-sm me-1"><i class='bx bxs-edit'></i> Edit</a>
                                     </td>

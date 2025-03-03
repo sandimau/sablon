@@ -39,7 +39,6 @@ class Order extends Model
                 }
             }
             $model->total = $total - $model->diskon + $model->ongkir;
-
         });
     }
 
@@ -58,11 +57,29 @@ class Order extends Model
         return $this->hasMany(OrderDetail::class);
     }
 
+    public function scopeOffline($query)
+    {
+        return $query->whereHas('kontak', function($q) {
+            $q->where('marketplace', 0);
+        })
+        ->orderBy('id', 'desc');
+    }
+
+    public function scopeOnline($query)
+    {
+        return $query->whereHas('kontak', function($q) {
+            $q->where('marketplace', '!=', 0);
+        })
+        ->orderBy('id', 'desc');
+    }
+
     public function scopeBelumLunas($query)
     {
-        $query->whereRaw('total > bayar');
-        $query->orderBy('id','desc');
-        return $query;
+        return $query->whereRaw('total > bayar')
+            ->whereHas('kontak', function($q) {
+                $q->where('marketplace', 0);
+            })
+            ->orderBy('id', 'desc');
     }
 
     public function getListprodukAttribute()
@@ -82,7 +99,7 @@ class Order extends Model
         return $query;
     }
 
-    public function scopeOmzetBulan($query,$var)
+    public function scopeOmzetBulan($query, $var)
     {
         $query->select(
             DB::raw('YEAR(created_at) as year'),
