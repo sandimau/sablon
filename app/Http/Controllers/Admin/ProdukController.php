@@ -67,7 +67,7 @@ class ProdukController extends Controller
 
     public function edit(Produk $produk)
     {
-        $listKategori = Kategori::where('jual',1)->get();
+        $listKategori = Kategori::get();
         $satuan = [
             'kilo' => 'kilo', 'lembar' => 'lembar', 'rim' => 'rim', 'koli' => 'koli', 'jasa' => 'jasa', 'meter' => 'meter', 'roll' => 'roll', 'gross' => 'gross', 'liter' => 'liter', 'buah' => 'buah',
             'pak(25)' => 'pak(25)', 'pak(50)' => 'pak(50)', 'pak(100)' => 'pak(100)', 'pak(120)' => 'pak(120)', 'pak(200)' => 'pak(200)', 'pak(250)' => 'pak(250)', 'pak(500)' => 'pak(500)', 'pak(1000)' => 'pak(1000)', 'pak(2000)' => 'pak(2000)',
