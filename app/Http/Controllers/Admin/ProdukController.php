@@ -123,9 +123,42 @@ class ProdukController extends Controller
             )
             ->join('produks as p', 'p.id', '=', 't.produk_id')
             ->join('kategoris as k', 'k.id', '=', 'p.kategori_id')
-            ->select('t.saldo', 'p.harga_beli','p.nama', 'k.nama as namaKategori')
-            ->get();
+            ->select(
+                'k.id as kategori_id',
+                'k.nama as namaKategori',
+                DB::raw('SUM(CAST(CAST(t.saldo AS DECIMAL(30,2)) * CAST(p.harga_beli AS DECIMAL(30,2)) AS DECIMAL(30,2))) as total_aset')
+            )
+            ->groupBy('k.nama')
+            ->orderBy('k.nama')
+            ->get()
+            ->groupBy('namaKategori');
         return view('admin.produks.aset', compact('asets'));
+    }
+
+    public function asetDetail(Kategori $kategori)
+    {
+        $asets = DB::table('produk_last_stoks as t')
+            ->join(
+                DB::raw('(SELECT produk_id FROM produk_last_stoks GROUP BY produk_id) as subquery'),
+                't.produk_id',
+                '=',
+                'subquery.produk_id'
+            )
+            ->join('produks as p', 'p.id', '=', 't.produk_id')
+            ->join('kategoris as k', 'k.id', '=', 'p.kategori_id')
+            ->select(
+                'k.nama as namaKategori',
+                'p.nama',
+                't.saldo',
+                'p.harga_beli',
+                DB::raw('CAST(CAST(t.saldo AS DECIMAL(30,2)) * CAST(p.harga_beli AS DECIMAL(30,2)) AS DECIMAL(30,2)) as total_aset')
+            )
+            ->where('k.id', $kategori->id)
+            ->orderBy('k.nama')
+            ->orderBy('p.nama')
+            ->get()
+            ->groupBy('namaKategori');
+        return view('admin.produks.asetDetail', compact('asets'));
     }
 
     public function omzet(Request $request)

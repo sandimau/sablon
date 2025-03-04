@@ -22,23 +22,30 @@
                     <table class="table table-striped" id="myTable">
                         <thead>
                             <tr>
-                                <th scope="col">Produk</th>
-                                <th scope="col">Stok</th>
-                                <th scope="col" style="text-align: right;">Harga Beli</th>
-                                <th scope="col" style="text-align: right;">Aset</th>
+                                <th scope="col">Kategori</th>
+                                <th scope="col" style="text-align: right;">Total Aset</th>
                             </tr>
                         </thead>
                         <tbody>
-                            @foreach ($asets as $aset)
+                            @php $totalAllAsets = 0; @endphp
+                            @foreach ($asets as $kategori => $items)
+                                @php
+                                    $totalAset = $items->sum('total_aset');
+                                    $totalAllAsets += $totalAset;
+                                @endphp
                                 <tr>
-                                    <td>{{ $aset->nama }}</td>
-                                    <td>{{ $aset->saldo }}</td>
+                                    <td><a href="{{ route('produks.asetDetail', ['kategori' => $items->first()->kategori_id]) }}">{{ $kategori }}</a></td>
                                     <td style="text-align: right;">
-                                        {{ number_format($aset->harga_beli, 0, ',', '.') }}</td>
-                                    <td style="text-align: right;">
-                                        {{ number_format($aset->saldo * $aset->harga_beli, 0, ',', '.') }}</td>
+                                        {{ number_format($totalAset, 0, ',', '.') }}
+                                    </td>
                                 </tr>
                             @endforeach
+                            <tr class="fw-bold">
+                                <td>Total</td>
+                                <td style="text-align: right;">
+                                    {{ number_format($totalAllAsets, 0, ',', '.') }}
+                                </td>
+                            </tr>
                         </tbody>
                     </table>
                 </div>
