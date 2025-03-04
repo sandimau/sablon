@@ -60,7 +60,8 @@ class Order extends Model
     public function scopeOffline($query)
     {
         return $query->whereHas('kontak', function($q) {
-            $q->where('marketplace', 0);
+            $q->where('marketplace', 0)
+              ->orWhereNull('marketplace');
         })
         ->orderBy('id', 'desc');
     }
@@ -77,7 +78,8 @@ class Order extends Model
     {
         return $query->whereRaw('total > bayar')
             ->whereHas('kontak', function($q) {
-                $q->where('marketplace', 0);
+                $q->where('marketplace', 0)
+                  ->orWhereNull('marketplace');
             })
             ->orderBy('id', 'desc');
     }
