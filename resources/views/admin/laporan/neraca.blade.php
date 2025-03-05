@@ -35,7 +35,7 @@
                             </tr>
                             <tr>
                                 <td>Stok</td>
-                                <td>{{ number_format($stok, 0, ',', '.') }}</td>
+                                <td>{{ number_format($totalAllAsets, 0, ',', '.') }}</td>
                                 <td>0</td>
                             </tr>
                             <tr>
@@ -56,7 +56,7 @@
                             <tr class="table-success">
                                 <td>Laba</td>
                                 <td>0</td>
-                                <td>{{ number_format($kas + $stok  + $total_piutang - $total_hutang - abs($modal), 0, ',', '.') }}</td>
+                                <td>{{ number_format($kas + $totalAllAsets  + $total_piutang - $total_hutang - abs($modal), 0, ',', '.') }}</td>
                             </tr>
                         </tbody>
                     </table>

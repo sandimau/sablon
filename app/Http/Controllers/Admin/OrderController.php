@@ -283,10 +283,19 @@ class OrderController extends Controller
         return view('admin.orders.omzet', compact('orders'));
     }
 
-    public function omzetBulan()
+    public function omzetBulan(Request $request)
     {
+        // Get selected year, default to current year if not specified
+        $selectedYear = $request->input('year', date('Y'));
+
+        // Get all available years for the dropdown
+        $tahuns = DB::table('orders')
+            ->select(DB::raw('DISTINCT YEAR(created_at) as year'))
+            ->orderBy('year', 'desc')
+            ->pluck('year');
+
         abort_if(Gate::denies('omzet_access'), Response::HTTP_FORBIDDEN, '403 Forbidden');
-        $years = Order::omzetBulan(date('Y'))->get();
-        return view('admin.orders.omzetBulan', compact('years'));
+        $years = Order::omzetBulan($selectedYear)->get();
+        return view('admin.orders.omzetBulan', compact('years','tahuns', 'selectedYear'));
     }
 }

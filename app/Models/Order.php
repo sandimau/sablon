@@ -109,7 +109,7 @@ class Order extends Model
             DB::raw('MONTHNAME(created_at) as monthname'),
             DB::raw('SUM(total) as omzet')
         );
-        // $query->where( DB::raw('YEAR(created_at)'), '=', $var );
+        $query->where( DB::raw('YEAR(created_at)'), '=', $var );
         $query->whereRaw('total');
         $query->groupBy('month');
         $query->orderBy('created_at');

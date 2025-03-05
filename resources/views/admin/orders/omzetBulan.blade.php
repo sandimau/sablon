@@ -6,11 +6,23 @@
 
 @section('content')
     <div class="bg-light rounded">
+        <div class="card-header d-flex justify-content-between align-items-center">
+            <h4>Aset dan Omzet Produk</h4>
+            <form method="get" class="d-flex align-items-center">
+                <label for="year" class="me-2">Pilih Tahun:</label>
+                <select name="year" id="year" class="form-select" onchange="this.form.submit()">
+                    @foreach($tahuns as $year)
+                        <option value="{{ $year }}" {{ $year == $selectedYear ? 'selected' : '' }}>
+                            {{ $year }}
+                        </option>
+                    @endforeach
+                </select>
+            </form>
+        </div>
         <div class="card">
             <canvas id="speedChart"></canvas>
         </div>
     </div>
-    @php @endphp
 @endsection
 
 @push('after-scripts')
@@ -41,74 +53,12 @@
                     borderColor: '#2196f3', // Add custom color border (Line)
                     backgroundColor: '#2196f3', // Add custom color background (Points and Fill)
                     borderWidth: 1 // Specify bar border width
-                }]},
+                }]
+            },
             options: {
-            responsive: true, // Instruct chart js to respond nicely.
-            maintainAspectRatio: false, // Add to prevent default behaviour of full-width/height
+                responsive: true, // Instruct chart js to respond nicely.
+                maintainAspectRatio: false, // Add to prevent default behaviour of full-width/height
             }
         });
-
-
-
-        // var dataFirst = {
-        //     label: @php
-        //         $data = null;
-        //         if ($last->first()) {
-        //             $data = $last->first()->year;
-        //         }
-        //     echo '"omzet ' . $data . '"'; @endphp,
-        //     data: [
-        //         @php
-        //             foreach ($last as $value) {
-        //                 echo $value->omzet . ',';
-        //             }
-        //         @endphp
-        //     ],
-        //     lineTension: 0,
-        //     fill: false,
-        //     borderColor: 'red'
-        // };
-
-        // var dataSecond = {
-        //     label: @php echo '"omzet '.$years->first()->year . '"' @endphp,
-        //     data: [
-        //         @php
-        //             foreach ($years as $value) {
-        //                 echo $value->omzet . ',';
-        //             }
-        //         @endphp
-        //     ],
-        //     lineTension: 0,
-        //     fill: false,
-        //     borderColor: 'blue'
-        // };
-
-        // var speedData = {
-        //     labels: [
-        //         @php
-        //             foreach ($years as $value) {
-        //                 echo '"' . $value->monthname . '",';
-        //             }
-        //         @endphp
-        //     ],
-        //     datasets: [dataFirst, dataSecond]
-        // };
-
-        // var chartOptions = {
-        //     legend: {
-        //         display: true,
-        //         position: 'top',
-        //         labels: {
-        //             boxWidth: 80,
-        //             fontColor: 'black'
-        //         }
-        //     }
-        // };
-
-        // var lineChart = new Chart(speedCanvas, {
-        //     type: 'line',
-        //     data: speedData,
-        //     options: chartOptions
-        // });
     </script>
 @endpush
