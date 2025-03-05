@@ -163,7 +163,7 @@ class LaporanController extends Controller
                     'k.nama as kategori',
                     'k.id as kategori_id',
                     DB::raw('SUM(od.jumlah * od.harga) as omzet'),
-                    DB::raw('SUM(od.hpp * od.jumlah) as hpp'),
+                    DB::raw('SUM(p.hpp * od.jumlah) as hpp'),
                     DB::raw('COALESCE((
                         SELECT SUM(ps.hpp * COALESCE(ps.tambah,0) - ps.hpp * COALESCE(ps.kurang,0))
                         FROM produk_stoks ps
@@ -175,7 +175,7 @@ class LaporanController extends Controller
                     ), 0) as opname'),
                     DB::raw('(
                         SUM(od.jumlah * od.harga) -
-                        SUM(od.hpp * od.jumlah) +
+                        SUM(p.hpp * od.jumlah) +
                         COALESCE((
                             SELECT SUM(ps.hpp * COALESCE(ps.tambah,0) - ps.hpp * COALESCE(ps.kurang,0))
                             FROM produk_stoks ps
@@ -188,7 +188,7 @@ class LaporanController extends Controller
                     ) as laba_kotor'),
                     DB::raw('CASE
                         WHEN SUM(od.jumlah * od.harga) > 0
-                        THEN ((SUM(od.jumlah * od.harga) - SUM(od.hpp * od.jumlah)) / SUM(od.jumlah * od.harga)) * 100
+                        THEN ((SUM(od.jumlah * od.harga) - SUM(p.hpp * od.jumlah)) / SUM(od.jumlah * od.harga)) * 100
                         ELSE 0
                     END as persen')
                 )
@@ -208,7 +208,7 @@ class LaporanController extends Controller
                     'k.nama as kategori',
                     'p.nama as produk',
                     DB::raw('SUM(od.jumlah * od.harga) as omzet'),
-                    DB::raw('SUM(od.hpp * od.jumlah) as hpp'),
+                    DB::raw('SUM(p.hpp * od.jumlah) as hpp'),
                     DB::raw('COALESCE((
                         SELECT sum(hpp * COALESCE(tambah,0) - hpp * COALESCE(kurang,0))
                         FROM produk_stoks ps
@@ -219,7 +219,7 @@ class LaporanController extends Controller
                     ), 0) as opname'),
                     DB::raw('(
                         SUM(od.jumlah * od.harga) -
-                        SUM(od.hpp * od.jumlah) +
+                        SUM(p.hpp * od.jumlah) +
                         COALESCE((
                             SELECT sum(hpp * COALESCE(tambah,0) - hpp * COALESCE(kurang,0))
                             FROM produk_stoks ps
@@ -231,7 +231,7 @@ class LaporanController extends Controller
                     ) as laba_kotor'),
                     DB::raw('CASE
                         WHEN SUM(od.jumlah * od.harga) > 0
-                        THEN ((SUM(od.jumlah * od.harga) - SUM(od.hpp * od.jumlah)) / SUM(od.jumlah * od.harga)) * 100
+                        THEN ((SUM(od.jumlah * od.harga) - SUM(p.hpp * od.jumlah)) / SUM(od.jumlah * od.harga)) * 100
                         ELSE 0
                     END as persen')
                 )
@@ -309,7 +309,7 @@ class LaporanController extends Controller
             'p.nama as produk',
             'p.id as produk_id',
             DB::raw('COALESCE(SUM(CASE WHEN o.id IS NOT NULL THEN od.jumlah * od.harga ELSE 0 END), 0) as omzet'),
-            DB::raw('COALESCE(SUM(CASE WHEN o.id IS NOT NULL THEN od.hpp * od.jumlah ELSE 0 END), 0) as hpp'),
+            DB::raw('COALESCE(SUM(CASE WHEN o.id IS NOT NULL THEN p.hpp * od.jumlah ELSE 0 END), 0) as hpp'),
             DB::raw('COALESCE((
                 SELECT sum(hpp * COALESCE(tambah,0) - hpp * COALESCE(kurang,0))
                 FROM produk_stoks ps
@@ -322,7 +322,7 @@ class LaporanController extends Controller
             ->addSelect(
                 DB::raw('(
                 COALESCE(SUM(CASE WHEN o.id IS NOT NULL THEN od.jumlah * od.harga ELSE 0 END), 0) -
-                COALESCE(SUM(CASE WHEN o.id IS NOT NULL THEN od.hpp * od.jumlah ELSE 0 END), 0) +
+                COALESCE(SUM(CASE WHEN o.id IS NOT NULL THEN p.hpp * od.jumlah ELSE 0 END), 0) +
                 COALESCE((
                     SELECT sum(hpp * COALESCE(tambah,0) - hpp * COALESCE(kurang,0))
                     FROM produk_stoks ps
@@ -335,7 +335,7 @@ class LaporanController extends Controller
                 DB::raw('CASE
                 WHEN COALESCE(SUM(CASE WHEN o.id IS NOT NULL THEN od.jumlah * od.harga ELSE 0 END), 0) > 0
                 THEN ((COALESCE(SUM(CASE WHEN o.id IS NOT NULL THEN od.jumlah * od.harga ELSE 0 END), 0) -
-                      COALESCE(SUM(CASE WHEN o.id IS NOT NULL THEN od.hpp * od.jumlah ELSE 0 END), 0)) /
+                      COALESCE(SUM(CASE WHEN o.id IS NOT NULL THEN p.hpp * od.jumlah ELSE 0 END), 0)) /
                       COALESCE(SUM(CASE WHEN o.id IS NOT NULL THEN od.jumlah * od.harga ELSE 0 END), 0)) * 100
                 ELSE 0
             END as persen')

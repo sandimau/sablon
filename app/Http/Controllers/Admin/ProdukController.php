@@ -100,6 +100,8 @@ class ProdukController extends Controller
         $produk->update([
             'nama' => $request->nama,
             'harga' => $request->harga ?? 0,
+            'harga_beli' => $request->harga_beli ?? 0,
+            'hpp' => $request->hpp ?? 0,
             'satuan' => $request->satuan,
             'deskripsi' => $request->deskripsi,
             'beli' => $request->beli ?? 0,

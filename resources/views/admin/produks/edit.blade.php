@@ -44,10 +44,30 @@
                     @endif
                 </div>
                 <div class="form-group mb-3">
-                    <label for="harga">Harga</label>
+                    <label for="harga">Harga Jual</label>
                     <input class="form-control {{ $errors->has('harga') ? 'is-invalid' : '' }}" type="number"
                         name="harga" id="harga" value="{{ old('harga', $produk->harga) }}">
                     @if ($errors->has('harga'))
+                        <div class="invalid-feedback">
+                            {{ $errors->first('harga') }}
+                        </div>
+                    @endif
+                </div>
+                <div class="form-group mb-3">
+                    <label for="harga">Harga beli</label>
+                    <input class="form-control {{ $errors->has('harga_beli') ? 'is-invalid' : '' }}" type="number"
+                        name="harga_beli" id="harga_beli" value="{{ old('harga_beli', $produk->harga_beli) }}">
+                    @if ($errors->has('harga_beli'))
+                        <div class="invalid-feedback">
+                            {{ $errors->first('harga_beli') }}
+                        </div>
+                    @endif
+                </div>
+                <div class="form-group mb-3">
+                    <label for="hpp">Hpp</label>
+                    <input class="form-control {{ $errors->has('hpp') ? 'is-invalid' : '' }}" type="number"
+                        name="hpp" id="hpp" value="{{ old('hpp', $produk->hpp) }}">
+                    @if ($errors->has('hpp'))
                         <div class="invalid-feedback">
                             {{ $errors->first('harga') }}
                         </div>
