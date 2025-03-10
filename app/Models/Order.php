@@ -88,7 +88,7 @@ class Order extends Model
     {
         $yy = array();
         foreach ($this->orderDetail as $item) {
-            $yy[] = $item->produk->nama;
+            $yy[] = $item->produk ? $item->produk->nama : '';
         }
         return implode(', ', $yy);
     }
