@@ -24,21 +24,45 @@
                     </thead>
                     <tbody>
                         @foreach ($whattodos as $what)
-                            <tr data-entry-id="{{ $what->id }}">
-                                <td>{{ $what->isi }}</td>
-                                <td>
-                                    <div class="d-flex">
-                                        <a href="{{ route('whattodo.edit', $what->id) }}"
-                                            class="btn btn-info btn-sm me-1"><i class='bx bxs-edit'></i> Edit</a>
-                                        <form action="{{ route('whattodo.destroy', $what->id) }}" method="post">
-                                            {{ csrf_field() }}
-                                            {{ method_field('delete') }}
-                                            <button type="submit" onclick="return confirm('Are you sure?')"
-                                                class="btn btn-danger btn-sm"><i class='bx bxs-trash'></i> delete</button>
-                                        </form>
-                                    </div>
-                                </td>
-                            </tr>
+                            @php
+                                $auth = auth()->user()->roles->pluck('name')->toArray();
+                            @endphp
+                            @if ($what->nama == 'gajian' && in_array('super', $auth))
+                                <tr data-entry-id="{{ $what->id }}">
+                                    <td>{{ $what->isi }}</td>
+                                    <td>
+                                        <div class="d-flex">
+                                            <a href="{{ route('whattodo.edit', $what->id) }}"
+                                                class="btn btn-info btn-sm me-1"><i class='bx bxs-edit'></i> Edit</a>
+                                            <form action="{{ route('whattodo.destroy', $what->id) }}" method="post">
+                                                {{ csrf_field() }}
+                                                {{ method_field('delete') }}
+                                                <button type="submit" onclick="return confirm('Are you sure?')"
+                                                    class="btn btn-danger btn-sm"><i class='bx bxs-trash'></i>
+                                                    delete</button>
+                                            </form>
+                                        </div>
+                                    </td>
+                                </tr>
+                            @endif
+                            @if ($what->nama == 'tugas')
+                                <tr data-entry-id="{{ $what->id }}">
+                                    <td>{{ $what->isi }}</td>
+                                    <td>
+                                        <div class="d-flex">
+                                            <a href="{{ route('whattodo.edit', $what->id) }}"
+                                                class="btn btn-info btn-sm me-1"><i class='bx bxs-edit'></i> Edit</a>
+                                            <form action="{{ route('whattodo.destroy', $what->id) }}" method="post">
+                                                {{ csrf_field() }}
+                                                {{ method_field('delete') }}
+                                                <button type="submit" onclick="return confirm('Are you sure?')"
+                                                    class="btn btn-danger btn-sm"><i class='bx bxs-trash'></i>
+                                                    delete</button>
+                                            </form>
+                                        </div>
+                                    </td>
+                                </tr>
+                            @endif
                         @endforeach
                     </tbody>
                 </table>
