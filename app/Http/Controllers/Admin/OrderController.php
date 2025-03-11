@@ -29,6 +29,12 @@ class OrderController extends Controller
         return response()->json($kontak);
     }
 
+    public function apiKontak()
+    {
+        $kontak = Kontak::select('nama', 'id')->where('nama', 'LIKE', '%' . $_GET['q'] . '%')->get();
+        return response()->json($kontak);
+    }
+
     public function apiSupplier()
     {
         $kontak = Kontak::select('nama', 'id')->where('supplier', 1)->where('nama', 'LIKE', '%' . $_GET['q'] . '%')->get();

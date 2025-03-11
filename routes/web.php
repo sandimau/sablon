@@ -188,6 +188,7 @@ Route::group(['namespace' => 'App\Http\Controllers'], function()
             Route::get('/order/create', 'OrderController@create')->name('order.create');
             Route::post('/order', 'OrderController@store')->name('order.store');
             Route::get('/konsumen/api', 'OrderController@apiKonsumen')->name('order.konsumen');
+            Route::get('/kontak/api', 'OrderController@apiKontak')->name('order.kontak');
             Route::get('/supplier/api', 'OrderController@apiSupplier')->name('order.supplier');
             Route::get('/produk/api', 'OrderController@apiProduk')->name('order.produk');
             Route::get('/produkBeli/api', 'OrderController@apiProdukBeli')->name('order.produkBeli');
