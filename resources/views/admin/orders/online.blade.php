@@ -17,6 +17,8 @@
                     <form action="{{ route('order.arsip') }}" method="get" class="d-flex gap-2 align-items-center">
                         <div class="d-flex gap-2 align-items-center">
                             <label for="nota" class="form-label mb-0">Nota</label>
+                            <input type="text" name="nota" class="form-control">
+                            <label for="nota" class="form-label mb-0">Marketplace</label>
                             <select name="kontak_id" class="form-select">
                                 <option value="">Pilih Marketplace</option>
                                 @foreach($marketplace as $id => $nama)
