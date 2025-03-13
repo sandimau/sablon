@@ -7,6 +7,7 @@ use App\Models\Order;
 use App\Models\Hutang;
 use App\Models\Produk;
 use App\Models\Belanja;
+use App\Models\Produksi;
 use App\Models\Tunjangan;
 use App\Models\AkunDetail;
 use App\Models\Penggajian;
@@ -19,8 +20,15 @@ class LaporanController extends Controller
 {
     public function neraca()
     {
+        $finish = Produksi::ambilFlow('finish');
         $kas = AkunDetail::TotalKas();
         $modal = AkunDetail::modal();
+
+        $belumLunas = Order::belumLunas()->get();
+        $total_belum_lunas = 0;
+        foreach ($belumLunas as $item) {
+            $total_belum_lunas += $item->kekurangan;
+        }
 
         $piutang = Hutang::with('details')->where('jenis', '=', 'piutang')->get();
         $hutang = Hutang::with('details')->where('jenis', '=', 'hutang')->get();
@@ -63,11 +71,12 @@ class LaporanController extends Controller
             $totalAllAsets += $totalAset;
         }
 
-        return view('admin.laporan.neraca', compact('kas', 'modal', 'total_piutang', 'total_hutang', 'totalAllAsets'));
+        return view('admin.laporan.neraca', compact('kas', 'modal', 'total_piutang', 'total_hutang', 'totalAllAsets', 'total_belum_lunas'));
     }
 
     public function labarugi()
     {
+        $finish = Produksi::ambilFlow('finish');
         $bulan = request('bulan') ?? date('Y-m');
         $pilihan_parts = explode('-', $bulan);
         $thn = $pilihan_parts[0];
@@ -79,15 +88,16 @@ class LaporanController extends Controller
             ->selectRaw('sum(jumlah*harga) as total_omzet,sum(hpp * jumlah) as total_hpp')
             ->join('produksis', 'produksi_id', '=', 'produksis.id')
             ->join('orders', 'order_id', '=', 'orders.id')
-            ->where('produksis.id', '<>', 9)
+            ->where('produksis.id', '<>', $finish)
             ->whereYear('orders.created_at', $thn)
             ->whereMonth('orders.created_at', $bln)
             ->first();
 
-        $opname = ProdukStok::selectRaw('sum(hpp * COALESCE(tambah,0) - hpp * COALESCE(kurang,0)) as total_opname')
+        $opname = ProdukStok::selectRaw('sum(p.hpp * COALESCE(tambah,0) - p.hpp * COALESCE(kurang,0)) as total_opname')
+            ->join('produks as p', 'p.id', '=', 'produk_id')
             ->where('kode', 'opn')
-            ->whereYear('created_at', $thn)
-            ->whereMonth('created_at', $bln)
+            ->whereYear('produk_stoks.created_at', $thn)
+            ->whereMonth('produk_stoks.created_at', $bln)
             ->first()->total_opname;
 
         $beban = DB::table('produks')
@@ -144,6 +154,7 @@ class LaporanController extends Controller
 
     public function labaKotor(Request $request)
     {
+        $finish = Produksi::ambilFlow('finish');
         $bulan = $request->bulan ?? date('Y-m');
         $pilihan_parts = explode('-', $bulan);
         $thn = $pilihan_parts[0];
@@ -156,7 +167,7 @@ class LaporanController extends Controller
                 ->join('orders as o', 'o.id', '=', 'od.order_id')
                 ->join('produks as p', 'p.id', '=', 'od.produk_id')
                 ->join('kategoris as k', 'k.id', '=', 'p.kategori_id')
-                ->where('od.produksi_id', '<>', 9)
+                ->where('od.produksi_id', '<>', $finish)
                 ->whereYear('o.created_at', $thn)
                 ->whereMonth('o.created_at', $bln)
                 ->select(
@@ -201,7 +212,7 @@ class LaporanController extends Controller
                 ->join('orders as o', 'o.id', '=', 'od.order_id')
                 ->join('produks as p', 'p.id', '=', 'od.produk_id')
                 ->join('kategoris as k', 'k.id', '=', 'p.kategori_id')
-                ->where('od.produksi_id', '<>', 9)
+                ->where('od.produksi_id', '<>', $finish)
                 ->whereYear('o.created_at', $thn)
                 ->whereMonth('o.created_at', $bln)
                 ->select(

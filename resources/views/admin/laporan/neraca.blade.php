@@ -49,6 +49,11 @@
                                 <td>{{ number_format($total_hutang, 0, ',', '.') }}</td>
                             </tr>
                             <tr>
+                                <td>Piutang Belum Lunas</td>
+                                <td>{{ number_format($total_belum_lunas, 0, ',', '.') }}</td>
+                                <td>0</td>
+                            </tr>
+                            <tr>
                                 <td>Modal</td>
                                 <td>0</td>
                                 <td>{{ number_format(abs($modal), 0, ',', '.') }}</td>
@@ -56,7 +61,7 @@
                             <tr class="table-success">
                                 <td>Laba</td>
                                 <td>0</td>
-                                <td>{{ number_format($kas + $totalAllAsets  + $total_piutang - $total_hutang - abs($modal), 0, ',', '.') }}</td>
+                                <td>{{ number_format($kas + $totalAllAsets + $total_belum_lunas + $total_piutang - $total_hutang - abs($modal), 0, ',', '.') }}</td>
                             </tr>
                         </tbody>
                     </table>
