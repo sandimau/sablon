@@ -52,7 +52,7 @@
                             @foreach ($produkStoks as $stok)
                                 <tr>
                                     <td>{{ $stok->created_at->format('d-m-Y') }}</td>
-                                    <td>{{ $stok->produk->namaLengkap }}</td>
+                                    <td>{{ $stok->produk->nama }}</td>
                                     <td>{{ $stok->tambah }}</td>
                                     <td>{{ $stok->kurang }}</td>
                                     <td>{{ $stok->saldo }}</td>
