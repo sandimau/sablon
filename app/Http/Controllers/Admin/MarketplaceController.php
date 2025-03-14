@@ -258,7 +258,7 @@ class MarketplaceController extends Controller
                 //////posisi header di baris brapa
                 $header = $marketplace->barisHeader ?? 1;
 
-                $order = $orderdetil = $stok = $inputStok = $inputBatal =  $batal = [];
+                $order = $orderdetil = $stok = $inputStok = $inputBatal =  $batal = $kirim = [];
                 $input = $notaTerakhir = false;
                 $awal = true;
                 $nota_skr = 0;
@@ -319,6 +319,9 @@ class MarketplaceController extends Controller
                             $notaTerakhir = true;
                             continue;
                         }
+                        if ($status == "Sedang Dikirim") {
+                            $kirim[$nota] = 1;
+                        }
                         /////////jika nota terakhir udah selesai, dan ketemu nota baru, baru bisa mulai input
                         else   if ($notaTerakhir and $nota != $terakhir->nota)
                             $input = true;
@@ -340,6 +343,14 @@ class MarketplaceController extends Controller
                         $harga = str_replace(".", "", $harga);
                         $jumlah = str_replace(".", "", $jumlah);
 
+                        //////jika sku depannya ada CUSTOM_ , hapus tulisan itu, sisain sku nya
+                        if (strpos($barang, 'CUSTOM_') !== false) {
+                            $produksi_id = $awal_id;
+                            $barang = str_replace('CUSTOM_', "", $barang);
+
+                            $orderCustom = true;
+                            $custom = $tema;
+                        }
 
                         if ($status == $marketplace->batal) {
                             $produksi_id = $batal_id;
@@ -370,15 +381,6 @@ class MarketplaceController extends Controller
 
                         $custom = '';
                         $orderCustom = false;
-
-                        //////jika sku depannya ada CUSTOM_ , hapus tulisan itu, sisain sku nya
-                        if (strpos($barang, 'CUSTOM_') !== false) {
-                            $produksi_id = $awal_id;
-                            $barang = str_replace('CUSTOM_', "", $barang);
-
-                            $orderCustom = true;
-                            $custom = $tema;
-                        }
 
                         /////////////////cek, apakah sku udah sesuai dgn produk_id
                         $produk = $produks[$barang] ?? false;
@@ -414,7 +416,7 @@ class MarketplaceController extends Controller
                     $batal = array_keys($batal);
 
                     ////////////////cari di db, yg di excel nya batal, tp di table order_details msh blm batal
-                    $batalx = DB::table('order_details')->whereIn('nota', $batal)->where('produksi_id', $finish_id)->get();
+                    $batalx = DB::table('order_details')->whereIn('nota', $batal)->get();
 
                     $diubahBatal = $produkBatal = $projectBatal = [];
                     //////kalo ada order_details yg blm dirubah ke batal, maka proses utk rubah
@@ -456,6 +458,25 @@ class MarketplaceController extends Controller
                         }
 
                         DB::table('produk_stoks')->insert($inputBatal);
+                    }
+                }
+
+                if ($kirim) {
+                    $kirim = array_keys($kirim);
+
+                    ////////////////cari di db, yg di excel nya kirim, tp di table order_details msh blm kirim
+                    $kirimx = DB::table('order_details')->whereIn('nota', $kirim)->get();
+
+                    $diubahKirim = [];
+                    //////kalo ada order_details yg blm dirubah ke kirim, maka proses utk rubah
+                    foreach ($kirimx as $yy) {
+                        ///project_detail yg blm dirubah ke kirim
+                        $diubahKirim[] = $yy->id;
+                    }
+
+                    ////proses perubahan ke db
+                    if ($diubahKirim) {
+                        DB::table('order_details')->whereIn('id', $diubahKirim)->update(['produksi_id' => $finish_id]);
                     }
                 }
 
