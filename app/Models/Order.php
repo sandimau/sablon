@@ -103,16 +103,19 @@ class Order extends Model
 
     public function scopeOmzetBulan($query, $var)
     {
+        $finish = Produksi::ambilFlow('batal');
         $query->select(
-            DB::raw('YEAR(created_at) as year'),
-            DB::raw('EXTRACT(YEAR_MONTH FROM created_at) as month'),
-            DB::raw('MONTHNAME(created_at) as monthname'),
-            DB::raw('SUM(total) as omzet')
-        );
-        $query->where( DB::raw('YEAR(created_at)'), '=', $var );
-        $query->whereRaw('total');
-        $query->groupBy('month');
-        $query->orderBy('created_at');
+            DB::raw('YEAR(orders.created_at) as year'),
+            DB::raw('EXTRACT(YEAR_MONTH FROM orders.created_at) as month'),
+            DB::raw('MONTHNAME(orders.created_at) as monthname'),
+            DB::raw('SUM(order_details.jumlah * order_details.harga) as omzet')
+        )
+        ->join('order_details', 'orders.id', '=', 'order_details.order_id')
+        ->join('produksis', 'order_details.produksi_id', '=', 'produksis.id')
+        ->where(DB::raw('YEAR(orders.created_at)'), '=', $var)
+        ->where('produksis.id', '<>', $finish)
+        ->groupBy('month')
+        ->orderBy('orders.created_at');
         return $query;
     }
 }

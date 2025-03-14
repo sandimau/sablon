@@ -20,7 +20,6 @@ class LaporanController extends Controller
 {
     public function neraca()
     {
-        $finish = Produksi::ambilFlow('finish');
         $kas = AkunDetail::TotalKas();
         $modal = AkunDetail::modal();
 
@@ -76,13 +75,11 @@ class LaporanController extends Controller
 
     public function labarugi()
     {
-        $finish = Produksi::ambilFlow('finish');
+        $finish = Produksi::ambilFlow('batal');
         $bulan = request('bulan') ?? date('Y-m');
         $pilihan_parts = explode('-', $bulan);
         $thn = $pilihan_parts[0];
         $bln = $pilihan_parts[1];
-
-        $potongan = Order::selectRaw('sum(ongkir-diskon) as total_omzet')->whereYear('created_at', $thn)->whereMonth('created_at', $bln)->first()->total_omzet;
 
         $penjualan = DB::table('order_details')
             ->selectRaw('sum(jumlah*harga) as total_omzet,sum(hpp * jumlah) as total_hpp')
@@ -121,7 +118,7 @@ class LaporanController extends Controller
             ->whereMonth('created_at', $bln)
             ->first()->total_tunjangan;
 
-        $omzet = $penjualan->total_omzet + $potongan;
+        $omzet = $penjualan->total_omzet;
         $hpp = $penjualan->total_hpp;
 
         // Get the earliest order date from database
@@ -154,7 +151,7 @@ class LaporanController extends Controller
 
     public function labaKotor(Request $request)
     {
-        $finish = Produksi::ambilFlow('finish');
+        $finish = Produksi::ambilFlow('batal');
         $bulan = $request->bulan ?? date('Y-m');
         $pilihan_parts = explode('-', $bulan);
         $thn = $pilihan_parts[0];
