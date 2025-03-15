@@ -238,6 +238,13 @@ Route::group(['namespace' => 'App\Http\Controllers'], function()
             Route::get('/hutang/{hutang}/detail', 'HutangController@detail')->name('hutang.detail');
             Route::get('/hutang/{hutang}/bayar', 'HutangController@bayar')->name('hutang.bayar');
             Route::post('/hutang/bayar', 'HutangController@bayarStore')->name('hutang.bayarStore');
+
+            // Peraturan Pegawai routes
+            Route::resource('peraturan', 'PeraturanPegawaiController');
+
+            // Jobdesk routes
+            Route::resource('jobdesks', 'JobdeskController');
+
         });
     });
 });
