@@ -101,8 +101,8 @@
 @endsection
 
 @push('after-scripts')
-    <script src="https://unpkg.com/@trevoreyre/autocomplete-js"></script>
-    <link rel="stylesheet" href="https://unpkg.com/@trevoreyre/autocomplete-js/dist/style.css" />
+<script src="{{ asset('js/autocomplete.min.js') }}"></script>
+<link rel="stylesheet" href="{{ asset('js/autocomplete.css') }}">
     <script>
         new Autocomplete('#autocompleteProduk', {
             search: input => {
@@ -123,6 +123,10 @@
             onSubmit: result => {
                 let idProduk = document.getElementById('produkId');
                 idProduk.value = result.id;
+
+                //set harga
+                let harga = document.getElementById("harga");
+                harga.value = result.harga;
 
                 let btn = document.getElementById("closeBrgProduk");
                 btn.style.display = "block";

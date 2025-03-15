@@ -302,6 +302,10 @@
                 let idProduk = document.getElementById('produkId');
                 idProduk.value = result.id;
 
+                //set harga
+                let harga = document.getElementById("harga");
+                harga.value = result.harga;
+
                 let btn = document.getElementById("closeBrgProduk");
                 btn.style.display = "block";
                 btn.innerHTML =
@@ -326,6 +330,8 @@
             let idProduk = document.getElementById('produkId');
             idProduk.value = null;
         }
+
+
     </script>
     <style>
         #autocomplete,

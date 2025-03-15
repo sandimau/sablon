@@ -43,7 +43,7 @@ class OrderController extends Controller
 
     public function apiProduk()
     {
-        $produk = Produk::select('nama', 'id')->where('jual', 1)->where('nama', 'LIKE', '%' . $_GET['q'] . '%')->get();
+        $produk = Produk::select('nama', 'id','harga')->where('jual', 1)->where('nama', 'LIKE', '%' . $_GET['q'] . '%')->get();
         return response()->json($produk);
     }
 
