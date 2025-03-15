@@ -151,6 +151,8 @@
             auto.value = null;
             let idProduk = document.getElementById('produkId');
             idProduk.value = null;
+            let harga = document.getElementById("harga");
+            harga.value = null;
         }
     </script>
     <style>
