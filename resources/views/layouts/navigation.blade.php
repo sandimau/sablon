@@ -207,8 +207,6 @@
                         {{ __('cs') }}
                     </a>
                 </li>
-            @endcan
-            @role('super')
                 <li class="nav-item">
                     <a class="nav-link {{ request()->is('peraturan*') ? 'active' : '' }}"
                         href="{{ route('peraturan.index') }}">
@@ -227,7 +225,8 @@
                         {{ __('Jobdesk') }}
                     </a>
                 </li>
-            @endrole
+            @endcan
+
         </ul>
     </li>
 

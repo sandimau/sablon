@@ -14,23 +14,29 @@
                             <th>Title</th>
                             <th>Role</th>
                             <th>Description</th>
-                            <th>Actions</th>
+                            @role('super')
+                                <th>Actions</th>
+                            @endrole
                         </tr>
                     </thead>
                     <tbody>
-                        @foreach($jobdesks as $jobdesk)
+                        @foreach ($jobdesks as $jobdesk)
                             <tr>
                                 <td>{{ $jobdesk->title }}</td>
                                 <td>{{ $jobdesk->role->name }}</td>
                                 <td>{{ $jobdesk->description }}</td>
-                                <td>
-                                    <a href="{{ route('jobdesks.edit', $jobdesk) }}" class="btn btn-primary btn-sm">Edit</a>
-                                    <form action="{{ route('jobdesks.destroy', $jobdesk) }}" method="POST" class="d-inline">
-                                        @csrf
-                                        @method('DELETE')
-                                        <button type="submit" class="btn btn-danger btn-sm" onclick="return confirm('Are you sure?')">Delete</button>
-                                    </form>
-                                </td>
+                                @role('super')
+                                    <td>
+                                        <a href="{{ route('jobdesks.edit', $jobdesk) }}" class="btn btn-primary btn-sm">Edit</a>
+                                        <form action="{{ route('jobdesks.destroy', $jobdesk) }}" method="POST"
+                                            class="d-inline">
+                                            @csrf
+                                            @method('DELETE')
+                                            <button type="submit" class="btn btn-danger btn-sm"
+                                                onclick="return confirm('Are you sure?')">Delete</button>
+                                        </form>
+                                    </td>
+                                @endrole
                             </tr>
                         @endforeach
                     </tbody>
