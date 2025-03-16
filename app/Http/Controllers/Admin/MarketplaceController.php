@@ -258,7 +258,7 @@ class MarketplaceController extends Controller
                 //////posisi header di baris brapa
                 $header = $marketplace->barisHeader ?? 1;
 
-                $order = $orderdetil = $stok = $inputStok = $inputBatal =  $batal = $kirim = [];
+                $order = $orderdetil = $stok = $inputStok = $inputBatal =  $batal = $kirim = $perlu_kirim = [];
                 $input = $notaTerakhir = false;
                 $awal = true;
                 $nota_skr = 0;
@@ -321,6 +321,10 @@ class MarketplaceController extends Controller
                         }
                         if ($status == "Sedang Dikirim") {
                             $kirim[$nota] = 1;
+                        }
+
+                        if ($status == "Perlu Dikirim") {
+                            $perlu_kirim[$nota] = 1;
                         }
                         /////////jika nota terakhir udah selesai, dan ketemu nota baru, baru bisa mulai input
                         else   if ($notaTerakhir and $nota != $terakhir->nota)
@@ -477,6 +481,25 @@ class MarketplaceController extends Controller
                     ////proses perubahan ke db
                     if ($diubahKirim) {
                         DB::table('order_details')->whereIn('id', $diubahKirim)->update(['produksi_id' => $finish_id]);
+                    }
+                }
+
+                if ($perlu_kirim) {
+                    $perlu_kirim = array_keys($perlu_kirim);
+
+                    ////////////////cari di db, yg di excel nya perlu kirim, tp di table order_details msh blm perlu kirim
+                    $perlu_kirimx = DB::table('order_details')->whereIn('nota', $perlu_kirim)->get();
+
+                    $diubahPerluKirim = [];
+                    //////kalo ada order_details yg blm dirubah ke perlu kirim, maka proses utk rubah
+                    foreach ($perlu_kirimx as $yy) {
+                        ///project_detail yg blm dirubah ke perlu kirim
+                        $diubahPerluKirim[] = $yy->id;
+                    }
+
+                    ////proses perubahan ke db
+                    if ($diubahPerluKirim) {
+                        DB::table('order_details')->whereIn('id', $diubahPerluKirim)->update(['produksi_id' => $awal_id]);
                     }
                 }
 
