@@ -322,10 +322,6 @@ class MarketplaceController extends Controller
                         if ($status == "Sedang Dikirim") {
                             $kirim[$nota] = 1;
                         }
-
-                        if ($status == "Perlu Dikirim") {
-                            $perlu_kirim[$nota] = 1;
-                        }
                         /////////jika nota terakhir udah selesai, dan ketemu nota baru, baru bisa mulai input
                         else   if ($notaTerakhir and $nota != $terakhir->nota)
                             $input = true;
@@ -346,15 +342,6 @@ class MarketplaceController extends Controller
                         $harga = str_replace("Rp ", "", $baris[$marketplace->harga]);
                         $harga = str_replace(".", "", $harga);
                         $jumlah = str_replace(".", "", $jumlah);
-
-                        //////jika sku depannya ada CUSTOM_ , hapus tulisan itu, sisain sku nya
-                        if (strpos($barang, 'CUSTOM_') !== false) {
-                            $produksi_id = $awal_id;
-                            $barang = str_replace('CUSTOM_', "", $barang);
-
-                            $orderCustom = true;
-                            $custom = $tema;
-                        }
 
                         if ($status == $marketplace->batal) {
                             $produksi_id = $batal_id;
@@ -385,6 +372,15 @@ class MarketplaceController extends Controller
 
                         $custom = '';
                         $orderCustom = false;
+
+                        //////jika sku depannya ada CUSTOM_ , hapus tulisan itu, sisain sku nya
+                        if (strpos($barang, 'CUSTOM_') !== false) {
+                            $produksi_id = $awal_id;
+                            $barang = str_replace('CUSTOM_', "", $barang);
+
+                            $orderCustom = true;
+                            $custom = $tema;
+                        }
 
                         /////////////////cek, apakah sku udah sesuai dgn produk_id
                         $produk = $produks[$barang] ?? false;
@@ -481,25 +477,6 @@ class MarketplaceController extends Controller
                     ////proses perubahan ke db
                     if ($diubahKirim) {
                         DB::table('order_details')->whereIn('id', $diubahKirim)->update(['produksi_id' => $finish_id]);
-                    }
-                }
-
-                if ($perlu_kirim) {
-                    $perlu_kirim = array_keys($perlu_kirim);
-
-                    ////////////////cari di db, yg di excel nya perlu kirim, tp di table order_details msh blm perlu kirim
-                    $perlu_kirimx = DB::table('order_details')->whereIn('nota', $perlu_kirim)->get();
-
-                    $diubahPerluKirim = [];
-                    //////kalo ada order_details yg blm dirubah ke perlu kirim, maka proses utk rubah
-                    foreach ($perlu_kirimx as $yy) {
-                        ///project_detail yg blm dirubah ke perlu kirim
-                        $diubahPerluKirim[] = $yy->id;
-                    }
-
-                    ////proses perubahan ke db
-                    if ($diubahPerluKirim) {
-                        DB::table('order_details')->whereIn('id', $diubahPerluKirim)->update(['produksi_id' => $awal_id]);
                     }
                 }
 
