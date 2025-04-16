@@ -8,6 +8,7 @@ use App\Models\Order;
 use App\Models\Produksi;
 use App\Models\BukuBesar;
 use App\Models\AkunDetail;
+use App\Models\Pembayaran;
 use App\Models\ProdukStok;
 use App\Models\Marketplace;
 use Illuminate\Http\Request;
@@ -116,6 +117,12 @@ class MarketplaceController extends Controller
 
                 $header = $marketplace->barisHeader ?? 1;
 
+                // Get existing orders for this marketplace contact
+                $existingOrders = DB::table('orders')
+                    ->where('kontak_id', $config->kontak_id)
+                    ->get();
+                $orders = $existingOrders->keyBy('nota');
+
                 $keuangan = [];
                 $input = false;
                 if ($config->baruKeuangan == 1)
@@ -173,9 +180,31 @@ class MarketplaceController extends Controller
                     if ($harga < 0 and strpos($baris[$marketplace->tema], $marketplace->batal) !== false) {
                         $keuangan[] = $baris;
                     }
+
+                    if (strlen($baris[4]) > 8) {
+                        if (isset($orders[$baris[4]])) {
+                            $order[] = $baris;
+                        }
+                    }
                 }
 
                 if ($input) {
+
+                    //proses update order sudah dibayar
+                    foreach ($order as $baris) {
+                        Order::where('nota', $baris[4])->update([
+                            'bayar' => $baris[6]
+                        ]);
+                        Pembayaran::create([
+                            'order_id' => Order::where('nota', $baris[4])->first()->id,
+                            'jumlah' => $baris[6],
+                            'created_at' => $baris[$marketplace->tanggal],
+                            'status' => 'lunas',
+                            'akun_detail_id' => $config->penarikan_id,
+                            'ket' => 'upload keuangan',
+                        ]);
+                    }
+
                     //////////////////////proses masukin dana yg ditarik
                     foreach (array_reverse($keuangan) as $baris) {
 
@@ -430,7 +459,10 @@ class MarketplaceController extends Controller
                         $projectBatal[$yy->order_id] = 1;
                         //////jumlah produk yg batal dibeli
                         $produk = $produks[$yy->produk_id];
-                        if ($produk->stok == 1)
+
+                        $order = Order::find($yy->order_id);
+
+                        if ($produk->stok == 1 && $order->bayar > 0)
                             $produkBatal[$yy->produk_id] = $yy->jumlah + ($produkBatal[$yy->produk_id] ?? 0);
                     }
 
