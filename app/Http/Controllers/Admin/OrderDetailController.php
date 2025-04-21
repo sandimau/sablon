@@ -7,6 +7,7 @@ use App\Models\Chat;
 use App\Models\Spek;
 use App\Models\Order;
 use App\Models\Member;
+use App\Models\Operator;
 use App\Models\Produksi;
 use App\Models\ProdukStok;
 use App\Models\OrderDetail;
@@ -29,6 +30,14 @@ class OrderDetailController extends Controller
 
         return view('admin.orderDetails.index', compact('orderDetails', 'order', 'produksi','chats'));
     }
+    public function listOperator()
+    {
+        $operators = Operator::select('nama', DB::raw('COUNT(*) as total'), DB::raw('SUM(jumlah) as total_jumlah'))
+            ->whereDate('created_at', Carbon::today())
+            ->groupBy('nama')
+            ->get();
+        return view('admin.orderDetails.list', compact('operators'));
+    }
 
     public function create(Order $order)
     {
@@ -36,6 +45,49 @@ class OrderDetailController extends Controller
 
         $speks = Spek::all();
         return view('admin.orderDetails.create', compact('order', 'speks'));
+    }
+
+    public function operator(OrderDetail $detail)
+    {
+        return view('admin.orderDetails.operator', compact('detail'));
+    }
+
+    public function operatorStore(Request $request)
+    {
+        $request->validate([
+            'nama' => 'required',
+        ]);
+
+        $operator = Operator::create([
+            'nama' => $request->nama,
+            'order_detail_id' => $request->order_detail_id,
+            'jumlah' => $request->jumlah,
+            'konsumen' => $request->konsumen,
+        ]);
+
+        $orderDetail = OrderDetail::find($request->order_detail_id);
+
+        $orderDetail->update([
+            'operator' => 1,
+        ]);
+
+        return redirect('/admin/order/' . $orderDetail->order->id . '/detail')->withSuccess(__('Operator berhasil ditambahkan.'));
+    }
+
+    public function listOperatorDetail($operator)
+    {
+        $operators = Operator::where('nama', $operator)
+            ->orderBy('created_at', 'desc')
+            ->paginate(10);
+
+        $totalOperator = Operator::where('nama', $operator)->count();
+        $totalJumlah = Operator::where('nama', $operator)->sum('jumlah');
+
+        $groupedOperators = $operators->groupBy(function($item) {
+            return $item->created_at->format('d F Y');
+        });
+
+        return view('admin.orderDetails.listDetail', compact('operators', 'groupedOperators', 'operator', 'totalOperator', 'totalJumlah'));
     }
 
     public function store(Request $request)

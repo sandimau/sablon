@@ -33,6 +33,18 @@
                     </a>
                 </li>
             @endcan
+
+            @role('super')
+                <li class="nav-item">
+                    <a class="nav-link {{ request()->is('orderDetail*') ? 'active' : '' }}"
+                        href="{{ route('orderDetail.listOperator') }}">
+                        <svg class="nav-icon">
+                            <use xlink:href="{{ asset('icons/coreui.svg#cil-3d') }}"></use>
+                        </svg>
+                        Target
+                    </a>
+                </li>
+            @endrole
         </ul>
     </li>
 

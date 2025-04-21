@@ -88,20 +88,29 @@
                                         <tr>
                                             <td>
                                                 <div class="form-check">
-                                                    <input name="jual" class="form-check-input" type="checkbox" value="1" id="flexCheckDefault" {{ $detail->bahan ? 'checked' : '' }} disabled>
-                                                    <label style="opacity: 1 !important; font-weight: 600" class="form-check-label" for="flexCheckDefault">
+                                                    <input name="jual" class="form-check-input" type="checkbox"
+                                                        value="1" id="flexCheckDefault"
+                                                        {{ $detail->bahan ? 'checked' : '' }} disabled>
+                                                    <label style="opacity: 1 !important; font-weight: 600"
+                                                        class="form-check-label" for="flexCheckDefault">
                                                         bahan
                                                     </label>
                                                 </div>
                                                 <div class="form-check">
-                                                    <input name="jual" class="form-check-input" type="checkbox" value="1" id="flexCheckDefault" {{ $detail->kalkir ? 'checked' : '' }} disabled>
-                                                    <label style="opacity: 1 !important; font-weight: 600" class="form-check-label" for="flexCheckDefault">
+                                                    <input name="jual" class="form-check-input" type="checkbox"
+                                                        value="1" id="flexCheckDefault"
+                                                        {{ $detail->kalkir ? 'checked' : '' }} disabled>
+                                                    <label style="opacity: 1 !important; font-weight: 600"
+                                                        class="form-check-label" for="flexCheckDefault">
                                                         kalkir
                                                     </label>
                                                 </div>
                                                 <div class="form-check">
-                                                    <input name="jual" class="form-check-input" type="checkbox" value="1" id="flexCheckDefault" {{ $detail->screen ? 'checked' : '' }} disabled>
-                                                    <label style="opacity: 1 !important; font-weight: 600" class="form-check-label" for="flexCheckDefault">
+                                                    <input name="jual" class="form-check-input" type="checkbox"
+                                                        value="1" id="flexCheckDefault"
+                                                        {{ $detail->screen ? 'checked' : '' }} disabled>
+                                                    <label style="opacity: 1 !important; font-weight: 600"
+                                                        class="form-check-label" for="flexCheckDefault">
                                                         screen
                                                     </label>
                                                 </div>
@@ -156,6 +165,12 @@
                                             </td>
                                             <td>
                                                 {{ date('d-m-Y', strtotime($detail->deathline)) }}
+                                                <br>
+                                                @if ($detail->operator == 0)
+                                                    <a href="{{ route('orderDetail.operator', $detail->id) }}"
+                                                        class="btn btn-primary text-white">operator</a>
+                                                @endif
+
                                             </td>
                                         </tr>
                                     @endforeach
@@ -195,7 +210,8 @@
                             enctype="multipart/form-data">
                             @csrf
                             <div class="input-group mb-3">
-                                <input type="text" class="form-control chat" placeholder="tulis pesan" name="isi">
+                                <input type="text" class="form-control chat" placeholder="tulis pesan"
+                                    name="isi">
                                 <button class="input-group-text btn btn-primary rounded-pill" type="submit"><i
                                         class='bx bx-send'></i></button>
                             </div>

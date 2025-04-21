@@ -215,7 +215,10 @@ Route::group(['namespace' => 'App\Http\Controllers'], function()
             Route::patch('/orderDetail/{detail}/update', 'OrderDetailController@update')->name('orderDetail.update');
             Route::get('/orderDetail/{detail}/editGambar', 'OrderDetailController@editGambar')->name('orderDetail.editGambar');
             Route::patch('/orderDetail/{detail}/updateGambar', 'OrderDetailController@updateGambar')->name('orderDetail.updateGambar');
-
+            Route::get('/orderDetail/{detail}/operator', 'OrderDetailController@operator')->name('orderDetail.operator');
+            Route::post('/orderDetail/operator', 'OrderDetailController@operatorStore')->name('orderDetail.operatorStore');
+            Route::get('/orderDetail/listOperator', 'OrderDetailController@listOperator')->name('orderDetail.listOperator');
+            Route::get('/orderDetail/listOperator/{operator}', 'OrderDetailController@listOperatorDetail')->name('orderDetail.listOperatorDetail');
             //marketplaces
             Route::resource('marketplaces', 'MarketplaceController');
             Route::post('/marketplaces/{id}/uploadKeuangan', 'MarketplaceController@uploadKeuangan')->name('marketplaces.uploadKeuangan');
