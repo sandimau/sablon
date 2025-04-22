@@ -15,6 +15,9 @@
                             <div>
                                 <h5 class="card-title">Target {{ date('d F Y') }}</h5>
                             </div>
+                            <div>
+                                <a href="{{ route('orderDetail.semuaList') }}" class="btn btn-primary">Semua Data</a>
+                            </div>
                         </div>
                     </div>
                     <div class="card-body">
@@ -29,7 +32,7 @@
                                                 <br>
                                                 Point: {{ $operator->total_jumlah }}
                                             </p>
-                                            <a href="{{ route('orderDetail.listOperatorDetail', $operator->nama) }}" class="btn btn-primary">Detail</a>
+                                            <a href="{{ route('orderDetail.listOperatorDetail', $operator->nama) }}" class="btn btn-success">Detail</a>
                                         </div>
                                     </div>
                                 </div>

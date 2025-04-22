@@ -90,6 +90,19 @@ class OrderDetailController extends Controller
         return view('admin.orderDetails.listDetail', compact('operators', 'groupedOperators', 'operator', 'totalOperator', 'totalJumlah'));
     }
 
+    public function semuaList(Request $request)
+    {
+        if ($request->search == null) {
+            $operators = Operator::orderBy('nama')->paginate(10);
+        } else {
+            $operators = Operator::where('nama', 'LIKE', '%' . $request->search . '%')
+                ->orderBy('nama')
+                ->paginate(10)
+                ->appends(['search' => $request->search]);
+        }
+        return view('admin.orderDetails.listSemua', compact('operators'));
+    }
+
     public function store(Request $request)
     {
         $request->validate([

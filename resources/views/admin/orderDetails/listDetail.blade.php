@@ -12,11 +12,9 @@
                 <div class="card">
                     <div class="card-header">
                         <div class="d-flex justify-content-between align-details-center">
-                            <div>
-                                <h5 class="card-title">Target detail {{ $operator }}</h5>
-                                <p>Total Resi: {{ $totalOperator }}</p>
-                                <p>Total Point: {{ $totalJumlah }}</p>
-                            </div>
+                            <h5 class="card-title">{{ $operator }}</h5>
+                            <h5>Total Resi: {{ $totalOperator }}</h5>
+                            <h5>Total Point: {{ $totalJumlah }}</h5>
                         </div>
                     </div>
                     <div class="card-body">
@@ -26,16 +24,25 @@
                                 <table class="table table-striped table-hover mb-4">
                                     <thead>
                                         <tr>
-                                            <th>Jumlah</th>
+                                            <th>Resi</th>
+                                            <th>Point</th>
                                             <th>Konsumen</th>
                                         </tr>
                                     </thead>
                                     <tbody>
                                         @foreach ($operatorGroup as $operator)
                                             <tr>
+                                                <td>{{ $loop->iteration }}</td>
                                                 <td>{{ $operator->jumlah }}</td>
                                                 <td>{{ $operator->konsumen }}</td>
                                             </tr>
+                                            @if ($loop->last)
+                                                <tr>
+                                                    <td><strong>total: <br>{{ $operatorGroup->count() }}</strong></td>
+                                                    <td><strong>total: <br>{{ $operatorGroup->sum('jumlah') }}</strong></td>
+                                                    <td></td>
+                                                </tr>
+                                            @endif
                                         @endforeach
                                     </tbody>
                                 </table>

@@ -219,6 +219,8 @@ Route::group(['namespace' => 'App\Http\Controllers'], function()
             Route::post('/orderDetail/operator', 'OrderDetailController@operatorStore')->name('orderDetail.operatorStore');
             Route::get('/orderDetail/listOperator', 'OrderDetailController@listOperator')->name('orderDetail.listOperator');
             Route::get('/orderDetail/listOperator/{operator}', 'OrderDetailController@listOperatorDetail')->name('orderDetail.listOperatorDetail');
+            Route::get('/orderDetail/semuaList', 'OrderDetailController@semuaList')->name('orderDetail.semuaList');
+
             //marketplaces
             Route::resource('marketplaces', 'MarketplaceController');
             Route::post('/marketplaces/{id}/uploadKeuangan', 'MarketplaceController@uploadKeuangan')->name('marketplaces.uploadKeuangan');
