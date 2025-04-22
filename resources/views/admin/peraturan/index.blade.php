@@ -5,7 +5,9 @@
         <div class="card">
             <div class="card-header d-flex justify-content-between align-items-center">
                 <h5 class="mb-0">Peraturan Pegawai</h5>
-                <a href="{{ route('peraturan.create') }}" class="btn btn-primary">Tambah Peraturan</a>
+                @role('super')
+                    <a href="{{ route('peraturan.create') }}" class="btn btn-primary">Tambah Peraturan</a>
+                @endrole
             </div>
             <div class="card-body">
                 <table class="table">

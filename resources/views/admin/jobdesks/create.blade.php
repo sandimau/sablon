@@ -3,7 +3,7 @@
 @section('content')
 <div class="card">
     <div class="card-header">
-        <h4>Create New Jobdesk</h4>
+        <h4>Tambah Jobdesk</h4>
     </div>
     <div class="card-body">
         <form action="{{ route('jobdesks.store') }}" method="POST">
@@ -33,10 +33,9 @@
                 @enderror
             </div>
 
-            <div class="mb-3">
-                <label for="description" class="form-label">Description</label>
-                <textarea class="form-control @error('description') is-invalid @enderror"
-                    id="description" name="description" rows="5" required>{{ old('description') }}</textarea>
+            <div class="form-group mb-3">
+                <label>Description</label>
+                <textarea id="description" name="description" class="form-control @error('description') is-invalid @enderror" rows="5">{{ old('description') }}</textarea>
                 @error('description')
                     <div class="invalid-feedback">{{ $message }}</div>
                 @enderror
@@ -50,3 +49,19 @@
     </div>
 </div>
 @endsection
+
+@push('after-scripts')
+    <script src="//ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+    <script>
+        window.jQuery || document.write('<script src="js/vendor/jquery-3.3.1.min.js"><\/script>')
+    </script>
+
+    <script src="{{ asset('dist/trumbowyg.min.js') }}"></script>
+    <link rel="stylesheet" href="{{ asset('dist/ui/trumbowyg.min.css') }}">
+
+    <script>
+        $(document).ready(function() {
+            $('#description').trumbowyg();
+        });
+    </script>
+@endpush

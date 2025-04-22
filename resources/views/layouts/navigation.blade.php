@@ -219,25 +219,25 @@
                         {{ __('cs') }}
                     </a>
                 </li>
-                <li class="nav-item">
-                    <a class="nav-link {{ request()->is('peraturan*') ? 'active' : '' }}"
-                        href="{{ route('peraturan.index') }}">
-                        <svg class="nav-icon">
-                            <use xlink:href="{{ asset('icons/coreui.svg#cil-description') }}"></use>
-                        </svg>
-                        {{ __('Peraturan') }}
-                    </a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link {{ request()->is('jobdesks*') ? 'active' : '' }}"
-                        href="{{ route('jobdesks.index') }}">
-                        <svg class="nav-icon">
-                            <use xlink:href="{{ asset('icons/coreui.svg#cil-description') }}"></use>
-                        </svg>
-                        {{ __('Jobdesk') }}
-                    </a>
-                </li>
             @endcan
+            <li class="nav-item">
+                <a class="nav-link {{ request()->is('peraturan*') ? 'active' : '' }}"
+                    href="{{ route('peraturan.index') }}">
+                    <svg class="nav-icon">
+                        <use xlink:href="{{ asset('icons/coreui.svg#cil-description') }}"></use>
+                    </svg>
+                    {{ __('Peraturan') }}
+                </a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link {{ request()->is('jobdesks*') ? 'active' : '' }}"
+                    href="{{ route('jobdesks.index') }}">
+                    <svg class="nav-icon">
+                        <use xlink:href="{{ asset('icons/coreui.svg#cil-description') }}"></use>
+                    </svg>
+                    {{ __('Jobdesk') }}
+                </a>
+            </li>
 
         </ul>
     </li>
