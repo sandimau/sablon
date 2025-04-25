@@ -32,9 +32,6 @@
                         Arsip Online
                     </a>
                 </li>
-            @endcan
-
-            @role('super')
                 <li class="nav-item">
                     <a class="nav-link {{ request()->is('orderDetail*') ? 'active' : '' }}"
                         href="{{ route('orderDetail.listOperator') }}">
@@ -44,7 +41,7 @@
                         Target
                     </a>
                 </li>
-            @endrole
+            @endcan
         </ul>
     </li>
 
