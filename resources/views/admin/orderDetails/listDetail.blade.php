@@ -9,21 +9,24 @@
         @include('layouts.includes.messages')
         <div class="row">
             <div class="col-lg-12">
-                <div class="card">
-                    <div class="card-header">
-                        <div class="d-flex justify-content-between align-details-center">
-                            <h5 class="card-title">{{ $operator }}</h5>
-                            <h5>Total Resi: {{ $totalOperator }}</h5>
-                            <h5>Total Point: {{ $totalJumlah }}</h5>
+                <header class="header mb-4">
+                    <div class="container-fluid">
+                        <div>
+                            <h5 class="card-title">Rekap Bulan {{ date('F Y') }}</h5>
+                            <h5 class=" text-red-800">Operator: {{ $operator }}</h5>
                         </div>
+                        <h5>Total Resi: {{ $totalOperator }}</h5>
+                        <h5>Total Point: {{ $totalJumlah }}</h5>
                     </div>
+                </header>
+                <div class="card">
                     <div class="card-body">
                         <div class="table-responsive">
                             @foreach ($groupedOperators as $date => $operatorGroup)
-                                <h5 class="mb-3">{{ $date }}</h5>
                                 <table class="table table-striped table-hover mb-4">
                                     <thead>
                                         <tr>
+                                            <th>Tanggal</th>
                                             <th>Resi</th>
                                             <th>Point</th>
                                             <th>Konsumen</th>
@@ -32,6 +35,7 @@
                                     <tbody>
                                         @foreach ($operatorGroup as $operator)
                                             <tr>
+                                                <td>{{ $operator->created_at->format('d F Y') }}</td>
                                                 <td>{{ $loop->iteration }}</td>
                                                 <td>{{ $operator->jumlah }}</td>
                                                 <td>{{ $operator->konsumen }}</td>
@@ -39,7 +43,8 @@
                                             @if ($loop->last)
                                                 <tr>
                                                     <td><strong>total: <br>{{ $operatorGroup->count() }}</strong></td>
-                                                    <td><strong>total: <br>{{ $operatorGroup->sum('jumlah') }}</strong></td>
+                                                    <td><strong>total: <br>{{ $operatorGroup->sum('jumlah') }}</strong>
+                                                    </td>
                                                     <td></td>
                                                 </tr>
                                             @endif

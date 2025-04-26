@@ -77,11 +77,20 @@ class OrderDetailController extends Controller
     public function listOperatorDetail($operator)
     {
         $operators = Operator::where('nama', $operator)
+            ->whereMonth('created_at', Carbon::now()->month)
+            ->whereYear('created_at', Carbon::now()->year)
             ->orderBy('created_at', 'desc')
             ->paginate(10);
 
-        $totalOperator = Operator::where('nama', $operator)->count();
-        $totalJumlah = Operator::where('nama', $operator)->sum('jumlah');
+        $totalOperator = Operator::where('nama', $operator)
+            ->whereMonth('created_at', Carbon::now()->month)
+            ->whereYear('created_at', Carbon::now()->year)
+            ->count();
+
+        $totalJumlah = Operator::where('nama', $operator)
+            ->whereMonth('created_at', Carbon::now()->month)
+            ->whereYear('created_at', Carbon::now()->year)
+            ->sum('jumlah');
 
         $groupedOperators = $operators->groupBy(function($item) {
             return $item->created_at->format('d F Y');
