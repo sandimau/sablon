@@ -218,7 +218,7 @@ class OrderDetailController extends Controller
                         'tambah' => 0,
                         'kurang' => $detail->jumlah,
                         'keterangan' => 'barang dijual ke ' .$detail->order->kontak->nama.' '.$username,
-                        'kode' => 'btl',
+                        'kode' => 'jual',
                         'produk_id' => $detail->produk->id,
                         'hpp' => $currentHpp ?? $detail->produk->hpp
                     ]);
@@ -242,7 +242,7 @@ class OrderDetailController extends Controller
                         'tambah' => $detail->jumlah,
                         'kurang' => 0,
                         'keterangan' => $request->keterangan,
-                        'kode' => 'jual',
+                        'kode' => 'btl',
                         'produk_id' => $detail->produk->id,
                         'hpp' => $currentHpp ?? $detail->produk->hpp
                     ]);

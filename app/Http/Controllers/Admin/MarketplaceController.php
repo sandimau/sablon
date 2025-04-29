@@ -487,7 +487,7 @@ class MarketplaceController extends Controller
                                 'tambah' => $stokx,
                                 'saldo' => $saldo,
                                 'keterangan' => $config->nama . ' tdk jd beli',
-                                'kode' => 'jual',
+                                'kode' => 'btl',
                                 'created_at' => now()
                             );
                         }
