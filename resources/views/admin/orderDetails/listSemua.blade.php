@@ -15,6 +15,7 @@
                             <h5 class="card-title">semua</h5>
                             <form action="" method="GET" class="d-flex">
                                 <input type="text" name="search" class="form-control me-2" placeholder="Cari nama..." value="{{ request('search') }}">
+                                <input type="text" name="konsumen" class="form-control me-2" placeholder="Cari konsumen..." value="{{ request('konsumen') }}">
                                 <button type="submit" class="btn btn-primary">Cari</button>
                             </form>
                         </div>

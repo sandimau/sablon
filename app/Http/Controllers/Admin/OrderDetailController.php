@@ -101,14 +101,19 @@ class OrderDetailController extends Controller
 
     public function semuaList(Request $request)
     {
-        if ($request->search == null) {
-            $operators = Operator::orderBy('nama')->paginate(10);
-        } else {
-            $operators = Operator::where('nama', 'LIKE', '%' . $request->search . '%')
-                ->orderBy('nama')
-                ->paginate(10)
-                ->appends(['search' => $request->search]);
+        $query = Operator::query();
+
+        if ($request->search) {
+            $query->where('nama', 'LIKE', '%' . $request->search . '%');
         }
+
+        if ($request->konsumen) {
+            $query->where('konsumen', 'LIKE', '%' . $request->konsumen . '%');
+        }
+
+        $operators = $query->orderBy('nama')
+            ->paginate(10)
+            ->appends($request->all());
         return view('admin.orderDetails.listSemua', compact('operators'));
     }
 
