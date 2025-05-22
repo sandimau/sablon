@@ -52,15 +52,24 @@ class HomeController extends Controller
             ]);
         }
 
+        $member = Member::where('user_id', auth()->id())->first();
+        if ($member) {
+            $whatMember = Whattodo::where('member_id', $member->id)
+                ->where('nama', 'tugas')
+                ->get();
+        }
+
         $whattodos = Whattodo::where('nama','!=','gaji')->get();
         $sistems = Sistem::get()->pluck('isi', 'nama');
         $request->session()->put('logo', $sistems['logo']);
-        return view('admin.whattodos.home', compact('whattodos'));
+        $whatMember = $whatMember ?? collect(); // Initialize if not set
+        return view('admin.whattodos.home', compact('whattodos', 'whatMember'));
     }
 
-    public function create()
+    public function create(Request $request)
     {
-        return view('admin.whattodos.create');
+        $member = Member::find($request->member);
+        return view('admin.whattodos.create', compact('member'));
     }
 
     public function store(Request $request)
@@ -69,10 +78,18 @@ class HomeController extends Controller
             'isi' => 'required',
         ]);
 
-        Whattodo::create([
-            'isi' => $request->isi,
-            'nama' => 'tugas'
-        ]);
+        if ($request->member_id) {
+            Whattodo::create([
+                'isi' => $request->isi,
+                'nama' => 'tugas',
+                'member_id' => $request->member_id
+            ]);
+        } else {
+            Whattodo::create([
+                'isi' => $request->isi,
+                'nama' => 'tugas'
+            ]);
+        }
 
         return redirect('/whattodo')->withSuccess(__('Whattodo created successfully.'));
     }

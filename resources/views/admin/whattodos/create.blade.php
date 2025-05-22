@@ -18,6 +18,9 @@
             <form method="POST" action="{{ route('whattodo.store') }}" enctype="multipart/form-data">
                 @csrf
                 <div class="form-group ">
+                    @if(isset($member))
+                        <input type="hidden" name="member_id" value="{{ $member->id }}">
+                    @endif
                     <label for="isi" class="mb-3">tugas</label>
                     <input class="form-control {{ $errors->has('isi') ? 'is-invalid' : '' }}" type="text" name="isi"
                         id="isi" value="{{ old('isi', '') }}">
