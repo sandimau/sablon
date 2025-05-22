@@ -23,6 +23,33 @@ Edit Akuns
                     </div>
                 @endif
             </div>
+
+            <div class="mb-3">
+                <div class="form-check">
+                    <input name="jual" class="form-check-input {{ $errors->has('jual') ? 'is-invalid' : '' }}"
+                        type="checkbox" value="1" id="flexCheckDefault" {{ $kategori->jual ? 'checked' : null }}>
+                    <label class="form-check-label" for="flexCheckDefault">
+                        Jual
+                    </label>
+                    @if ($errors->has('jual'))
+                        <div class="invalid-feedback">
+                            {{ $errors->first('jual') }}
+                        </div>
+                    @endif
+                </div>
+                <div class="form-check">
+                    <input name="beli" class="form-check-input {{ $errors->has('beli') ? 'is-invalid' : '' }}"
+                        type="checkbox" value="1" id="flexCheckDefault" {{ $kategori->beli ? 'checked' : null }}>
+                    <label class="form-check-label" for="flexCheckDefault">
+                        Beli
+                    </label>
+                    @if ($errors->has('beli'))
+                        <div class="invalid-feedback">
+                            {{ $errors->first('beli') }}
+                        </div>
+                    @endif
+                </div>
+            </div>
             <div class="form-group">
                 <button class="btn btn-danger" type="submit">
                     update
