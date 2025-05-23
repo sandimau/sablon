@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Admin;
 use Gate;
 use Carbon\Carbon;
 use App\Models\Order;
+use App\Models\Belanja;
 use App\Models\Produksi;
 use App\Models\BukuBesar;
 use App\Models\AkunDetail;
@@ -12,6 +13,7 @@ use App\Models\Pembayaran;
 use App\Models\ProdukStok;
 use App\Models\Marketplace;
 use Illuminate\Http\Request;
+use App\Models\BelanjaDetail;
 use Illuminate\Support\Facades\DB;
 use App\Http\Controllers\Controller;
 use Symfony\Component\HttpFoundation\Response;
@@ -123,7 +125,7 @@ class MarketplaceController extends Controller
                     ->get();
                 $orders = $existingOrders->keyBy('nota');
 
-                $keuangan = [];
+                $keuangan = $iklan = [];
                 $input = false;
                 if ($config->baruKeuangan == 1)
                     $input = true;
@@ -181,6 +183,10 @@ class MarketplaceController extends Controller
                         $keuangan[] = $baris;
                     }
 
+                    if (strpos($baris[$marketplace->tema], 'Isi Ulang Saldo Iklan/Koin Penjual') !== false) {
+                        $iklan[] = $baris;
+                    }
+
                     if (strlen($baris[4]) > 8) {
                         if (isset($orders[$baris[4]])) {
                             $order[] = $baris;
@@ -189,6 +195,25 @@ class MarketplaceController extends Controller
                 }
 
                 if ($input) {
+                    //masukan iklan
+                    foreach (array_reverse($iklan) as $baris) {
+                        $belanja = Belanja::create([
+                            'nota' => $request->nota ? $request->nota : rand(1000000, 100),
+                            'total' => abs($baris[6]),
+                            'kontak_id' => $config->kontak_id,
+                            'akun_detail_id' => $config->kas_id,
+                            'pembayaran' => abs($baris[6]),
+                            'created_at' => $baris[1],
+                        ]);
+
+                        BelanjaDetail::create([
+                            'belanja_id' => $belanja->id,
+                            'produk_id' => 708,
+                            'harga' => abs($baris[6]),
+                            'jumlah' => 1,
+                            'keterangan' => $baris[3],
+                        ]);
+                    }
 
                     //proses update order sudah dibayar
                     foreach ($order as $baris) {
