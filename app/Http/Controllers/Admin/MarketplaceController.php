@@ -487,7 +487,7 @@ class MarketplaceController extends Controller
 
                         $orderid = Order::find($yy->order_id);
 
-                        if ($produk->stok == 1 && $orderid->bayar > 0)
+                        if ($produk->stok == 1 && $orderid && $orderid->bayar > 0)
                             $produkBatal[$yy->produk_id] = $yy->jumlah + ($produkBatal[$yy->produk_id] ?? 0);
                     }
 
