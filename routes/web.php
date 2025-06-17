@@ -182,6 +182,7 @@ Route::group(['namespace' => 'App\Http\Controllers'], function()
             Route::get('/belanja/create', 'BelanjaController@create')->name('belanja.create');
             Route::post('/belanja', 'BelanjaController@store')->name('belanja.store');
             Route::get('/belanja/{belanja}', 'BelanjaController@detail')->name('belanja.detail');
+            Route::delete('/belanja/{belanja}', 'BelanjaController@destroy')->name('belanja.destroy');
 
             //order
             Route::get('/order', 'OrderController@index')->name('order.index');

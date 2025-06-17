@@ -99,7 +99,7 @@ class BelanjaController extends Controller
                             'produk_id' => $request->barang_beli_id[$item],
                             'harga' => $request->harga[$item],
                             'jumlah' => $request->jumlah[$item],
-                            'keterangan' => $request->keterangan[$item],
+                            'keterangan' => $request->keterangan[$item] ? $request->keterangan[$item] : 'pembelian ke ' . $supplier->nama,
                         ]);
 
                         $produk = Produk::find($request->barang_beli_id[$item]);
@@ -110,7 +110,7 @@ class BelanjaController extends Controller
                                 'produk_id' => $request->barang_beli_id[$item],
                                 'tambah' => $request->jumlah[$item],
                                 'kurang' => 0,
-                                'keterangan' => $request->keterangan[$item],
+                                'keterangan' => $request->keterangan[$item] ? $request->keterangan[$item] : 'pembelian ke ' . $supplier->nama,
                                 'kode' => 'blj',
                                 'hpp' => $hpp
                             ]);
@@ -135,5 +135,47 @@ class BelanjaController extends Controller
         $belanja = Belanja::find($belanja);
 
         return view('admin.belanjas.detail', compact('belanjaDetail', 'belanja'));
+    }
+
+    public function destroy($belanja)
+    {
+        abort_if(Gate::denies('belanja_delete'), Response::HTTP_FORBIDDEN, '403 Forbidden');
+
+        DB::transaction(function () use ($belanja) {
+            $belanja = Belanja::find($belanja);
+
+            // Balikin stok jika produk stok = 1
+            foreach($belanja->belanjaDetail as $detail) {
+                $produk = Produk::find($detail->produk_id);
+                $hpp = $produk->hpp ?? 0;
+                if($produk->stok == 1) {
+                    ProdukStok::create([
+                        'tanggal' => Carbon::now(),
+                        'produk_id' => $detail->produk_id,
+                        'tambah' => 0,
+                        'kurang' => $detail->jumlah,
+                        'keterangan' => 'Hapus Belanja',
+                        'kode' => 'blj',
+                        'hpp' => $hpp
+                    ]);
+                }
+            }
+
+            // Balikin uang yang sudah dibayar
+            if($belanja->pembayaran > 0) {
+                BukuBesar::create([
+                    'akun_detail_id' => $belanja->akun_detail_id,
+                    'ket' => 'Hapus Belanja #' . $belanja->nota,
+                    'debet' => $belanja->pembayaran,
+                    'kredit' => 0,
+                    'kode' => 'blj'
+                ]);
+            }
+
+            $belanja->belanjaDetail()->forceDelete();
+            $belanja->forceDelete();
+        });
+
+        return redirect()->route('belanja.index')->withDanger(__('Belanja Berhasil Dihapus'));
     }
 }

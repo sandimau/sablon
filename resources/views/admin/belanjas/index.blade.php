@@ -20,8 +20,8 @@
         <div class="card">
             <div class="card-header">
                 <div class="d-flex justify-content-between align-items-center">
-                    <form action="{{ route('belanja.index') }}" method="get" class="d-flex gap-2 align-items-center">
-                        <div class="d-flex gap-2 align-items-center">
+                    <form action="{{ route('belanja.index') }}" method="get">
+                        <div class="d-flex gap-2 align-items-center mb-2">
                             <label for="nota" class="form-label mb-0">Konsumen</label>
                             <div id="autocomplete" class="autocomplete">
                                 <input class="autocomplete-input {{ $errors->has('kontak_id') ? 'is-invalid' : '' }}"
@@ -60,6 +60,9 @@
                                 <th>produk</th>
                                 <th>nota</th>
                                 <th>total</th>
+                                @can('belanja_delete')
+                                    <th>aksi</th>
+                                @endcan
                             </tr>
                         </thead>
                         <tbody>
@@ -70,6 +73,15 @@
                                     <td><a href="{{ route('belanja.detail', $belanja->id) }}">{{ $belanja->produk }}</a></td>
                                     <td>#{{ $belanja->nota }}</td>
                                     <td>{{ number_format($belanja->total, 0, ',', '.') }}</td>
+                                    <td>
+                                        @can('belanja_delete')
+                                            <form action="{{ route('belanja.destroy', $belanja->id) }}" method="POST" onsubmit="return confirm('Apakah anda yakin ingin menghapus data ini?');" style="display: inline-block;">
+                                                @csrf
+                                                @method('DELETE')
+                                                <button type="submit" class="btn btn-danger"><i class='bx bx-trash'></i></button>
+                                            </form>
+                                        @endcan
+                                    </td>
                                 </tr>
                             @endforeach
                         </tbody>
