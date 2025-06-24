@@ -444,7 +444,7 @@ class MarketplaceController extends Controller
                             $skuParts = explode('_', $barang);
                             $barang = $skuParts[0]; // Mengambil bagian pertama dari SKU
                             $paket = $skuParts[1]; // Menambahkan paket dengan bagian kedua dari SKU
-                            $jumlah = $jumlah * $paket;
+                            $jumlah = intval($jumlah) * intval($paket);
                         }
 
                         /////////////////cek, apakah sku udah sesuai dgn produk_id
