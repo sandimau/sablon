@@ -226,6 +226,7 @@ Route::group(['namespace' => 'App\Http\Controllers'], function()
             Route::resource('marketplaces', 'MarketplaceController');
             Route::post('/marketplaces/{id}/uploadKeuangan', 'MarketplaceController@uploadKeuangan')->name('marketplaces.uploadKeuangan');
             Route::post('/marketplaces/{id}/uploadOrder', 'MarketplaceController@uploadOrder')->name('marketplaces.uploadOrder');
+            Route::get('/analisaMarketplace', 'MarketplaceController@analisa')->name('marketplaces.analisa');
 
             // laporan
             Route::get('/neraca', 'LaporanController@neraca')->name('laporan.neraca');

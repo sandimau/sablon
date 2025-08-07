@@ -602,4 +602,74 @@ class MarketplaceController extends Controller
             return redirect()->back()->withErrors(['error' => 'Upload Order gagal: ' . $e->getMessage()]);
         }
     }
+
+    public function analisa(Request $request)
+    {
+        $marketplaces = Marketplace::with(['kontak' => function ($query) {
+            $query->whereNotNull('marketplace');
+        }])->get();
+
+        $tahun_skr = date('Y');
+        $bulan_skr = date('n');
+        $data = [];
+
+        for ($i = 1; $i <= $bulan_skr; $i++) {
+            $bulan = str_pad($i, 2, '0', STR_PAD_LEFT);
+            $bulan_nama = date('F', mktime(0, 0, 0, $i, 1));
+
+            $omzet = DB::table('orders')
+                ->selectRaw('sum(total) as omzet, kontak_id')
+                ->whereYear('created_at', $tahun_skr)
+                ->whereMonth('created_at', $i)
+                ->groupBy('kontak_id')
+                ->get()
+                ->pluck('omzet', 'kontak_id');
+
+            $bayar = DB::table('orders')
+                ->selectRaw('sum(total) as total,sum(bayar) as bayar, kontak_id')
+                ->whereYear('created_at', $tahun_skr)
+                ->whereMonth('created_at', $i)
+                ->where('bayar', '>', 0)
+                ->groupBy('kontak_id')
+                ->get();
+            $total = $bayar->pluck('total', 'kontak_id');
+            $bayar = $bayar->pluck('bayar', 'kontak_id');
+
+            $hpp = DB::table('orders')
+                ->join('order_details', 'orders.id', '=', 'order_details.order_id')
+                ->selectRaw('sum(order_details.hpp*order_details.jumlah) as hpp, orders.kontak_id')
+                ->whereYear('orders.created_at', $tahun_skr)
+                ->whereMonth('orders.created_at', $i)
+                ->groupBy('orders.kontak_id')
+                ->get()
+                ->pluck('hpp', 'kontak_id');
+
+            $produkIklan = DB::table('produks')
+                ->join('kategoris', 'produks.kategori_id', '=', 'kategoris.id')
+                ->where('produks.nama', 'like', '%Biaya Iklan%')
+                ->orWhere('produks.nama', 'like', '%iklan%')
+                ->pluck('produks.id');
+
+            $iklan = DB::table('belanjas')
+                ->selectRaw('sum(belanja_details.harga * belanja_details.jumlah) as potongan, belanjas.kontak_id as kontak_id')
+                ->join('belanja_details', 'belanjas.id', '=', 'belanja_details.belanja_id')
+                ->whereYear('belanjas.created_at', $tahun_skr)
+                ->whereMonth('belanjas.created_at', $i)
+                ->whereIn('belanja_details.produk_id', $produkIklan)
+                ->groupBy('belanjas.kontak_id')
+                ->get();
+            $iklan = $iklan->pluck('potongan', 'kontak_id');
+
+            $data[$bulan] = [
+                'nama' => $bulan_nama,
+                'omzet' => $omzet,
+                'bayar' => $bayar,
+                'total' => $total,
+                'hpp' => $hpp,
+                'iklan' => $iklan
+            ];
+        }
+
+        return view('admin.marketplaces.analisa', compact('marketplaces', 'data'));
+    }
 }

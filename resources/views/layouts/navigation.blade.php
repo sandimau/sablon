@@ -176,6 +176,15 @@
                         {{ __('Config') }}
                     </a>
                 </li>
+                <li class="nav-item">
+                    <a class="nav-link {{ request()->is('marketplaces*') ? 'active' : '' }}"
+                        href="{{ route('marketplaces.analisa') }}">
+                        <svg class="nav-icon">
+                            <use xlink:href="{{ asset('icons/coreui.svg#cil-cash') }}"></use>
+                        </svg>
+                        {{ __('Analisa') }}
+                    </a>
+                </li>
             @endcan
         </ul>
     </li>
