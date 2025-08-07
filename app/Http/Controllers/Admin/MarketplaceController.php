@@ -452,11 +452,13 @@ class MarketplaceController extends Controller
                         if (!$produk)
                             throw new \Exception('sku: ' . $barang . ', nama: ' . $baris[$marketplace->produk] . ', tidak ada di sistem');
 
+                        $jumlahOri = $baris[$marketplace->jumlah];
+                        $jumlahOri = str_replace(".", "", $jumlahOri);
 
                         /////mulai input orderdetil ke array
                         $orderdetil[] = array(
                             'produk_id' => $produk->id,
-                            'jumlah' => $jumlah,
+                            'jumlah' => $jumlahOri,
                             'tema' => $custom,
                             'harga' => $harga,
                             'produksi_id' => $produksi_id,
@@ -581,7 +583,7 @@ class MarketplaceController extends Controller
                                 'produk_id' => $produk_id,
                                 'kurang' => $stokx,
                                 'saldo' => $saldo,
-                                'keterangan' => 'upload ' . $config->nama,
+                                'keterangan' => 'upload ' . $config->nama . ' (' . $nama . ')',
                                 'kode' => 'jual',
                                 'created_at' => now()
                             );
