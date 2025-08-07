@@ -202,12 +202,18 @@ class ProdukController extends Controller
             ->orderBy('k.nama')
             ->get();
 
+        // Get produksi batal ID for exclusion
+        $batalProduksiId = DB::table('produksis')->where('nama', 'batal')->first()->id ?? null;
+
         // Get omzet data for the selected year
         $omzetData = DB::table('order_details as od')
             ->join('orders as o', 'o.id', '=', 'od.order_id')
             ->join('produks as p', 'p.id', '=', 'od.produk_id')
             ->join('kategoris as k', 'k.id', '=', 'p.kategori_id')
             ->whereYear('o.created_at', $selectedYear)
+            ->when($batalProduksiId, function($query) use ($batalProduksiId) {
+                return $query->where('od.produksi_id', '!=', $batalProduksiId);
+            })
             ->select(
                 'k.id as kategori_id',
                 'k.nama as namaKategori',
