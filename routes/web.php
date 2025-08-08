@@ -221,6 +221,8 @@ Route::group(['namespace' => 'App\Http\Controllers'], function()
             Route::get('/orderDetail/listOperator', 'OrderDetailController@listOperator')->name('orderDetail.listOperator');
             Route::get('/orderDetail/listOperator/{operator}', 'OrderDetailController@listOperatorDetail')->name('orderDetail.listOperatorDetail');
             Route::get('/orderDetail/semuaList', 'OrderDetailController@semuaList')->name('orderDetail.semuaList');
+            Route::get('/marketplaces/analisaDetail/{bulan}/{kontak_id}', 'MarketplaceController@analisaDetail')->name('marketplaces.analisaDetail');
+            Route::get('/marketplaces/bayar/{bulan}/{kontak_id}', 'MarketplaceController@bayarDetail')->name('marketplaces.bayarDetail');
 
             //marketplaces
             Route::resource('marketplaces', 'MarketplaceController');

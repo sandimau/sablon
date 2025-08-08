@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Admin;
 use Gate;
 use Carbon\Carbon;
 use App\Models\Order;
+use App\Models\Kontak;
 use App\Models\Belanja;
 use App\Models\Produksi;
 use App\Models\BukuBesar;
@@ -673,5 +674,39 @@ class MarketplaceController extends Controller
         }
 
         return view('admin.marketplaces.analisa', compact('marketplaces', 'data'));
+    }
+
+    public function analisaDetail($bulan, $kontak_id, Request $request)
+    {
+        $marketplace = Kontak::find($kontak_id);
+        $data = Order::whereYear('created_at', date('Y'))
+            ->whereMonth('created_at', $bulan)
+            ->where('kontak_id', $kontak_id)
+            ->orderBy('id', 'desc')->paginate(15);
+        return view('admin.marketplaces.analisaDetail', compact('data', 'marketplace', 'bulan'));
+    }
+
+    public function bayarDetail($bulan, $kontak_id, Request $request)
+    {
+        $marketplace = Kontak::find($kontak_id);
+
+        $query = Order::whereYear('created_at', date('Y'))
+            ->whereMonth('created_at', $bulan)
+            ->where('kontak_id', $kontak_id)
+            ->where('bayar', '>', 0)
+            ->where('total', '>', 0);
+
+        // Handle sorting
+        $sort = $request->get('sort', 'id');
+        $direction = $request->get('direction', 'desc');
+
+        if ($sort === 'potongan') {
+            $query->orderByRaw('(total - bayar) ' . $direction);
+        } else {
+            $query->orderBy($sort, $direction);
+        }
+
+        $data = $query->paginate(15);
+        return view('admin.marketplaces.bayarDetail', compact('data', 'marketplace', 'bulan'));
     }
 }

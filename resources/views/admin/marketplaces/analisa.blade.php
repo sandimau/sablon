@@ -36,8 +36,8 @@
                                     @foreach ($data as $bulan => $bulanData)
                                         <tr>
                                             <td>{{ $bulanData['nama'] }}</td>
-                                            <td>{{ number_format($bulanData['omzet'][$marketplace->kontak->id] ?? 0, 0, ',', '.') }}</td>
-                                            <td>{{ number_format($bulanData['bayar'][$marketplace->kontak->id] ?? 0, 0, ',', '.') }}</td>
+                                            <td><a href="{{ route('marketplaces.analisaDetail', [$bulan, $marketplace->kontak->id]) }}">{{ number_format($bulanData['omzet'][$marketplace->kontak->id] ?? 0, 0, ',', '.') }}</a></td>
+                                            <td><a href="{{ route('marketplaces.bayarDetail', [$bulan, $marketplace->kontak->id]) }}">{{ number_format($bulanData['bayar'][$marketplace->kontak->id] ?? 0, 0, ',', '.') }}</a></td>
                                             <td>{{ number_format($bulanData['hpp'][$marketplace->kontak->id] ?? 0, 0, ',', '.') }}</td>
                                             @php
                                                 $potongan = ($bulanData['total'][$marketplace->kontak->id] ?? 0) - ($bulanData['bayar'][$marketplace->kontak->id] ?? 0);
