@@ -126,7 +126,7 @@
                                                             '</span>';
                                                     }
 
-                                                    $nama_produk = $detail->produk->nama;
+                                                    $nama_produk = $detail->produk->nama ?? '-';
 
                                                     $jadwalx = '';
                                                     if ($detail->deathline) {
