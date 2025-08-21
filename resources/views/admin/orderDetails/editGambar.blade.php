@@ -11,6 +11,9 @@
                 <div>
                     <h5 class="card-title">edit gambar</h5>
                 </div>
+                <div>
+                    <a href="{{ route('order.detail', $detail->order_id) }}" class="btn btn-secondary text-white">back</a>
+                </div>
             </div>
         </div>
         <div class="card-body">

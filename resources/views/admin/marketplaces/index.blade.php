@@ -51,8 +51,11 @@
                                             <div class="d-flex">
                                                 <a href="{{ route('marketplaces.edit', $marketplace->id) }}"
                                                     class="btn btn-info btn-sm me-1"><i class='bx bxs-edit'></i> Edit</a>
-                                                <a href="{{ route('marketplaces.destroy', $marketplace->id) }}"
-                                                    class="btn btn-danger btn-sm me-1"><i class='bx bxs-trash'></i> Delete</a>
+                                                <form action="{{ route('marketplaces.destroy', $marketplace->id) }}" method="POST" onsubmit="return confirm('Apakah anda yakin ingin menghapus data ini?');" style="display: inline-block;">
+                                                    @csrf
+                                                    @method('DELETE')
+                                                    <button type="submit" class="btn btn-danger"><i class='bx bx-trash'></i></button>
+                                                </form>
                                             </div>
                                         </td>
                                     @endcan
