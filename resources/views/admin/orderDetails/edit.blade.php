@@ -22,7 +22,7 @@
                     <label for="nama" class="mb-2">Produk</label>
                     <div id="autocompleteProduk" class="autocomplete">
                         <input class="autocomplete-input produk {{ $errors->has('produk_id') ? 'invalid' : '' }}"
-                            placeholder="cari produk" aria-label="cari produk" value="{{ $detail->produk->nama }}">
+                            placeholder="cari produk" aria-label="cari produk" value="{{ $detail->produk ? $detail->produk->nama : '-'  }}">
                         <span id="closeBrgProduk" style="display: block">
                             @if ($detail->produk_id)
                                 <button onclick="clearProduk()" type="button" class="btnClose btn-warning"><i
