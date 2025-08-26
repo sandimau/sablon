@@ -25,12 +25,11 @@ Route::get('/', function () {
 Auth::routes();
 
 
-Route::group(['namespace' => 'App\Http\Controllers'], function()
-{
+Route::group(['namespace' => 'App\Http\Controllers'], function () {
     Route::middleware('auth')->group(function () {
 
         // Clear application cache
-        Route::get('/clear-cache', function() {
+        Route::get('/clear-cache', function () {
             Artisan::call('cache:clear');
             Artisan::call('config:clear');
             Artisan::call('config:cache');
@@ -57,7 +56,7 @@ Route::group(['namespace' => 'App\Http\Controllers'], function()
 
         Route::resource('permissions', PermissionsController::class);
 
-        Route::group(['prefix' => 'users'], function() {
+        Route::group(['prefix' => 'users'], function () {
             Route::get('/', 'UserController@index')->name('users.index');
             Route::get('/create', 'UserController@create')->name('users.create');
             Route::post('/create', 'UserController@store')->name('users.store');
@@ -133,30 +132,11 @@ Route::group(['namespace' => 'App\Http\Controllers'], function()
             Route::get('/penggajian/{penggajian}/slip', 'PenggajianController@slip')->name('penggajian.slip');
             Route::post('/penggajian/create', 'PenggajianController@store')->name('penggajian.store');
 
-            // produk
-            Route::get('/kategori/{kategori}/produk', 'ProdukController@index')->name('produks.index');
-            Route::get('/kategori/{kategori}/produk/create', 'ProdukController@create')->name('produks.create');
-            Route::post('/produk', 'ProdukController@store')->name('produks.store');
-            Route::get('/produk/{produk}/edit', 'ProdukController@edit')->name('produks.edit');
-            Route::patch('/produk/{produk}/update', 'ProdukController@update')->name('produks.update');
-            Route::get('/aset', 'ProdukController@aset')->name('produk.aset');
-            Route::get('/produk/omzet', 'ProdukController@omzet')->name('produk.omzet');
-            Route::get('/produk/omzet/{kategori}', 'ProdukController@omzetDetail')->name('produk.omzetDetail');
-            Route::delete('/produk/{produk}', 'ProdukController@destroy')->name('produks.destroy');
-            Route::get('/aset/{kategori}', 'ProdukController@asetDetail')->name('produks.asetDetail');
-
             //produkStoks
             Route::get('/produk/{produk}/produkStok', 'ProdukStokController@index')->name('produkStok.index');
             Route::get('/produk/{produk}/produk/create', 'ProdukStokController@create')->name('produkStok.create');
             Route::post('/produkStok', 'ProdukStokController@store')->name('produkStok.store');
             Route::get('/opnames', 'ProdukStokController@opname')->name('opnames.index');
-
-            // produkModel
-            Route::get('/kategoriUtama/{kategoriUtama}/produkModel', 'ProdukModelController@index')->name('produkModel.index');
-            Route::get('/kategoriUtama/{kategoriUtama}/produkModel/create', 'ProdukModelController@create')->name('produkModel.create');
-            Route::post('/produkModel', 'ProdukModelController@store')->name('produkModel.store');
-            Route::get('/produkModel/{produkModel}/edit', 'ProdukModelController@edit')->name('produkModel.edit');
-            Route::patch('/produkModel/{produkModel}/update', 'ProdukModelController@update')->name('produkModel.update');
 
             // kategoriUtamas
             Route::get('/kategoriUtama', 'KategoriUtamaController@index')->name('kategoriUtama.index');
@@ -169,12 +149,38 @@ Route::group(['namespace' => 'App\Http\Controllers'], function()
             Route::get('/kategoriUtama/{kategoriUtama}/kategori/create', 'KategoriUtamaController@createByKategoriUtama')->name('kategori.createByKategoriUtama');
             Route::post('/kategoriUtama/{kategoriUtama}/kategori', 'KategoriUtamaController@storeByKategoriUtama')->name('kategori.storeByKategoriUtama');
 
-             //kategori
-             Route::get('/kategori', 'KategoriController@index')->name('kategori.index');
-             Route::get('/kategori/create', 'KategoriController@create')->name('kategori.create');
-             Route::post('/kategori', 'KategoriController@store')->name('kategori.store');
-             Route::get('/kategori/{kategori}/edit', 'KategoriController@edit')->name('kategori.edit');
-             Route::patch('/kategori/{kategori}/update', 'KategoriController@update')->name('kategori.update');
+            //kategori
+            Route::get('/kategori', 'KategoriController@index')->name('kategori.index');
+            Route::get('/kategori/create', 'KategoriController@create')->name('kategori.create');
+            Route::post('/kategori', 'KategoriController@store')->name('kategori.store');
+            Route::get('/kategori/{kategori}/edit', 'KategoriController@edit')->name('kategori.edit');
+            Route::patch('/kategori/{kategori}/update', 'KategoriController@update')->name('kategori.update');
+
+            // produkModel
+            Route::get('/kategori/{kategori}/produkModel', 'ProdukModelController@index')->name('produkModel.index');
+            Route::get('/kategori/{kategori}/produkModel/create', 'ProdukModelController@create')->name('produkModel.create');
+            Route::get('/kategori/{kategori}/produkModel/{id}', 'ProdukModelController@show')->name('produkModel.show');
+            Route::post('/produkModel', 'ProdukModelController@store')->name('produkModel.store');
+            Route::get('/produkModel/{produkModel}/edit', 'ProdukModelController@edit')->name('produkModel.edit');
+            Route::patch('/produkModel/{produkModel}/update', 'ProdukModelController@update')->name('produkModel.update');
+            Route::delete('/produkModel/{produkModel}', 'ProdukModelController@destroy')->name('produkModel.destroy');
+            Route::get('/produkModel/{produkModel}/produk/{kategori}', 'ProdukModelController@produk')->name('produkModel.createProduk');
+            Route::post('/produkModel/{produkModel}/produk', 'ProdukModelController@storeProduk')->name('produkModel.storeProduk');
+            Route::get('/produkModel/{produkModel}/produk/{produk}/edit', 'ProdukModelController@editProduk')->name('produkModel.editProduk');
+            Route::patch('/produkModel/{produkModel}/produk/{produk}/update', 'ProdukModelController@updateProduk')->name('produkModel.updateProduk');
+
+             // produk
+             Route::get('/kategori/{kategori}/produk', 'ProdukController@index')->name('produks.index');
+             Route::get('/kategori/{kategori}/produk/create', 'ProdukController@create')->name('produks.create');
+             Route::post('/produk', 'ProdukController@store')->name('produks.store');
+             Route::get('/produk/{produk}/edit', 'ProdukController@edit')->name('produks.edit');
+             Route::patch('/produk/{produk}/update', 'ProdukController@update')->name('produks.update');
+             Route::get('/aset', 'ProdukController@aset')->name('produk.aset');
+             Route::get('/produk/omzet', 'ProdukController@omzet')->name('produk.omzet');
+             Route::get('/produk/omzet/{kategori}', 'ProdukController@omzetDetail')->name('produk.omzetDetail');
+             Route::delete('/produk/{produk}', 'ProdukController@destroy')->name('produks.destroy');
+             Route::get('/aset/{kategori}', 'ProdukController@asetDetail')->name('produks.asetDetail');
+
 
             // kontak
             Route::resource('kontaks', 'KontakController');
@@ -271,8 +277,6 @@ Route::group(['namespace' => 'App\Http\Controllers'], function()
 
             // Jobdesk routes
             Route::resource('jobdesks', 'JobdeskController');
-
         });
     });
 });
-
