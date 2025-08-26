@@ -43,13 +43,43 @@ class OrderController extends Controller
 
     public function apiProduk()
     {
-        $produk = Produk::select('nama', 'id','harga')->where('jual', 1)->where('nama', 'LIKE', '%' . $_GET['q'] . '%')->get();
+        $query = $_GET['q'] ?? '';
+        $produk = Produk::select(
+            'produks.id',
+            'produks.harga',
+            \Illuminate\Support\Facades\DB::raw("if(length(produks.nama),concat(produk_models.nama,'-',produks.nama), concat(produk_models.nama)) as nama")
+        )
+        ->join('produk_models', 'produks.produk_model_id', '=', 'produk_models.id')
+        ->where('produk_models.jual', 1)
+        ->where(function ($queryBuilder) use ($query) {
+            $queryBuilder->where('produk_models.nama', 'LIKE', '%' . $query . '%')
+                  ->orWhere('produks.nama', 'LIKE', '%' . $query . '%');
+        })
+        ->orderBy('produk_models.nama')
+        ->orderBy('produks.nama')
+        ->get();
         return response()->json($produk);
     }
 
     public function apiProdukBeli()
     {
-        $produk = Produk::select('nama', 'id','harga_beli','satuan','harga')->where('beli', 1)->where('nama', 'LIKE', '%' . $_GET['q'] . '%')->get();
+        $query = $_GET['q'] ?? '';
+        $produk = Produk::select(
+            'produks.id',
+            'produks.harga_beli',
+            'produks.satuan',
+            'produks.harga',
+            \Illuminate\Support\Facades\DB::raw("if(length(produks.nama),concat(produk_models.nama,'-',produks.nama), concat(produk_models.nama)) as nama")
+        )
+        ->join('produk_models', 'produks.produk_model_id', '=', 'produk_models.id')
+        ->where('produk_models.beli', 1)
+        ->where(function ($queryBuilder) use ($query) {
+            $queryBuilder->where('produk_models.nama', 'LIKE', '%' . $query . '%')
+                  ->orWhere('produks.nama', 'LIKE', '%' . $query . '%');
+        })
+        ->orderBy('produk_models.nama')
+        ->orderBy('produks.nama')
+        ->get();
         return response()->json($produk);
     }
 

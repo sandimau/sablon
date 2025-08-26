@@ -61,6 +61,14 @@ class KategoriUtamaController extends Controller
 
     public function editByKategoriUtama(KategoriUtama $kategoriUtama, Kategori $kategori)
     {
-        return view('admin.kategoris.editKategoriUtama', compact('kategoriUtama', 'kategori'));
+        $kategoriUtamas = KategoriUtama::all();
+        return view('admin.kategoris.editKategoriUtama', compact('kategoriUtama', 'kategori','kategoriUtamas'));
+    }
+
+    public function updateByKategoriUtama(Request $request, KategoriUtama $kategoriUtama, Kategori $kategori)
+    {
+        $kategori->update($request->all());
+
+        return redirect()->route('kategori.indexByKategoriUtama', $kategoriUtama)->with('success', 'Kategori berhasil diupdate');
     }
 }

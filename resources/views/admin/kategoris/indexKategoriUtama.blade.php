@@ -38,7 +38,7 @@
                                     <td><a href="{{ route('produkModel.index', $kategori->id) }}">{{ $kategori->nama }}</a></td>
                                     <td>
                                         <div class="d-flex">
-                                            <a href="{{ route('kategori.edit', $kategori->id) }}" class="btn btn-info btn-sm me-1"><i
+                                            <a href="{{ route('kategori.editByKategoriUtama', [$kategoriUtama->id, $kategori->id]) }}" class="btn btn-info btn-sm me-1"><i
                                                     class='bx bxs-edit'></i> Edit</a>
                                         </div>
                                     </td>

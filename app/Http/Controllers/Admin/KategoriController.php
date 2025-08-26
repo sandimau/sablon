@@ -15,7 +15,7 @@ class KategoriController extends Controller
     {
         abort_if(Gate::denies('kategori_access'), Response::HTTP_FORBIDDEN, '403 Forbidden');
 
-        $kategoris = Kategori::where('kategori_utama_id',0)->get();
+        $kategoris = Kategori::where('kategori_utama_id',0)->orWhere('kategori_utama_id',null)->get();
 
         return view('admin.kategoris.index', compact('kategoris'));
     }

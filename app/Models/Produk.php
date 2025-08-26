@@ -33,6 +33,14 @@ class Produk extends Model
         }
     }
 
+    public function getNamaLengkapAttribute()
+    {
+        if ($this->produkModel) {
+            return $this->produkModel->nama . ' - ' . $this->nama;
+        }
+        return $this->nama;
+    }
+
     public function akunDetail()
     {
         return $this->belongsTo(AkunDetail::class, 'akun_detail_id');

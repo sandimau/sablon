@@ -126,7 +126,7 @@
 
         new Autocomplete('#autocompleteProduk', {
             search: input => {
-                const url = "{{ url('admin/produk/api?q=') }}" + `${escape(input)}`;
+                const url = "{{ url('admin/produkBeli/api?q=') }}" + `${escape(input)}`;
                 return new Promise(resolve => {
                     if (input.length < 1) {
                         return resolve([])

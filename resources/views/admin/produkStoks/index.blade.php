@@ -39,7 +39,7 @@
                         <tbody>
                             @foreach ($produkStoks as $stok)
                                 <tr>
-                                    <td>{{ $stok->tanggal }}</td>
+                                    <td>{{ $stok->created_at->format('d-m-Y') }}</td>
                                     <td>{{ $stok->keterangan }}</td>
                                     <td>{{ number_format($stok->tambah) }}</td>
                                     <td>{{ number_format($stok->kurang) }}</td>

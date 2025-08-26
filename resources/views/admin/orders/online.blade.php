@@ -14,7 +14,7 @@
         <div class="card">
             <div class="card-header">
                 <div class="d-flex justify-content-between align-items-center">
-                    <form action="{{ route('order.arsip') }}" method="get" class="d-flex gap-2 align-items-center">
+                    <form action="{{ route('order.arsip') }}" method="get" class="d-flex flex-column gap-2">
                         <div class="d-flex gap-2 align-items-center">
                             <label for="nota" class="form-label mb-0">Nota</label>
                             <input type="text" name="nota" class="form-control">

@@ -7,6 +7,7 @@ use App\Models\Produk;
 use App\Models\Kategori;
 use App\Models\ProdukModel;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use App\Http\Controllers\Controller;
 use Intervention\Image\Facades\Image;
 use Illuminate\Support\Facades\Storage;
@@ -55,6 +56,7 @@ class ProdukModelController extends Controller
                     ->whereRaw('belanja_details.id = (SELECT id FROM belanja_details WHERE produk_id = produks.id ORDER BY id DESC LIMIT 1)');
             })
             ->where('produk_models.kategori_id', $kategori->id)
+            ->orderBy('produk_models.id')
             ->get();
 
         return view('admin.produkModels.index', compact('produks', 'kategori'));
@@ -106,7 +108,10 @@ class ProdukModelController extends Controller
         // Tambahkan data ke tabel produk
         Produk::create([
             'status' => 1,
-            'produk_model_id' => $produkModel->id
+            'produk_model_id' => $produkModel->id,
+            'jual' => $kategori->kategoriUtama->jual,
+            'beli' => $kategori->kategoriUtama->beli,
+            'stok' => $kategori->kategoriUtama->stok,
         ]);
         return redirect()->route('produkModel.index', ['kategori' => $kategori->id])->with('success', 'Produk berhasil ditambahkan');
     }
@@ -199,6 +204,9 @@ class ProdukModelController extends Controller
             'nama' => $request->nama,
             'status' => $request->status,
             'produk_model_id' => $request->produk_model_id,
+            'jual' => $produkModel->jual,
+            'beli' => $produkModel->beli,
+            'stok' => $produkModel->stok,
         ]);
 
         $produkModel = ProdukModel::find($request->produk_model_id);
@@ -222,6 +230,9 @@ class ProdukModelController extends Controller
                 'produk_model_id' => $request->produk_model_id,
             ]
         );
-        return redirect()->route('produkModel.show', ['id' => $produkModel->id, 'kategori' => $produkModel->kategori_id])->with('success', 'Produk berhasil diperbarui');
+        $model = ProdukModel::find($request->produk_model_id);
+        // Clean up orphaned produk models that are no longer referenced by any products
+        DB::statement("DELETE FROM produk_models WHERE id NOT IN (SELECT DISTINCT produk_model_id FROM produks WHERE produk_model_id IS NOT NULL)");
+        return redirect()->route('produkModel.show', ['id' => $model->id, 'kategori' => $model->kategori_id])->with('success', 'Produk berhasil diperbarui');
     }
 }

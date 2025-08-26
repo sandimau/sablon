@@ -148,6 +148,8 @@ Route::group(['namespace' => 'App\Http\Controllers'], function () {
             Route::get('/kategoriUtama/{kategoriUtama}/kategori', 'KategoriUtamaController@indexByKategoriUtama')->name('kategori.indexByKategoriUtama');
             Route::get('/kategoriUtama/{kategoriUtama}/kategori/create', 'KategoriUtamaController@createByKategoriUtama')->name('kategori.createByKategoriUtama');
             Route::post('/kategoriUtama/{kategoriUtama}/kategori', 'KategoriUtamaController@storeByKategoriUtama')->name('kategori.storeByKategoriUtama');
+            Route::get('/kategoriUtama/{kategoriUtama}/kategori/{kategori}/edit', 'KategoriUtamaController@editByKategoriUtama')->name('kategori.editByKategoriUtama');
+            Route::patch('/kategoriUtama/{kategoriUtama}/kategori/{kategori}/update', 'KategoriUtamaController@updateByKategoriUtama')->name('kategori.updateByKategoriUtama');
 
             //kategori
             Route::get('/kategori', 'KategoriController@index')->name('kategori.index');

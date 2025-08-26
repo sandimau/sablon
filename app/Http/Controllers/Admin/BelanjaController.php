@@ -104,7 +104,8 @@ class BelanjaController extends Controller
 
                         $produk = Produk::find($request->barang_beli_id[$item]);
                         $hpp = $produk->hpp ?? 0;
-                        if ($produk->stok == 1) {
+                        $stok = $produk->stok ?? $produk->produkModel->stok ?? 0;
+                        if ($stok == 1) {
                             ProdukStok::create([
                                 'tanggal' => Carbon::now(),
                                 'produk_id' => $request->barang_beli_id[$item],
