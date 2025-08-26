@@ -21,8 +21,8 @@ class Kategori extends Model
 
     protected $guarded = [];
 
-    public function kategori(): HasMany
+    public function kategoriUtama()
     {
-        return $this->hasMany(Kategori::class);
+        return $this->belongsTo(KategoriUtama::class, 'kategori_utama_id');
     }
 }

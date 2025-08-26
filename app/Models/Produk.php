@@ -47,4 +47,9 @@ class Produk extends Model
     {
         return $this->belongsToMany(Produk::class, 'produk_last_stoks', 'produk_id')->withPivot('saldo');
     }
+
+    public function produkModel()
+    {
+        return $this->belongsTo(ProdukModel::class);
+    }
 }

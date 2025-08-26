@@ -151,6 +151,31 @@ Route::group(['namespace' => 'App\Http\Controllers'], function()
             Route::post('/produkStok', 'ProdukStokController@store')->name('produkStok.store');
             Route::get('/opnames', 'ProdukStokController@opname')->name('opnames.index');
 
+            // produkModel
+            Route::get('/kategoriUtama/{kategoriUtama}/produkModel', 'ProdukModelController@index')->name('produkModel.index');
+            Route::get('/kategoriUtama/{kategoriUtama}/produkModel/create', 'ProdukModelController@create')->name('produkModel.create');
+            Route::post('/produkModel', 'ProdukModelController@store')->name('produkModel.store');
+            Route::get('/produkModel/{produkModel}/edit', 'ProdukModelController@edit')->name('produkModel.edit');
+            Route::patch('/produkModel/{produkModel}/update', 'ProdukModelController@update')->name('produkModel.update');
+
+            // kategoriUtamas
+            Route::get('/kategoriUtama', 'KategoriUtamaController@index')->name('kategoriUtama.index');
+            Route::get('/kategoriUtama/create', 'KategoriUtamaController@create')->name('kategoriUtama.create');
+            Route::post('/kategoriUtama', 'KategoriUtamaController@store')->name('kategoriUtama.store');
+            Route::get('/kategoriUtama/{kategoriUtama}/edit', 'KategoriUtamaController@edit')->name('kategoriUtama.edit');
+            Route::patch('/kategoriUtama/{kategoriUtama}/update', 'KategoriUtamaController@update')->name('kategoriUtama.update');
+
+            Route::get('/kategoriUtama/{kategoriUtama}/kategori', 'KategoriUtamaController@indexByKategoriUtama')->name('kategori.indexByKategoriUtama');
+            Route::get('/kategoriUtama/{kategoriUtama}/kategori/create', 'KategoriUtamaController@createByKategoriUtama')->name('kategori.createByKategoriUtama');
+            Route::post('/kategoriUtama/{kategoriUtama}/kategori', 'KategoriUtamaController@storeByKategoriUtama')->name('kategori.storeByKategoriUtama');
+
+             //kategori
+             Route::get('/kategori', 'KategoriController@index')->name('kategori.index');
+             Route::get('/kategori/create', 'KategoriController@create')->name('kategori.create');
+             Route::post('/kategori', 'KategoriController@store')->name('kategori.store');
+             Route::get('/kategori/{kategori}/edit', 'KategoriController@edit')->name('kategori.edit');
+             Route::patch('/kategori/{kategori}/update', 'KategoriController@update')->name('kategori.update');
+
             // kontak
             Route::resource('kontaks', 'KontakController');
 
@@ -162,13 +187,6 @@ Route::group(['namespace' => 'App\Http\Controllers'], function()
 
             // ars
             Route::resource('ars', 'ArController');
-
-            //kategori
-            Route::get('/kategori', 'KategoriController@index')->name('kategori.index');
-            Route::get('/kategori/create', 'KategoriController@create')->name('kategori.create');
-            Route::post('/kategori', 'KategoriController@store')->name('kategori.store');
-            Route::get('/kategori/{kategori}/edit', 'KategoriController@edit')->name('kategori.edit');
-            Route::patch('/kategori/{kategori}/update', 'KategoriController@update')->name('kategori.update');
 
             // sistem
             Route::get('/sistem', 'SistemController@index')->name('sistem.index');

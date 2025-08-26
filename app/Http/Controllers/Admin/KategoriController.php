@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Admin;
 use Gate;
 use App\Models\Kategori;
 use Illuminate\Http\Request;
+use App\Models\KategoriUtama;
 use App\Http\Controllers\Controller;
 use Symfony\Component\HttpFoundation\Response;
 
@@ -34,8 +35,8 @@ class KategoriController extends Controller
 
     public function edit(Kategori $kategori)
     {
-        abort_if(Gate::denies('kategori_edit'), Response::HTTP_FORBIDDEN, '403 Forbidden');
-        return view('admin.kategoris.edit', compact('kategori'));
+        $kategoriUtamas = KategoriUtama::all();
+        return view('admin.kategoris.edit', compact('kategori', 'kategoriUtamas'));
     }
 
     public function update(Request $request, Kategori $kategori)

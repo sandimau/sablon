@@ -49,6 +49,16 @@ Edit Akuns
                         </div>
                     @endif
                 </div>
+
+                <div class="form-group">
+                    <label for="kategori_utama_id">Kategori Utama</label>
+                    <select name="kategori_utama_id" id="kategori_utama_id" class="form-control">
+                        <option value="">Pilih Kategori Utama</option>
+                        @foreach ($kategoriUtamas as $kategoriUtama)
+                            <option value="{{ $kategoriUtama->id }}" {{ $kategori->kategori_utama_id == $kategoriUtama->id ? 'selected' : '' }}>{{ $kategoriUtama->nama }}</option>
+                        @endforeach
+                    </select>
+                </div>
             </div>
             <div class="form-group">
                 <button class="btn btn-danger" type="submit">
