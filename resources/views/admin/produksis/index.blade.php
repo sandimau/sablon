@@ -40,6 +40,13 @@
                                         <div class="d-flex">
                                             <a href="{{ route('produksis.edit', $produksi->id) }}"
                                                 class="btn btn-info btn-sm me-1"><i class='bx bxs-edit'></i> Edit</a>
+                                            <form action="{{ route('produksis.destroy', $produksi->id) }}" method="POST"
+                                                onsubmit="return confirm('Apakah Anda yakin ingin menghapus data ini?');">
+                                                @csrf
+                                                @method('DELETE')
+                                                <button type="submit" class="btn btn-danger btn-sm"><i
+                                                        class='bx bxs-trash'></i> Delete</button>
+                                            </form>
                                         </div>
                                     </td>
                                 </tr>

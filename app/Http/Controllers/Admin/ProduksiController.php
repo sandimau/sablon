@@ -48,4 +48,11 @@ class ProduksiController extends Controller
 
         return redirect()->route('produksis.index')->withSuccess(__('Produksi updated successfully.'));
     }
+
+    public function destroy(Produksi $produksi)
+    {
+        $produksi->delete();
+
+        return redirect()->route('produksis.index')->withSuccess(__('Produksi deleted successfully.'));
+    }
 }
