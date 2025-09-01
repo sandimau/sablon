@@ -30,13 +30,33 @@ class OrderDetailController extends Controller
 
         return view('admin.orderDetails.index', compact('orderDetails', 'order', 'produksi','chats'));
     }
+
     public function listOperator()
     {
+        // Data operator hari ini
         $operators = Operator::select('nama', DB::raw('COUNT(*) as total'), DB::raw('SUM(jumlah) as total_jumlah'))
             ->whereDate('created_at', Carbon::today())
             ->groupBy('nama')
             ->get();
-        return view('admin.orderDetails.list', compact('operators'));
+
+        // Data operator bulan-bulan sebelumnya (6 bulan terakhir, tidak termasuk bulan ini)
+        $operatorsBulanSebelumnya = Operator::select(
+                'nama',
+                DB::raw('YEAR(created_at) as tahun'),
+                DB::raw('MONTH(created_at) as bulan'),
+                DB::raw('MONTHNAME(created_at) as nama_bulan'),
+                DB::raw('COUNT(*) as total'),
+                DB::raw('SUM(jumlah) as total_jumlah')
+            )
+            ->where('created_at', '<', Carbon::now()->startOfMonth()) // Sebelum bulan ini
+            ->where('created_at', '>=', Carbon::now()->subMonths(6)->startOfMonth()) // 6 bulan terakhir
+            ->groupBy('nama', 'tahun', 'bulan', 'nama_bulan')
+            ->orderBy('tahun', 'desc')
+            ->orderBy('bulan', 'desc')
+            ->orderBy('nama')
+            ->get();
+
+        return view('admin.orderDetails.list', compact('operators', 'operatorsBulanSebelumnya'));
     }
 
     public function create(Order $order)
@@ -97,6 +117,33 @@ class OrderDetailController extends Controller
         });
 
         return view('admin.orderDetails.listDetail', compact('operators', 'groupedOperators', 'operator', 'totalOperator', 'totalJumlah'));
+    }
+
+    public function listOperatorDetailBulan($operator, $bulan, $tahun)
+    {
+        $operators = Operator::where('nama', $operator)
+            ->whereMonth('created_at', $bulan)
+            ->whereYear('created_at', $tahun)
+            ->orderBy('created_at', 'desc')
+            ->paginate(10);
+
+        $totalOperator = Operator::where('nama', $operator)
+            ->whereMonth('created_at', $bulan)
+            ->whereYear('created_at', $tahun)
+            ->count();
+
+        $totalJumlah = Operator::where('nama', $operator)
+            ->whereMonth('created_at', $bulan)
+            ->whereYear('created_at', $tahun)
+            ->sum('jumlah');
+
+        $groupedOperators = $operators->groupBy(function($item) {
+            return $item->created_at->format('d F Y');
+        });
+
+        $namaBulan = Carbon::createFromDate($tahun, $bulan, 1)->format('F Y');
+
+        return view('admin.orderDetails.listDetail', compact('operators', 'groupedOperators', 'operator', 'totalOperator', 'totalJumlah', 'namaBulan'));
     }
 
     public function semuaList(Request $request)

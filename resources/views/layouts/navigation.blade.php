@@ -86,15 +86,6 @@
                     </a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link {{ request()->is('kategori*') ? 'active' : '' }}"
-                        href="{{ route('kategori.index') }}">
-                        <svg class="nav-icon">
-                            <use xlink:href="{{ asset('icons/coreui.svg#cil-basket') }}"></use>
-                        </svg>
-                        {{ __('Produk') }}
-                    </a>
-                </li>
-                <li class="nav-item">
                     <a class="nav-link {{ request()->is('opnames*') ? 'active' : '' }}"
                         href="{{ route('opnames.index') }}">
                         <svg class="nav-icon">

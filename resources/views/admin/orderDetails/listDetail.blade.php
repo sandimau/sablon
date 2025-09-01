@@ -12,7 +12,7 @@
                 <header class="header mb-4">
                     <div class="container-fluid">
                         <div>
-                            <h5 class="card-title">Rekap Bulan {{ date('F Y') }}</h5>
+                            <h5 class="card-title">Rekap Bulan {{ isset($namaBulan) ? $namaBulan : date('F Y') }}</h5>
                             <h5 class=" text-red-800">Operator: {{ $operator }}</h5>
                         </div>
                         <h5>Total Resi: {{ $totalOperator }}</h5>
@@ -27,25 +27,26 @@
                                     <thead>
                                         <tr>
                                             <th>Tanggal</th>
-                                            <th>Resi</th>
-                                            <th>Point</th>
-                                            <th>Konsumen</th>
+                                            <th class="text-end">Resi</th>
+                                            <th class="text-end">Point</th>
+                                            <th class="text-end">Konsumen</th>
                                         </tr>
                                     </thead>
                                     <tbody>
                                         @foreach ($operatorGroup as $operator)
                                             <tr>
                                                 <td>{{ $operator->created_at->format('d F Y') }}</td>
-                                                <td>{{ $loop->iteration }}</td>
-                                                <td>{{ $operator->jumlah }}</td>
-                                                <td>{{ $operator->konsumen }}</td>
+                                                <td class="text-end">{{ $loop->iteration }}</td>
+                                                <td class="text-end">{{ $operator->jumlah }}</td>
+                                                <td class="text-end">{{ $operator->konsumen }}</td>
                                             </tr>
                                             @if ($loop->last)
                                                 <tr>
-                                                    <td><strong>total: <br>{{ $operatorGroup->count() }}</strong></td>
-                                                    <td><strong>total: <br>{{ $operatorGroup->sum('jumlah') }}</strong>
-                                                    </td>
                                                     <td></td>
+                                                    <td class="text-end"><strong>total resi: {{ $operatorGroup->count() }}</strong></td>
+                                                    <td class="text-end"><strong>total point: {{ $operatorGroup->sum('jumlah') }}</strong>
+                                                    </td>
+                                                    <td class="text-end"></td>
                                                 </tr>
                                             @endif
                                         @endforeach
