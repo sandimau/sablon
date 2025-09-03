@@ -577,17 +577,20 @@ class MarketplaceController extends Controller
 
                             $produk = $produks[$produk_id];
 
-                            $lastStok = ProdukStok::lastStok($produk_id);
+                            if ($produk->stok == 1) {
 
-                            $saldo = $lastStok - $stokx;
-                            $inputStok[] = array(
-                                'produk_id' => $produk_id,
-                                'kurang' => $stokx,
-                                'saldo' => $saldo,
-                                'keterangan' => 'upload ' . $config->nama . ' (' . $nama . ')',
-                                'kode' => 'jual',
-                                'created_at' => now()
-                            );
+                                $lastStok = ProdukStok::lastStok($produk_id);
+
+                                $saldo = $lastStok - $stokx;
+                                $inputStok[] = array(
+                                    'produk_id' => $produk_id,
+                                    'kurang' => $stokx,
+                                    'saldo' => $saldo,
+                                    'keterangan' => 'upload ' . $config->nama . ' (' . $nama . ')',
+                                    'kode' => 'jual',
+                                    'created_at' => now()
+                                );
+                            }
                         }
 
                         DB::table('produk_stoks')->insert($inputStok);
