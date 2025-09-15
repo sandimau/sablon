@@ -37,6 +37,17 @@ Route::group(['namespace' => 'App\Http\Controllers'], function () {
             return "Cache cleared successfully";
         })->name('clear.cache');
 
+        // Maintenance mode routes
+        Route::get('/down', function () {
+            Artisan::call('down');
+            return "Aplikasi telah masuk ke mode maintenance";
+        })->name('app.down');
+
+        Route::get('/up', function () {
+            Artisan::call('up');
+            return "Aplikasi telah keluar dari mode maintenance";
+        })->name('app.up');
+
         Route::get('/whattodo', 'HomeController@index')->name('whattodo');
         Route::get('/profile', 'ProfileController@show')->name('profile.show');
         Route::get('/profile/{id}/cuti', 'ProfileController@cuti')->name('profile.cuti');
