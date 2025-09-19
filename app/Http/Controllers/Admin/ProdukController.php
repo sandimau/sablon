@@ -124,6 +124,7 @@ class ProdukController extends Controller
                 'subquery.produk_id'
             )
             ->join('produks as p', 'p.id', '=', 't.produk_id')
+            ->join('produk_models as pm', 'pm.id', '=', 'p.produk_model_id')
             ->join('kategoris as k', 'k.id', '=', 'p.kategori_id')
             ->select(
                 'k.id as kategori_id',
@@ -147,16 +148,18 @@ class ProdukController extends Controller
                 'subquery.produk_id'
             )
             ->join('produks as p', 'p.id', '=', 't.produk_id')
+            ->join('produk_models as pm', 'pm.id', '=', 'p.produk_model_id')
             ->join('kategoris as k', 'k.id', '=', 'p.kategori_id')
             ->select(
                 'k.nama as namaKategori',
-                'p.nama',
+                DB::raw("if(length(p.nama),concat(pm.nama,'-',p.nama), concat(pm.nama)) as nama"),
                 't.saldo',
                 'p.harga_beli',
-                DB::raw('CAST(CAST(t.saldo AS DECIMAL(30,2)) * CAST(p.harga_beli AS DECIMAL(30,2)) AS DECIMAL(30,2)) as total_aset')
+                'p.hpp',
             )
             ->where('k.id', $kategori->id)
             ->orderBy('k.nama')
+            ->orderBy('pm.nama')
             ->orderBy('p.nama')
             ->get()
             ->groupBy('namaKategori');

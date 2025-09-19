@@ -33,7 +33,6 @@ Route::get('/clear', function () {
     return "Cache cleared successfully";
 })->name('clear');
 
-
 Route::group(['namespace' => 'App\Http\Controllers'], function () {
     Route::middleware('auth')->group(function () {
 
@@ -191,17 +190,17 @@ Route::group(['namespace' => 'App\Http\Controllers'], function () {
             Route::get('/produkModel/{produkModel}/produk/{produk}/edit', 'ProdukModelController@editProduk')->name('produkModel.editProduk');
             Route::patch('/produkModel/{produkModel}/produk/{produk}/update', 'ProdukModelController@updateProduk')->name('produkModel.updateProduk');
 
-            // produk
-            Route::get('/kategori/{kategori}/produk', 'ProdukController@index')->name('produks.index');
-            Route::get('/kategori/{kategori}/produk/create', 'ProdukController@create')->name('produks.create');
-            Route::post('/produk', 'ProdukController@store')->name('produks.store');
-            Route::get('/produk/{produk}/edit', 'ProdukController@edit')->name('produks.edit');
-            Route::patch('/produk/{produk}/update', 'ProdukController@update')->name('produks.update');
-            Route::get('/aset', 'ProdukController@aset')->name('produk.aset');
-            Route::get('/produk/omzet', 'ProdukController@omzet')->name('produk.omzet');
-            Route::get('/produk/omzet/{kategori}', 'ProdukController@omzetDetail')->name('produk.omzetDetail');
-            Route::delete('/produk/{produk}', 'ProdukController@destroy')->name('produks.destroy');
-            Route::get('/aset/{kategori}', 'ProdukController@asetDetail')->name('produks.asetDetail');
+             // produk
+             Route::get('/kategori/{kategori}/produk', 'ProdukController@index')->name('produks.index');
+             Route::get('/kategori/{kategori}/produk/create', 'ProdukController@create')->name('produks.create');
+             Route::post('/produk', 'ProdukController@store')->name('produks.store');
+             Route::get('/produk/{produk}/edit', 'ProdukController@edit')->name('produks.edit');
+             Route::patch('/produk/{produk}/update', 'ProdukController@update')->name('produks.update');
+             Route::get('/aset', 'ProdukController@aset')->name('produk.aset');
+             Route::get('/produk/omzet', 'ProdukController@omzet')->name('produk.omzet');
+             Route::get('/produk/omzet/{kategori}', 'ProdukController@omzetDetail')->name('produk.omzetDetail');
+             Route::delete('/produk/{produk}', 'ProdukController@destroy')->name('produks.destroy');
+             Route::get('/aset/{kategori}', 'ProdukController@asetDetail')->name('produks.asetDetail');
 
 
             // kontak
@@ -300,6 +299,11 @@ Route::group(['namespace' => 'App\Http\Controllers'], function () {
 
             // Jobdesk routes
             Route::resource('jobdesks', 'JobdeskController');
+
+            //freelance
+            Route::resource('freelances', FreelanceController::class);
+            Route::resource('freelance_overtime', FreelanceOvertimeController::class);
+            Route::post('/setup-lembur/store-or-update', [SetupLemburController::class, 'storeOrUpdate'])->name('setup_lembur.store_or_update');
         });
     });
 });

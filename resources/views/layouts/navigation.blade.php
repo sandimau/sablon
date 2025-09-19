@@ -260,6 +260,41 @@
         </ul>
     </li>
 
+    @can('freelance_access')
+        <li class="nav-group" aria-expanded="false">
+            <a href="#" class="nav-link nav-group-toggle">
+                <svg class="nav-icon">
+                    <use xlink:href="{{ asset('icons/coreui.svg#cil-user') }}"></use>
+                </svg>
+                Freelance
+            </a>
+            <ul class="nav-group-items" style="height: 0px;">
+                @can('freelance_list')
+                    <li class="nav-item">
+                        <a href="{{route('freelances.index')}}" class="nav-link {{request()->is('freelances*') ? 'active' : ''}}">
+                            <svg class="nav-icon">
+                                <use xlink:href="{{asset('icons/coreui.svg#cil-user')}}"></use>
+                            </svg>
+                            Data Freelance
+                        </a>
+                    </li>
+                @endcan
+
+                @can('freelance_overtime_list')
+                    <li class="nav-item">
+                        <a href="{{route('freelance_overtime.index')}}"
+                        class="nav-link {{request()->is('freelance_overtime*') ? 'active' : ''}}">
+                            <svg class="nav-icon">
+                                <use xlink:href="{{asset('icons/coreui.svg#cil-clock')}}"></use>
+                            </svg>
+                            Lembur Freelancer
+                        </a>
+                    </li>
+                @endcan
+            </ul>
+        </li>
+    @endcan
+
     <li class="nav-group" aria-expanded="false">
         <a class="nav-link nav-group-toggle" href="#">
             <svg class="nav-icon">
