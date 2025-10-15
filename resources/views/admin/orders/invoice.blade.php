@@ -75,13 +75,13 @@
                 <div class="col-lg-12">
                     <div class="row">
                         <div class="col-lg-3 col-sm-6">
-                            <p class="text-center p-t-10" style="font-size: 13px">Hormat Kami
+                            <p class="text-center" style="font-size: 13px">Hormat Kami
                                 <br>
                                 <br>
                                 @if ($ars && $ars->ttd)
-                                    <div style="position: relative; display: flex; justify-content: center; align-items: center; min-height: 80px;">
+                                    <div style="position: relative; display: flex; justify-content: center; align-items: center;">
                                         <img id="signature-image" src="{{ url('uploads/ttd/' . $ars->ttd) }}" alt="Tanda Tangan" style="height: 60px; visibility: hidden; position: relative; z-index: 1;">
-                                        <img id="stempel-image" src="{{ url('img/stempel.png') }}" alt="Stempel" style="height: 40px; visibility: hidden; transform: rotate(22deg); position: absolute; top: 5px; left: 20px; z-index: 2;">
+                                        <img id="stempel-image" src="{{ url('img/stempel.png') }}" alt="Stempel" style="height: 40px; visibility: hidden; transform: rotate(22deg); position: absolute; top: 0px; left: 130px; z-index: 2;">
                                     </div>
                                 @endif
                                 @if ($member)
@@ -146,32 +146,48 @@
             }
         }
 
-        // Function to toggle signature and stempel images visibility
-        function toggleSignature() {
+        // Counter untuk tracking jumlah klik
+        var clickCount = 0;
+
+        // Function untuk mengatur tampilan berdasarkan jumlah klik
+        function handleClick() {
             var signatureImg = document.getElementById("signature-image");
             var stempelImg = document.getElementById("stempel-image");
 
-            if (signatureImg) {
-                if (signatureImg.style.visibility === "hidden") {
-                    signatureImg.style.visibility = "visible";
-                } else {
-                    signatureImg.style.visibility = "hidden";
-                }
-            }
+            clickCount++;
 
-            if (stempelImg) {
-                if (stempelImg.style.visibility === "hidden") {
-                    stempelImg.style.visibility = "visible";
-                } else {
+            if (clickCount === 1) {
+                // Klik 1: Tampilkan tanda tangan saja
+                if (signatureImg) {
+                    signatureImg.style.visibility = "visible";
+                }
+                if (stempelImg) {
                     stempelImg.style.visibility = "hidden";
                 }
+            } else if (clickCount === 2) {
+                // Klik 2: Tampilkan tanda tangan dan stempel
+                if (signatureImg) {
+                    signatureImg.style.visibility = "visible";
+                }
+                if (stempelImg) {
+                    stempelImg.style.visibility = "visible";
+                }
+            } else if (clickCount === 3) {
+                // Klik 3: Sembunyikan semua
+                if (signatureImg) {
+                    signatureImg.style.visibility = "hidden";
+                }
+                if (stempelImg) {
+                    stempelImg.style.visibility = "hidden";
+                }
+                clickCount = 0; // Reset counter
             }
         }
 
         // Add click event listener to member name
         $(document).ready(function() {
             $("#member-name").click(function() {
-                toggleSignature();
+                handleClick();
             });
         });
     </script>

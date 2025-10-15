@@ -224,7 +224,12 @@ class OrderController extends Controller
         $order = Order::where('id', $order)->with(['orderDetail'])->first();
         $sistems = Sistem::get()->pluck('isi', 'nama');
         $member = Member::where('user_id', auth()->user()->id)->first();
-        $ars = Ar::where('member_id', $member->id)->first();
+
+        $ars = null;
+        if ($member) {
+            $ars = Ar::where('member_id', $member->id)->first();
+        }
+
         return view('admin.orders.invoice', compact('order', 'sistems', 'member', 'ars'));
     }
 

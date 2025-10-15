@@ -50,7 +50,7 @@ class ArController extends Controller
             });
             $save_path = 'uploads/ttd/';
             if (!file_exists($save_path)) {
-                mkdir($save_path, 666, true);
+                mkdir($save_path, 777, true);
             }
             $img_resize->save(public_path($save_path . $filename));
             $gambar = $filename;
