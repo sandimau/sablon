@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Admin;
 
 use Gate;
+use App\Models\Ar;
 use Carbon\Carbon;
 use App\Models\Chat;
 use App\Models\Spek;
@@ -223,7 +224,8 @@ class OrderController extends Controller
         $order = Order::where('id', $order)->with(['orderDetail'])->first();
         $sistems = Sistem::get()->pluck('isi', 'nama');
         $member = Member::where('user_id', auth()->user()->id)->first();
-        return view('admin.orders.invoice', compact('order', 'sistems', 'member'));
+        $ars = Ar::where('member_id', $member->id)->first();
+        return view('admin.orders.invoice', compact('order', 'sistems', 'member', 'ars'));
     }
 
     public function unpaid(Request $request)

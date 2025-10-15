@@ -78,9 +78,14 @@
                             <p class="text-center p-t-10" style="font-size: 13px">Hormat Kami
                                 <br>
                                 <br>
-                                <br>
+                                @if ($ars && $ars->ttd)
+                                    <div style="position: relative; display: flex; justify-content: center; align-items: center; min-height: 80px;">
+                                        <img id="signature-image" src="{{ url('uploads/ttd/' . $ars->ttd) }}" alt="Tanda Tangan" style="height: 60px; visibility: hidden; position: relative; z-index: 1;">
+                                        <img id="stempel-image" src="{{ url('img/stempel.png') }}" alt="Stempel" style="height: 40px; visibility: hidden; transform: rotate(22deg); position: absolute; top: 5px; left: 20px; z-index: 2;">
+                                    </div>
+                                @endif
                                 @if ($member)
-                                    {{ $member->nama_lengkap }}
+                                    <span id="member-name" style="cursor: pointer; display: block; text-align: center;">{{ $member->nama_lengkap }}</span>
                                 @endif
                             </p>
                         </div>
@@ -140,6 +145,35 @@
                 x.style.visibility = "hidden";
             }
         }
+
+        // Function to toggle signature and stempel images visibility
+        function toggleSignature() {
+            var signatureImg = document.getElementById("signature-image");
+            var stempelImg = document.getElementById("stempel-image");
+
+            if (signatureImg) {
+                if (signatureImg.style.visibility === "hidden") {
+                    signatureImg.style.visibility = "visible";
+                } else {
+                    signatureImg.style.visibility = "hidden";
+                }
+            }
+
+            if (stempelImg) {
+                if (stempelImg.style.visibility === "hidden") {
+                    stempelImg.style.visibility = "visible";
+                } else {
+                    stempelImg.style.visibility = "hidden";
+                }
+            }
+        }
+
+        // Add click event listener to member name
+        $(document).ready(function() {
+            $("#member-name").click(function() {
+                toggleSignature();
+            });
+        });
     </script>
     <style>
         @media only screen and (min-width: 600px) {

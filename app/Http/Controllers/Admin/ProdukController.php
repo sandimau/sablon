@@ -129,7 +129,7 @@ class ProdukController extends Controller
             ->select(
                 'k.id as kategori_id',
                 'k.nama as namaKategori',
-                DB::raw('SUM(CAST(CAST(t.saldo AS DECIMAL(30,2)) * CAST(p.harga_beli AS DECIMAL(30,2)) AS DECIMAL(30,2))) as total_aset')
+                DB::raw('SUM(CAST(CAST(t.saldo AS DECIMAL(30,2)) * CAST(IF(p.harga_beli > 0, p.harga_beli, p.hpp) AS DECIMAL(30,2)) AS DECIMAL(30,2))) as total_aset')
             )
             ->groupBy('k.nama')
             ->orderBy('k.nama')
