@@ -15,6 +15,8 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\DB;
 use Symfony\Component\HttpFoundation\Response;
+use Intervention\Image\Facades\Image;
+use Illuminate\Support\Facades\Storage;
 
 class BelanjaController extends Controller
 {
@@ -59,9 +61,25 @@ class BelanjaController extends Controller
             'kontak_id' => 'required',
             'tanggal_beli' => 'required',
             'pembayaran' => 'equal:total|required',
+            'gambar' => 'nullable|image|mimes:jpeg,png,jpg',
         ]);
+        $gambar = null;
+        if ($request->hasFile('gambar')) {
+            $img = $request->file('gambar');
+            $filename = time() . '.' . $request->gambar->extension();
+            $img_resize = Image::make($img->getRealPath());
+            $img_resize->resize(500, null, function ($constraint) {
+                $constraint->aspectRatio();
+            });
+            $save_path = 'uploads/belanja/';
+            if (!file_exists($save_path)) {
+                mkdir($save_path, 777, true);
+            }
+            $img_resize->save(public_path($save_path . $filename));
+            $gambar = $filename;
+        }
 
-        DB::transaction(function () use ($request) {
+        DB::transaction(function () use ($request, $gambar) {
             //insert into belanja table
             $belanja = Belanja::create([
                 'nota' => $request->nota ? $request->nota : rand(1000000, 100),
@@ -71,6 +89,7 @@ class BelanjaController extends Controller
                 'akun_detail_id' => $request->akun_detail_id,
                 'pembayaran' => $request->pembayaran,
                 'tanggal_beli' => $request->tanggal_beli,
+                'gambar' => $gambar,
             ]);
 
             if ($request->pembayaran > 0 && $request->pembayaran <= $request->total) {
@@ -146,10 +165,10 @@ class BelanjaController extends Controller
             $belanja = Belanja::find($belanja);
 
             // Balikin stok jika produk stok = 1
-            foreach($belanja->belanjaDetail as $detail) {
+            foreach ($belanja->belanjaDetail as $detail) {
                 $produk = Produk::find($detail->produk_id);
                 $hpp = $produk->hpp ?? 0;
-                if($produk->stok == 1) {
+                if ($produk->stok == 1) {
                     ProdukStok::create([
                         'tanggal' => Carbon::now(),
                         'produk_id' => $detail->produk_id,
@@ -163,7 +182,7 @@ class BelanjaController extends Controller
             }
 
             // Balikin uang yang sudah dibayar
-            if($belanja->pembayaran > 0) {
+            if ($belanja->pembayaran > 0) {
                 BukuBesar::create([
                     'akun_detail_id' => $belanja->akun_detail_id,
                     'ket' => 'Hapus Belanja #' . $belanja->nota,

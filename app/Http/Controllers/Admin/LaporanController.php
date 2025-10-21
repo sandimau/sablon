@@ -426,20 +426,25 @@ class LaporanController extends Controller
         $view_type = $request->view_type ?? 'kategori';
 
         if ($view_type == 'kategori') {
-            // Get data per kategori
+            // Get data per kategori utama
             $data = DB::table('belanja_details as bd')
                 ->join('belanjas as b', 'b.id', '=', 'bd.belanja_id')
                 ->join('produks as p', 'p.id', '=', 'bd.produk_id')
-                ->join('kategoris as k', 'k.id', '=', 'p.kategori_id')
+                ->join('produk_models as pm', 'pm.id', '=', 'p.produk_model_id')
+                ->join('kategoris as k', 'k.id', '=', 'pm.kategori_id')
+                ->join('kategori_utamas as ku', 'ku.id', '=', 'k.kategori_utama_id')
                 ->whereYear('b.created_at', $thn)
                 ->whereMonth('b.created_at', $bln)
                 ->whereNull('p.stok')
                 ->select(
+                    'ku.nama as kategori_utama',
+                    'ku.id as kategori_utama_id',
                     'k.nama as kategori',
                     'k.id as kategori_id',
                     DB::raw('SUM(bd.jumlah * bd.harga) as total_belanja')
                 )
-                ->groupBy('k.nama', 'k.id')
+                ->groupBy('ku.nama', 'ku.id', 'k.nama', 'k.id')
+                ->orderBy('ku.nama')
                 ->orderBy('k.nama')
                 ->get();
         } else {
@@ -447,7 +452,8 @@ class LaporanController extends Controller
             $data = DB::table('belanja_details as bd')
                 ->join('belanjas as b', 'b.id', '=', 'bd.belanja_id')
                 ->join('produks as p', 'p.id', '=', 'bd.produk_id')
-                ->join('kategoris as k', 'k.id', '=', 'p.kategori_id')
+                ->join('produk_models as pm', 'pm.id', '=', 'p.produk_model_id')
+                ->join('kategoris as k', 'k.id', '=', 'pm.kategori_id')
                 ->whereYear('b.created_at', $thn)
                 ->whereMonth('b.created_at', $bln)
                 ->whereNull('p.stok')
@@ -496,7 +502,9 @@ class LaporanController extends Controller
 
         // Base query starting from products to show all products
         $query = DB::table('produks as p')
-            ->join('kategoris as k', 'k.id', '=', 'p.kategori_id')
+            ->join('produk_models as pm', 'pm.id', '=', 'p.produk_model_id')
+            ->join('kategoris as k', 'k.id', '=', 'pm.kategori_id')
+            ->join('kategori_utamas as ku', 'ku.id', '=', 'k.kategori_utama_id')
             ->leftJoin('belanja_details as bd', 'bd.produk_id', '=', 'p.id')
             ->leftJoin('belanjas as b', function ($join) use ($thn, $bln) {
                 $join->on('b.id', '=', 'bd.belanja_id')

@@ -28,35 +28,74 @@
                     <table class="table table-striped">
                         <thead>
                             <tr>
+                                <th>Kategori Utama</th>
                                 <th>Kategori</th>
-                                <th>Nama Kategori</th>
-                                <th>Total Belanja</th>
+                                <th>Beban</th>
                             </tr>
                         </thead>
                         <tbody>
                             @php
                                 $totalBelanja = 0;
+                                $currentKategoriUtama = null;
+                                $subtotalKategoriUtama = 0;
                             @endphp
 
                             @foreach($data as $item)
+                                @if($currentKategoriUtama != $item->kategori_utama)
+                                    @if($currentKategoriUtama !== null)
+                                        {{-- Tampilkan subtotal kategori utama sebelumnya --}}
+                                        <tr class="table-light">
+                                            <td></td>
+                                            <td></td>
+                                            <td class="text-end"><strong>{{ number_format($subtotalKategoriUtama, 0, ',', '.') }}</strong></td>
+                                        </tr>
+                                        @php
+                                            $subtotalKategoriUtama = 0;
+                                        @endphp
+                                    @endif
+
+                                    {{-- Tampilkan kategori utama baru --}}
+                                    <tr class="table-light">
+                                        <td><strong>{{ $item->kategori_utama }}</strong></td>
+                                        <td></td>
+                                        <td></td>
+                                    </tr>
+
+                                    @php
+                                        $currentKategoriUtama = $item->kategori_utama;
+                                    @endphp
+                                @endif
+
+                                {{-- Tampilkan sub-kategori --}}
                                 <tr>
-                                    <td>{{ $item->kategori }}</td>
+                                    <td></td>
                                     <td>
                                         <a href="{{ url('admin/operasionaldetail') }}?bulan={{ request('bulan') ?? date('Y-m') }}&kategori={{ $item->kategori_id }}">
                                             {{ $item->kategori }}
                                         </a>
                                     </td>
-                                    <td>{{ number_format($item->total_belanja, 0, ',', '.') }}</td>
+                                    <td class="text-end">{{ number_format($item->total_belanja, 0, ',', '.') }}</td>
                                 </tr>
 
                                 @php
                                     $totalBelanja += $item->total_belanja;
+                                    $subtotalKategoriUtama += $item->total_belanja;
                                 @endphp
                             @endforeach
 
+                            @if($currentKategoriUtama !== null)
+                                {{-- Tampilkan subtotal kategori utama terakhir --}}
+                                <tr class="table-light">
+                                    <td></td>
+                                    <td></td>
+                                    <td class="text-end"><strong>{{ number_format($subtotalKategoriUtama, 0, ',', '.') }}</strong></td>
+                                </tr>
+                            @endif
+
                             <tr class="table-primary">
-                                <td colspan="2"><strong>Total Keseluruhan</strong></td>
-                                <td><strong>{{ number_format($totalBelanja, 0, ',', '.') }}</strong></td>
+                                <td><strong>Total</strong></td>
+                                <td></td>
+                                <td class="text-end"><strong>{{ number_format($totalBelanja, 0, ',', '.') }}</strong></td>
                             </tr>
                         </tbody>
                     </table>
