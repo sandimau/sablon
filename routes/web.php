@@ -19,6 +19,18 @@ Route::get('/', function () {
     return redirect('/login');
 });
 
+Route::get('/run-scheduler/{token}', function ($token) {
+    // Cek token
+    if ($token !== env('APP_SCHEDULER_TOKEN')) {
+        abort(403, 'Unauthorized');
+    }
+
+    // Jalankan scheduler Laravel
+    Artisan::call('schedule:run');
+
+    return response()->json(['status' => 'success', 'time' => now()]);
+});
+
 /**
  * Auth Routes
  */
@@ -305,6 +317,7 @@ Route::group(['namespace' => 'App\Http\Controllers'], function () {
             Route::resource('freelance_overtime', FreelanceOvertimeController::class);
             Route::get('/freelance/keuangan', 'FreelanceController@keuangan')->name('freelance.keuangan');
             Route::get('/fingerspot/tarik', 'FreelanceController@tarikData');
+            Route::get('/freelance/upah', 'FreelanceController@upah')->name('freelance.upah');
         });
     });
 });

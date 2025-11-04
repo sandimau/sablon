@@ -7,6 +7,7 @@ use App\Models\User;
 use App\Models\Hutang;
 use App\Models\Freelance;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Http;
 use Symfony\Component\HttpFoundation\Response;
@@ -141,9 +142,9 @@ class FreelanceController extends Controller
 
     public function tarikData(Request $request)
     {
-        $cloudId = '616202024171916';
+        $cloudId = 'C2638898030E2729';
         // Ambil tanggal dari request jika ada, default H-1 sesuai dokumentasi
-        $attendanceUpload = $request->get('tanggal', now()->subDay()->format('Y-m-d'));
+        $attendanceUpload = $request->get('tanggal', now()->format('Y-m-d'));
         $currentTime = now()->format('YmdHis');
         $apiKey = 'YQKLVZL51DU1TSLD';
 
@@ -195,40 +196,50 @@ class FreelanceController extends Controller
         if ($response->successful()) {
             $responseData = $response->json();
 
-            // Cek apakah response body menunjukkan success atau error
-            if (isset($responseData['success']) && $responseData['success'] === false) {
-                $errorMsg = $responseData['msg'] ?? 'Error dari API Fingerspot';
+            // Jika "success" true, masukkan data ke table
+            if (isset($responseData['success']) && $responseData['success'] === true && isset($responseData['data']) && is_array($responseData['data'])) {
+                foreach ($responseData['data'] as $attendance) {
+                    // Asumsikan key dan struktur kolom:
+                    // Silakan sesuaikan kolom berikut sesuai dengan kebutuhan dan struktur tabel di database Anda
+                    DB::table('absensis')->insert([
+                        'nik'            => $attendance['NIK'] ?? null,
+                        'name'            => $attendance['Name'] ?? null,
+                        'tanggal'       => $attendance['Date Time'] ?? null,
+                        'type'       => $attendance['Type'] ?? null,
+                    ]);
 
-                // Penjelasan error code sesuai dokumentasi Fingerspot.io
-                $errorMessages = [
-                    'IO_API_ERR_1' => 'Mesin tidak ditemukan. Cloud ID pada perintah URL Get Data Scan tidak ada di akun web Fingerspot.io atau salah ketik Cloud ID.',
-                    'IO_API_ERR_2' => 'Akun tidak ditemukan. Pastikan akun Fingerspot.io Anda aktif dan valid.',
-                    'IO_API_ERR_3' => 'Parameter {auth} tidak sesuai. Token autentikasi tidak valid. Pastikan Cloud ID, tanggal, waktu, dan API Key sudah benar.',
-                    'IO_API_ERR_4' => 'Akun melebihi DUE DATE. Masa aktif akun Fingerspot.io Anda telah berakhir. Perpanjang langganan Anda.',
-                    'IO_API_ERR_5' => 'Mesin belum berlangganan API SDK. Aktifkan langganan API SDK untuk mesin absensi ini di akun Fingerspot.io Anda.',
-                    'IO_API_ERR_6' => 'Belum berlangganan AddOn API SDK scan GPS. Jika memerlukan data GPS, aktifkan AddOn API SDK scan GPS di akun Fingerspot.io Anda.',
-                    'IO_API_ERR_7' => 'Sudah mencapai limit 100 kali request API per hari. Limit harian API telah tercapai. Coba lagi besok atau hubungi support Fingerspot.io untuk meningkatkan limit.',
-                ];
+                    $freelance = Freelance::where('nama', 'like', '%' . $attendance['Name'] . '%')->first();
+                    if ($freelance) {
+                        // Cek apakah sudah ada hutang upah hari ini untuk freelance ini
+                        $tanggalHariIni = now()->format('Y-m-d');
+                        $keterangan = 'Upah ' . $tanggalHariIni;
 
-                $errorDescription = $errorMessages[$errorMsg] ?? 'Terjadi error saat mengambil data dari Fingerspot.io';
+                        $hutang = Hutang::where('kontak_id', $freelance->id)
+                            ->where('jenis', 'upah')
+                            ->whereDate('tanggal', $tanggalHariIni)
+                            ->first();
 
-                // Tambahkan informasi debugging khusus untuk error tertentu
-                $debugInfo = [];
-                if ($errorMsg === 'IO_API_ERR_1') {
-                    $debugInfo['cloud_id_digunakan'] = $cloudId;
-                    $debugInfo['saran'] = 'Periksa apakah Cloud ID ' . $cloudId . ' sudah terdaftar di akun Fingerspot.io Anda. Pastikan Cloud ID tidak salah ketik.';
-                } elseif ($errorMsg === 'IO_API_ERR_3') {
-                    $debugInfo['saran'] = 'Periksa kembali: Cloud ID, tanggal (format Y-m-d), dan API Key. Pastikan waktu server tidak terlalu berbeda dengan waktu Fingerspot.io.';
+                        if ($hutang) {
+                            // Update jumlah & keterangan jika sudah ada
+                            $hutang->update([
+                                'jumlah' => $freelance->upah,
+                                'keterangan' => $keterangan,
+                                'akun_detail_id' => $freelance->akun_detail_id,
+                            ]);
+                        } else {
+                            // Insert baru jika belum ada
+                            $hutang = Hutang::create([
+                                'kontak_id' => $freelance->id,
+                                'akun_detail_id' => $freelance->akun_detail_id,
+                                'tanggal' => $tanggalHariIni,
+                                'jumlah' => $freelance->upah,
+                                'keterangan' => $keterangan,
+                                'jenis' => 'upah',
+                            ]);
+                        }
+                    }
+
                 }
-
-                return response()->json([
-                    'success' => false,
-                    'error' => $errorMsg,
-                    'error_description' => $errorDescription,
-                    'tanggal_digunakan' => $attendanceUpload,
-                    'debug_info' => $debugInfo,
-                    'data' => $responseData,
-                ]);
             }
 
             return response()->json([
@@ -245,4 +256,47 @@ class FreelanceController extends Controller
             ], $response->status());
         }
     }
+
+    public function upah(Request $request)
+    {
+        // Ambil tahun dan bulan dari request, default ke bulan dan tahun saat ini
+        $thn = $request->get('tahun', date('Y'));
+        $bln = $request->get('bulan', date('m'));
+        $nama = $request->get('nama');
+        $statusBayar = $request->get('status_bayar', 'all');
+
+        // Query dasar untuk hutang jenis upah
+        $query = Hutang::where('jenis', 'upah')
+            ->with(['freelance', 'details']);
+
+        // Filter by bulan dan tahun
+        $query->whereYear('tanggal', $thn)
+              ->whereMonth('tanggal', $bln);
+
+        // Filter by nama freelance jika ada
+        if ($nama) {
+            $query->whereHas('freelance', function($q) use ($nama) {
+                $q->where('nama', 'like', '%' . $nama . '%');
+            });
+        }
+
+        // Get semua hutang dulu untuk filter status_bayar
+        $hutang = $query->get();
+
+        // Filter by status pembayaran jika dipilih
+        if ($statusBayar != 'all') {
+            $hutang = $hutang->filter(function($item) use ($statusBayar) {
+                $sisa = $item->sisa;
+                if ($statusBayar == 'sudah') {
+                    return $sisa <= 0;
+                } elseif ($statusBayar == 'belum') {
+                    return $sisa > 0;
+                }
+                return true;
+            });
+        }
+
+        return view('admin.freelances.upah', compact('hutang', 'thn', 'bln', 'nama', 'statusBayar'));
+    }
+
 }
