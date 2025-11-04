@@ -3,6 +3,7 @@
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Artisan;
+use App\Http\Controllers\Admin\FreelanceController;
 
 /*
 |--------------------------------------------------------------------------
@@ -19,17 +20,7 @@ Route::get('/', function () {
     return redirect('/login');
 });
 
-Route::get('/run-scheduler/{token}', function ($token) {
-    // Cek token
-    if ($token !== env('APP_SCHEDULER_TOKEN')) {
-        abort(403, 'Unauthorized');
-    }
-
-    // Jalankan scheduler Laravel
-    Artisan::call('schedule:run');
-
-    return response()->json(['status' => 'success', 'time' => now()]);
-});
+Route::get('/run-scheduler/{token}', [FreelanceController::class, 'tarikData']);
 
 /**
  * Auth Routes
