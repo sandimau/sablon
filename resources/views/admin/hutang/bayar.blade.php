@@ -14,7 +14,15 @@
                                 <table class="table table-borderless">
                                     <tr>
                                         <td width="30%">Kontak</td>
-                                        <td>: {{ $hutang->kontak->nama }}</td>
+                                        <td>:
+                                            @if ($hutang->kontak)
+                                                {{ $hutang->kontak->nama }}
+                                            @elseif ($hutang->freelance)
+                                                {{ $hutang->freelance->nama }}
+                                            @else
+                                                -
+                                            @endif
+                                        </td>
                                     </tr>
                                     <tr>
                                         <td>Tanggal</td>
@@ -43,10 +51,12 @@
 
 
                                         <div class="form-group mb-3">
-                                            @if ($hutang->jenis == 'hutang')
+                                            @if (in_array($hutang->jenis, ['hutang', 'lembur', 'upah']))
                                                 <label for="akun_detail_id" class="mb-2">Keluar dari Kas</label>
-                                            @else
+                                            @elseif ($hutang->jenis == 'piutang')
                                                 <label for="akun_detail_id" class="mb-2">Masuk ke Kas</label>
+                                            @else
+                                                <label for="akun_detail_id" class="mb-2">Pilih Kas</label>
                                             @endif
                                             <select name="akun_detail_id" id="akun_detail_id"
                                                 class="form-control @error('akun_detail_id') is-invalid @enderror" required>
@@ -74,7 +84,7 @@
                                             <label for="jumlah" class="mb-2">Jumlah</label>
                                             <input type="number" name="jumlah" id="jumlah"
                                                 class="form-control @error('jumlah') is-invalid @enderror"
-                                                value="{{ old('jumlah') }}" max="{{ $hutang->sisa }}" required>
+                                                value="{{ old('jumlah', $hutang->jumlah) }}" max="{{ $hutang->sisa }}" required>
                                             @error('jumlah')
                                                 <span class="invalid-feedback">{{ $message }}</span>
                                             @enderror

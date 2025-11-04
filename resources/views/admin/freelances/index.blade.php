@@ -40,7 +40,11 @@
                         <tbody>
                             @foreach ($freelances as $freelance)
                                 <tr>
-                                    <td>{{$freelance?->nama}}</td>
+                                    <td>
+                                        <a href="{{ url('admin/freelance_overtime') }}?nama={{ urlencode($freelance?->nama) }}&bulan=11&tahun=2025&status_bayar=all">
+                                            {{$freelance?->nama}}
+                                        </a>
+                                    </td>
                                     <td>{{ $freelance?->tanggal_masuk?->format('Y-m-d') }}</td>
                                     <td align="right">{{number_format($freelance?->upah,2)}}</td>
                                     <td align="right">{{number_format($freelance?->rate_lembur_per_jam,2)}}</td>

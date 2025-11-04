@@ -118,6 +118,16 @@ class LaporanController extends Controller
             ->whereMonth('created_at', $bln)
             ->first()->total_tunjangan;
 
+        // Hanya hitung hutang lembur yang belum dibayar (belum lunas)
+        $lembur = Hutang::selectRaw('sum(jumlah) as total_lembur')
+            ->whereIn('jenis', ['lembur', 'upah'])
+            ->whereYear('created_at', $thn)
+            ->whereMonth('created_at', $bln)
+            ->whereRaw('(jumlah - COALESCE((SELECT SUM(jumlah) FROM hutang_details WHERE hutang_details.hutang_id = hutangs.id), 0)) > 0')
+            ->first();
+
+        $lembur = $lembur && isset($lembur->total_lembur) ? $lembur->total_lembur : 0;
+
         $omzet = $penjualan->total_omzet;
         $hpp = $penjualan->total_hpp;
 
@@ -146,7 +156,7 @@ class LaporanController extends Controller
         // Set default selected month to current month if not specified in request
         $selected_month = request('bulan', date('Y-m'));
 
-        return view('admin.laporan.labarugi', compact('omzet', 'hpp', 'opname', 'beban', 'gaji', 'tunjangan', 'bulan', 'selected_month'));
+        return view('admin.laporan.labarugi', compact('omzet', 'hpp', 'opname', 'beban', 'gaji', 'tunjangan', 'bulan', 'selected_month', 'lembur'));
     }
 
     public function labaKotor(Request $request)

@@ -18,6 +18,8 @@ class FreelanceOvertime extends Model
         'kategori',
         'status',
         'catatan_akunting',
+        'hutang_id',
+        'overtime_rate_hour',
     ];
 
     public function freelance(){

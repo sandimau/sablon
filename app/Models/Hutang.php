@@ -25,6 +25,11 @@ class Hutang extends Model
         return $this->belongsTo(Kontak::class);
     }
 
+    public function freelance()
+    {
+        return $this->belongsTo(Freelance::class, 'kontak_id');
+    }
+
     public function akun_detail()
     {
         return $this->belongsTo(AkunDetail::class);

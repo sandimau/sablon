@@ -303,7 +303,8 @@ Route::group(['namespace' => 'App\Http\Controllers'], function () {
             //freelance
             Route::resource('freelances', FreelanceController::class);
             Route::resource('freelance_overtime', FreelanceOvertimeController::class);
-            Route::post('/setup-lembur/store-or-update', [SetupLemburController::class, 'storeOrUpdate'])->name('setup_lembur.store_or_update');
+            Route::get('/freelance/keuangan', 'FreelanceController@keuangan')->name('freelance.keuangan');
+            Route::get('/fingerspot/tarik', 'FreelanceController@tarikData');
         });
     });
 });

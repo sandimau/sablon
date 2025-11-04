@@ -16,6 +16,16 @@
             </div>
 
             <div class="mb-3">
+                <label for="kategori" class="form-label">Kategori</label>
+                <select name="kategori" id="kategori" class="form-select select2" required>
+                    <option value="">--Pilih--</option>
+                    <option value="Lembur Printing" {{ old('kategori') == 'Lembur Printing' ? 'selected' : '' }}>Lembur Printing</option>
+                    <option value="Lembur Sablon" {{ old('kategori') == 'Lembur Sablon' ? 'selected' : '' }}>Lembur Sablon</option>
+                    <option value="Lembur Sublime" {{ old('kategori') == 'Lembur Sublime' ? 'selected' : '' }}>Lembur Sublime</option>
+                </select>
+            </div>
+
+            <div class="mb-3">
                 <label for="jam_lembur" class="form-label">Jam Lembur</label>
                 <select name="jam_lembur" id="jam_lembur" class="form-control" required>
                     @for($i = 0.5; $i <= 6; $i += 0.5)

@@ -38,7 +38,23 @@
                                 @forelse($hutangs as $hutang)
                                     <tr>
                                         <td>{{ $hutang->tanggal->format('d/m/Y') }}</td>
-                                        <td>{{ $hutang->kontak->nama }}</td>
+                                        <td>
+                                            @if (in_array($hutang->jenis, ['lembur', 'upah']))
+                                                @if ($hutang->freelance)
+                                                    {{ $hutang->freelance->nama }}
+                                                @elseif ($hutang->kontak)
+                                                    {{ $hutang->kontak->nama }}
+                                                @else
+                                                    -
+                                                @endif
+                                            @else
+                                                @if ($hutang->kontak)
+                                                    {{ $hutang->kontak->nama }}
+                                                @else
+                                                    -
+                                                @endif
+                                            @endif
+                                        </td>
                                         <td>Rp {{ number_format($hutang->jumlah, 0, ',', '.') }}</td>
                                         <td>{{ $hutang->jenis }}</td>
                                         <td>

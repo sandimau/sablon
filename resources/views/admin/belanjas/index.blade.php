@@ -79,7 +79,7 @@
                                         @endif
                                     </td>
                                     <td>{{ date('d-m-Y', strtotime($belanja->created_at)) }}</td>
-                                    <td>{{ $belanja->kontak->nama }}</td>
+                                    <td>{{ optional($belanja->kontak)->nama ?? '-' }}</td>
                                     <td><a href="{{ route('belanja.detail', $belanja->id) }}">{{ $belanja->produk }}</a></td>
                                     <td>#{{ $belanja->nota }}</td>
                                     <td>{{ number_format($belanja->total, 0, ',', '.') }}</td>

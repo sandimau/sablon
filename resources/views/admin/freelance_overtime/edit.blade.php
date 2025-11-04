@@ -65,7 +65,7 @@
                 <div class="col-md-4">
                     <div class="mb-3">
                         <label for="kategori" class="form-label">Kategori</label>
-                        <select name="kategori" id="kategori" class="form-select select2">
+                        <select name="kategori" id="kategori" class="form-select select2" required>
                             <option value="">--Pilih--</option>
                             <option value="456" {{ $freelanceOvertime->kategori==456 ? 'selected' : '' }}>Lembur Printing</option>
                             <option value="464" {{ $freelanceOvertime->kategori==464 ? 'selected' : '' }}>Lembur Sublime</option>
@@ -76,7 +76,6 @@
                     <div class="mb-3">
                         <label for="status" class="form-label">Status</label>
                         <select name="status" id="status" class="form-control" required>
-                            <option value="pending" {{ $freelanceOvertime->status == 'pending' ? 'selected' : '' }}>Pending</option>
                             <option value="approved" {{ $freelanceOvertime->status == 'approved' ? 'selected' : '' }}>Approved</option>
                             <option value="rejected" {{ $freelanceOvertime->status == 'rejected' ? 'selected' : '' }}>Rejected</option>
                         </select>

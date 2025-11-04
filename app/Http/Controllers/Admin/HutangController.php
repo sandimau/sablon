@@ -7,6 +7,7 @@ use App\Models\Kontak;
 use App\Models\BukuBesar;
 use App\Models\AkunDetail;
 use App\Models\HutangDetail;
+use App\Models\FreelanceOvertime;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 
@@ -78,22 +79,67 @@ class HutangController extends Controller
 
         HutangDetail::create($validated);
 
-        $kredit = request()->jenis == 'hutang' ? $validated['jumlah'] : 0;
-        $debet = request()->jenis == 'hutang' ? 0 : $validated['jumlah'];
-        $keterangan = request()->jenis == 'hutang' ? 'Bayar Hutang ke ' . $hutang->kontak->nama : 'Bayar Piutang dari ' . $hutang->kontak->nama;
+        // Menentukan jenis transaksi dengan tambahan lembur dan upah
+        $jenis = request()->jenis; // hutang, piutang, lembur, upah
+
+        if ($jenis == 'hutang') {
+            $kredit = $validated['jumlah'];
+            $debet = 0;
+            $keterangan = 'Bayar Hutang ke ' . ($hutang->kontak?->nama ?? ($hutang->freelance?->nama ?? '-'));
+            $kode = 'htg';
+        } elseif ($jenis == 'piutang') {
+            $kredit = 0;
+            $debet = $validated['jumlah'];
+            $keterangan = 'Bayar Piutang dari ' . ($hutang->kontak?->nama ?? ($hutang->freelance?->nama ?? '-'));
+            $kode = 'ptg';
+        } elseif ($jenis == 'lembur') {
+            $kredit = $validated['jumlah'];
+            $debet = 0;
+            $keterangan = 'Bayar Lembur ke ' . ($hutang->freelance?->nama ?? ($hutang->kontak?->nama ?? '-'));
+            $kode = 'lembur';
+        } elseif ($jenis == 'upah') {
+            $kredit = $validated['jumlah'];
+            $debet = 0;
+            $keterangan = 'Bayar Upah ke ' . ($hutang->freelance?->nama ?? ($hutang->kontak?->nama ?? '-'));
+            $kode = 'upah';
+        } else {
+            $kredit = 0;
+            $debet = 0;
+            $keterangan = '';
+            $kode = '';
+        }
 
         BukuBesar::create([
             'akun_detail_id' => $validated['akun_detail_id'],
-            'kode' => request()->jenis == 'hutang' ? 'htg' : 'ptg',
+            'kode' => $kode,
             'debet' => $debet,
             'kredit' => $kredit,
             'ket' => $keterangan,
             'detail_id' => $hutang->id,
         ]);
 
+        // Update status overtime menjadi approved jika jenis adalah lembur
+        if ($jenis == 'lembur') {
+            FreelanceOvertime::where('hutang_id', $hutang->id)
+                ->where('status', 'pending')
+                ->update(['status' => 'approved']);
+        }
+
+        if (request()->jenis == 'hutang') {
+            $message = 'Hutang berhasil dibayar';
+        } elseif (request()->jenis == 'piutang') {
+            $message = 'Piutang berhasil dibayar';
+        } elseif (request()->jenis == 'lembur') {
+            $message = 'Lembur berhasil dibayar';
+        } elseif (request()->jenis == 'upah') {
+            $message = 'Upah berhasil dibayar';
+        } else {
+            $message = 'Transaksi berhasil dibayar';
+        }
         return redirect()->route('hutang.index')
-            ->with('success', request()->jenis == 'hutang' ? 'Hutang berhasil dibayar' : 'Piutang berhasil dibayar');
+            ->with('success', $message);
     }
+
     public function detail(Hutang $hutang)
     {
         return view('admin.hutang.detail', compact('hutang'));

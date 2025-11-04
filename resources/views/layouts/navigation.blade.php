@@ -159,8 +159,7 @@
                 </a>
             </li>
             <li class="nav-item">
-                <a class="nav-link {{ request()->is('hutang*') ? 'active' : '' }}"
-                    href="{{ route('hutang.index') }}">
+                <a class="nav-link {{ request()->is('hutang*') ? 'active' : '' }}" href="{{ route('hutang.index') }}">
                     <svg class="nav-icon">
                         <use xlink:href="{{ asset('icons/coreui.svg#cil-cash') }}"></use>
                     </svg>
@@ -271,26 +270,38 @@
             <ul class="nav-group-items" style="height: 0px;">
                 @can('freelance_list')
                     <li class="nav-item">
-                        <a href="{{route('freelances.index')}}" class="nav-link {{request()->is('freelances*') ? 'active' : ''}}">
+                        <a href="{{ route('freelances.index') }}"
+                            class="nav-link {{ request()->is('freelances*') ? 'active' : '' }}">
                             <svg class="nav-icon">
-                                <use xlink:href="{{asset('icons/coreui.svg#cil-user')}}"></use>
+                                <use xlink:href="{{ asset('icons/coreui.svg#cil-user') }}"></use>
                             </svg>
-                            Data Freelance
+                            Data
                         </a>
                     </li>
                 @endcan
 
                 @can('freelance_overtime_list')
                     <li class="nav-item">
-                        <a href="{{route('freelance_overtime.index')}}"
-                        class="nav-link {{request()->is('freelance_overtime*') ? 'active' : ''}}">
+                        <a href="{{ route('freelance_overtime.index') }}"
+                            class="nav-link {{ request()->is('freelance_overtime*') ? 'active' : '' }}">
                             <svg class="nav-icon">
-                                <use xlink:href="{{asset('icons/coreui.svg#cil-clock')}}"></use>
+                                <use xlink:href="{{ asset('icons/coreui.svg#cil-clock') }}"></use>
                             </svg>
-                            Lembur Freelancer
+                            Lembur
                         </a>
                     </li>
                 @endcan
+                @role('super')
+                    <li class="nav-item">
+                        <a href="{{ route('freelance.keuangan') }}"
+                            class="nav-link {{ request()->is('freelance.keuangan*') ? 'active' : '' }}">
+                            <svg class="nav-icon">
+                                <use xlink:href="{{ asset('icons/coreui.svg#cil-clock') }}"></use>
+                            </svg>
+                            Keuangan
+                        </a>
+                    </li>
+                @endrole
             </ul>
         </li>
     @endcan
@@ -441,15 +452,16 @@
             @endcan
         </ul>
     </li>
-    <li class="nav-group" aria-expanded="false">
-        <a class="nav-link nav-group-toggle" href="#">
-            <svg class="nav-icon">
-                <use xlink:href="{{ asset('icons/coreui.svg#cil-cog') }}"></use>
-            </svg>
-            Config
-        </a>
-        <ul class="nav-group-items" style="height: 0px;">
-            @role('super')
+    @role('super')
+        <li class="nav-group" aria-expanded="false">
+            <a class="nav-link nav-group-toggle" href="#">
+                <svg class="nav-icon">
+                    <use xlink:href="{{ asset('icons/coreui.svg#cil-cog') }}"></use>
+                </svg>
+                Config
+            </a>
+            <ul class="nav-group-items" style="height: 0px;">
+
                 <li class="nav-item">
                     <a class="nav-link {{ request()->is('roles*') ? 'active' : '' }}"
                         href="{{ route('roles.index') }}">
@@ -469,37 +481,38 @@
                         {{ __('Permissions') }}
                     </a>
                 </li>
-            @endrole
 
-            <li class="nav-item">
-                <a class="nav-link {{ request()->is('produksis*') ? 'active' : '' }}"
-                    href="{{ route('produksis.index') }}">
-                    <svg class="nav-icon">
-                        <use xlink:href="{{ asset('icons/coreui.svg#cil-room') }}"></use>
-                    </svg>
-                    {{ __('Setup Produksi') }}
-                </a>
-            </li>
 
-            <li class="nav-item">
-                <a class="nav-link {{ request()->is('speks*') ? 'active' : '' }}"
-                    href="{{ route('speks.index') }}">
-                    <svg class="nav-icon">
-                        <use xlink:href="{{ asset('icons/coreui.svg#cil-room') }}"></use>
-                    </svg>
-                    {{ __('Spek Produk') }}
-                </a>
-            </li>
+                <li class="nav-item">
+                    <a class="nav-link {{ request()->is('produksis*') ? 'active' : '' }}"
+                        href="{{ route('produksis.index') }}">
+                        <svg class="nav-icon">
+                            <use xlink:href="{{ asset('icons/coreui.svg#cil-room') }}"></use>
+                        </svg>
+                        {{ __('Setup Produksi') }}
+                    </a>
+                </li>
 
-            <li class="nav-item">
-                <a class="nav-link {{ request()->is('sistems*') ? 'active' : '' }}"
-                    href="{{ route('sistem.index') }}">
-                    <svg class="nav-icon">
-                        <use xlink:href="{{ asset('icons/coreui.svg#cil-room') }}"></use>
-                    </svg>
-                    {{ __('Sistem') }}
-                </a>
-            </li>
-        </ul>
-    </li>
+                <li class="nav-item">
+                    <a class="nav-link {{ request()->is('speks*') ? 'active' : '' }}"
+                        href="{{ route('speks.index') }}">
+                        <svg class="nav-icon">
+                            <use xlink:href="{{ asset('icons/coreui.svg#cil-room') }}"></use>
+                        </svg>
+                        {{ __('Spek Produk') }}
+                    </a>
+                </li>
+
+                <li class="nav-item">
+                    <a class="nav-link {{ request()->is('sistems*') ? 'active' : '' }}"
+                        href="{{ route('sistem.index') }}">
+                        <svg class="nav-icon">
+                            <use xlink:href="{{ asset('icons/coreui.svg#cil-room') }}"></use>
+                        </svg>
+                        {{ __('Sistem') }}
+                    </a>
+                </li>
+            </ul>
+        </li>
+    @endrole
 </ul>

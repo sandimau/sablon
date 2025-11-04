@@ -69,6 +69,13 @@
                             </tr>
                             <tr>
                                 <td>
+                                    <a href="{{ url('admin/freelance/keuangan') }}?bulan={{ request('bulan') ? date('m', strtotime(request('bulan').'-01')) : date('m') }}&tahun={{ request('bulan') ? date('Y', strtotime(request('bulan').'-01')) : date('Y') }}">lembur & upah Freelance</a>
+                                </td>
+                                <td>0</td>
+                                <td>{{ number_format($lembur, 0, ',', '.') }}</td>
+                            </tr>
+                            <tr>
+                                <td>
                                     <a href="{{ url('admin/tunjangan') }}?bulan={{ request('bulan') ?? date('Y-m') }}">tunjangan</a>
                                 </td>
                                 <td>0</td>
