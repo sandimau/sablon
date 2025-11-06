@@ -309,6 +309,7 @@ Route::group(['namespace' => 'App\Http\Controllers'], function () {
             Route::get('/freelance/keuangan', 'FreelanceController@keuangan')->name('freelance.keuangan');
             Route::get('/fingerspot/tarik', 'FreelanceController@tarikData');
             Route::get('/freelance/upah', 'FreelanceController@upah')->name('freelance.upah');
+            Route::get('/freelance/kehadiran', 'FreelanceController@kehadiran')->name('freelance.kehadiran');
         });
     });
 });

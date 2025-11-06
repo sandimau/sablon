@@ -299,6 +299,15 @@
                             Upah
                         </a>
                     </li>
+                    <li class="nav-item">
+                        <a href="{{ route('freelance.kehadiran') }}"
+                            class="nav-link {{ request()->is('freelance.kehadiran*') ? 'active' : '' }}">
+                            <svg class="nav-icon">
+                                <use xlink:href="{{ asset('icons/coreui.svg#cil-clock') }}"></use>
+                            </svg>
+                            Kehadiran
+                        </a>
+                    </li>
                 @endcan
                 @role('super')
                     <li class="nav-item">

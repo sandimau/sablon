@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Admin;
 use Gate;
 use App\Models\User;
 use App\Models\Hutang;
+use App\Models\Absensi;
 use App\Models\Freelance;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -210,30 +211,33 @@ class FreelanceController extends Controller
 
                     $freelance = Freelance::where('nama', 'like', '%' . $attendance['Name'] . '%')->first();
                     if ($freelance) {
-                        // Cek apakah sudah ada hutang upah hari ini untuk freelance ini
-                        $tanggalHariIni = now()->format('Y-m-d');
-                        $keterangan = 'Upah ' . $tanggalHariIni;
-
-                        $hutang = Hutang::where('kontak_id', $freelance->id)
+                        // Cari hutang upah bulan ini yang masih punya sisa (belum lunas)
+                        $hutangBulanIni = Hutang::with('details')
+                            ->where('kontak_id', $freelance->id)
                             ->where('jenis', 'upah')
-                            ->whereDate('tanggal', $tanggalHariIni)
-                            ->first();
+                            ->whereMonth('tanggal', now()->month)
+                            ->whereYear('tanggal', now()->year)
+                            ->orderBy('tanggal', 'desc')
+                            ->get();
+
+                        $hutang = $hutangBulanIni->first(function ($item) {
+                            $totalBayar = $item->details->sum('jumlah');
+                            $sisa = $item->jumlah - $totalBayar;
+                            return $sisa > 0; // masih ada yang belum lunas
+                        });
 
                         if ($hutang) {
-                            // Update jumlah & keterangan jika sudah ada
-                            $hutang->update([
-                                'jumlah' => $freelance->upah,
-                                'keterangan' => $keterangan,
-                                'akun_detail_id' => $freelance->akun_detail_id,
-                            ]);
+                            // Ada hutang berjalan (belum lunas) di bulan yang sama → tambahkan ke hutang itu
+                            $hutang->jumlah += $freelance->upah;
+                            $hutang->save();
                         } else {
-                            // Insert baru jika belum ada
+                            // Tidak ada hutang berjalan (semua lunas atau belum ada) → buat hutang baru
                             $hutang = Hutang::create([
                                 'kontak_id' => $freelance->id,
                                 'akun_detail_id' => $freelance->akun_detail_id,
-                                'tanggal' => $tanggalHariIni,
+                                'tanggal' => now()->format('Y-m-d'),
                                 'jumlah' => $freelance->upah,
-                                'keterangan' => $keterangan,
+                                'keterangan' => 'Upah bulan ' . now()->format('F Y'),
                                 'jenis' => 'upah',
                             ]);
                         }
@@ -297,6 +301,30 @@ class FreelanceController extends Controller
         }
 
         return view('admin.freelances.upah', compact('hutang', 'thn', 'bln', 'nama', 'statusBayar'));
+    }
+
+    public function kehadiran()
+    {
+        $absensis = Absensi::all();
+        $freelances = Freelance::all();
+
+        // Buat array untuk menyimpan hasil pengecekan
+        $dataAbsensi = $absensis->map(function($absen) use ($freelances) {
+            // Normalisasi nama dgn lower trim dan hilangkan spasi agar 'prayoga dwiputra' match 'Prayoga Dwi Putra'
+            $absenNama = preg_replace('/\s+/', '', strtolower(trim($absen->name)));
+            $match = $freelances->first(function($freelance) use ($absenNama) {
+                $freelanceNama = preg_replace('/\s+/', '', strtolower(trim($freelance->nama)));
+                return $freelanceNama == $absenNama;
+            });
+
+            return [
+                'absensi' => $absen,
+                'found_in_freelance' => $match ? true : false,
+                'freelance_data' => $match,
+            ];
+        });
+
+        return view('admin.freelances.kehadiran', compact('dataAbsensi'));
     }
 
 }
