@@ -107,7 +107,7 @@
     <script>
         $(document).ready(function() {
             let table = new DataTable('#myTable', {
-                order: [[0, 'desc']],
+                order: [[2, 'desc']],
                 pageLength: 25,
                 language: {
                     emptyTable: "Tidak ada data upah untuk periode yang dipilih."
