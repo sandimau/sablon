@@ -129,9 +129,15 @@
                                     <td>{{ $tagihan->tanggal->format('d/m/Y') }}</td>
                                     <td>
                                         @if ($tagihan->freelance)
-                                            <a href="{{ route('freelance_overtime.index') }}">
-                                                {{ $tagihan->freelance->nama }}
-                                            </a>
+                                            @if ($tagihan->jenis == 'upah')
+                                                <a href="{{ route('freelance.upah') }}">
+                                                    {{ $tagihan->freelance->nama }}
+                                                </a>
+                                            @else
+                                                <a href="{{ route('freelance_overtime.index') }}">
+                                                    {{ $tagihan->freelance->nama }}
+                                                </a>
+                                            @endif
                                         @elseif ($tagihan->kontak)
                                             {{ $tagihan->kontak->nama }}
                                         @else
