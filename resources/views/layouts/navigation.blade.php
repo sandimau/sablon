@@ -290,6 +290,8 @@
                             Lembur
                         </a>
                     </li>
+                @endcan
+                @can('upah')
                     <li class="nav-item">
                         <a href="{{ route('freelance.upah') }}"
                             class="nav-link {{ request()->is('freelance.upah*') ? 'active' : '' }}">
