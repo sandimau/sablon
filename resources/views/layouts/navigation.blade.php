@@ -311,7 +311,7 @@
                         </a>
                     </li>
                 @endcan
-                @role('super')
+                @can('freelance_delete')
                     <li class="nav-item">
                         <a href="{{ route('freelance.keuangan') }}"
                             class="nav-link {{ request()->is('freelance.keuangan*') ? 'active' : '' }}">
@@ -321,7 +321,7 @@
                             Keuangan
                         </a>
                     </li>
-                @endrole
+                @endcan
             </ul>
         </li>
     @endcan
