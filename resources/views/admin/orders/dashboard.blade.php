@@ -50,7 +50,7 @@
                                                 $tampilan = '';
                                                 $order_id = 0;
 
-                                                foreach ($item->orderDetail()->get() as $detail) {
+                                                foreach ($item->orderDetail()->orderBy('order_id')->get() as $detail) {
                                                     if (!$detail->order) {
                                                         continue;
                                                     }
