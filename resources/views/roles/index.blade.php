@@ -60,18 +60,7 @@
                         </tbody>
                     </table>
                 </div>
-
-                <div class="d-flex">
-                    {!! $roles->links() !!}
-                </div>
-
             </div>
         </div>
     </div>
 @endsection
-
-@push('after-scripts')
-    <script>
-        let table = new DataTable('#myTable');
-    </script>
-@endpush

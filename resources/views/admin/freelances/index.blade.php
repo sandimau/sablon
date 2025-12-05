@@ -39,9 +39,13 @@
                             @foreach ($freelances as $freelance)
                                 <tr>
                                     <td>
-                                        <a href="{{ route('freelances.show', $freelance->id) }}">
-                                            {{$freelance?->nama}}
-                                        </a>
+                                        @can('freelance_delete')
+                                            <a href="{{ route('freelances.show', $freelance->id) }}">
+                                                {{ $freelance->nama }}
+                                            </a>
+                                        @else
+                                            {{ $freelance->nama }}
+                                        @endcan
                                     </td>
                                     <td align="right">Rp {{number_format($freelance?->upah_belum_dibayar,2)}}</td>
                                     <td align="right">Rp {{number_format($freelance?->lembur_belum_dibayar,2)}}</td>
