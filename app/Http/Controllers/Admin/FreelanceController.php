@@ -12,6 +12,7 @@ use App\Models\Kasbon;
 use App\Models\FreelanceOvertime;
 use App\Models\AkunDetail;
 use App\Models\BukuBesar;
+use App\Models\PembayaranFreelance;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -195,6 +196,20 @@ class FreelanceController extends Controller
             ->orderBy('created_at', 'desc')
             ->get();
 
+        // Ambil data pembayaran freelance untuk bulan ini
+        $pembayaran = PembayaranFreelance::where('freelance_id', $freelance->id)
+            ->where('tahun', $thn)
+            ->where('bulan', $bln)
+            ->with('akunDetail')
+            ->first();
+
+        // Ambil semua riwayat pembayaran freelance ini
+        $riwayatPembayaran = PembayaranFreelance::where('freelance_id', $freelance->id)
+            ->orderBy('tahun', 'desc')
+            ->orderBy('bulan', 'desc')
+            ->with('akunDetail')
+            ->get();
+
         // Hitung total
         $totalUpah = $hutangUpah->sum('jumlah');
         $totalLembur = $hutangLembur->sum('jumlah');
@@ -237,7 +252,9 @@ class FreelanceController extends Controller
             'hutangUpahBelumLunas',
             'hutangLemburBelumLunas',
             'saldoKasbon',
-            'sudahDibayar'
+            'sudahDibayar',
+            'pembayaran',
+            'riwayatPembayaran'
         ));
     }
 
@@ -734,10 +751,34 @@ class FreelanceController extends Controller
                     ]);
                 }
             }
+
+            // Simpan data pembayaran ke tabel baru
+            PembayaranFreelance::create([
+                'freelance_id' => $freelance->id,
+                'akun_detail_id' => $akunDetailId,
+                'tanggal' => $tanggal,
+                'tahun' => $thn,
+                'bulan' => $bln,
+                'total_upah' => $totalBayarUpah,
+                'total_lembur' => $totalBayarLembur,
+                'total_pembayaran' => $totalPembayaran,
+                'potongan_kasbon' => $potonganKasbon,
+                'total_keluar' => $totalKeluar,
+                'keterangan' => 'Pembayaran gaji bulan ' . Carbon::create()->month($bln)->translatedFormat('F') . ' ' . $thn,
+                'created_at' => $tanggal,
+                'updated_at' => now(),
+            ]);
         });
 
         return redirect()->route('freelances.show', ['freelance' => $freelance->id, 'tab' => 'profil', 'bulan' => $bln, 'tahun' => $thn])
             ->withSuccess('Pembayaran berhasil dilakukan.');
+    }
+
+    public function printPembayaran($id)
+    {
+        $pembayaran = PembayaranFreelance::with(['freelance', 'akunDetail'])->findOrFail($id);
+
+        return view('admin.freelances.print_pembayaran', compact('pembayaran'));
     }
 
 }

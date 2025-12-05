@@ -41,4 +41,8 @@ class Freelance extends Model
     public function user(){
         return $this->belongsTo(User::class);
     }
+
+    public function pembayaranFreelances(){
+        return $this->hasMany(PembayaranFreelance::class);
+    }
 }

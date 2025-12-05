@@ -319,12 +319,12 @@ Route::group(['namespace' => 'App\Http\Controllers'], function () {
             Route::get('/freelances/{freelance}/bayar', 'FreelanceKasbonController@bayar')->name('freelance_kasbon.bayar');
             Route::post('/freelance_kasbon/bayarStore', 'FreelanceKasbonController@bayarStore')->name('freelance_kasbon.bayarStore');
 
-            //freelance slip pembayaran
-            Route::get('/freelances/{freelance}/slip', 'FreelanceController@slip')->name('freelance.slip');
-
             //freelance bayar semua
             Route::get('/freelances/{freelance}/bayar-semua', 'FreelanceController@bayarSemua')->name('freelance.bayar_semua');
             Route::post('/freelances/{freelance}/bayar-semua', 'FreelanceController@bayarSemuaStore')->name('freelance.bayar_semua.store');
+
+            //freelance print pembayaran
+            Route::get('/freelances/pembayaran/{id}/print', 'FreelanceController@printPembayaran')->name('freelance.pembayaran.print');
         });
     });
 });
