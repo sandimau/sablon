@@ -27,12 +27,10 @@
                         <thead>
                             <tr>
                                 <th scope="col">Nama</th>
-                                <th scope="col">Tanggal Masuk</th>
                                 <th scope="col">Upah</th>
-                                <th scope="col">Lembur Per Jam</th>
-                                <th scope="col">Handphone</th>
-                                <th scope="col">Rekening</th>
-                                <th scope="col">Bank</th>
+                                <th scope="col">Lembur</th>
+                                <th scope="col">absen Bulan Ini</th>
+                                <th scope="col">Kasbon</th>
                                 <th scope="col">Active</th>
                                 <th scope="col">Actions</th>
                             </tr>
@@ -41,16 +39,14 @@
                             @foreach ($freelances as $freelance)
                                 <tr>
                                     <td>
-                                        <a href="{{ url('admin/freelance_overtime') }}?nama={{ urlencode($freelance?->nama) }}&bulan=11&tahun=2025&status_bayar=all">
+                                        <a href="{{ route('freelances.show', $freelance->id) }}">
                                             {{$freelance?->nama}}
                                         </a>
                                     </td>
-                                    <td>{{ $freelance?->tanggal_masuk?->format('Y-m-d') }}</td>
-                                    <td align="right">{{number_format($freelance?->upah,2)}}</td>
-                                    <td align="right">{{number_format($freelance?->rate_lembur_per_jam,2)}}</td>
-                                    <td>{{$freelance?->handphone}}</td>
-                                    <td>{{$freelance?->nomor_rekening}}</td>
-                                    <td>{{$freelance?->bank}}</td>
+                                    <td align="right">Rp {{number_format($freelance?->upah_belum_dibayar,2)}}</td>
+                                    <td align="right">Rp {{number_format($freelance?->lembur_belum_dibayar,2)}}</td>
+                                    <td align="center">{{$freelance?->total_kehadiran}} hari</td>
+                                    <td align="right">Rp {{number_format($freelance?->kasbon_belum_lunas,2)}}</td>
                                     <td>
                                         <span class="badge {{ $freelance?->is_active ? 'bg-success' : 'bg-danger' }}">
                                             {{ $freelance?->is_active ? 'Active' : 'Inactive' }}

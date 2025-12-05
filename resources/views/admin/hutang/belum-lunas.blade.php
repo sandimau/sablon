@@ -4,12 +4,22 @@
     <div class="container-fluid">
         <div class="row">
             <div class="col-md-12">
+                {{-- Navigation Tabs --}}
+                <ul class="nav nav-tabs mb-3">
+                    <li class="nav-item">
+                        <a class="nav-link active" href="{{ route('hutang.belumLunas') }}">Belum Lunas</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{{ route('hutang.sudahLunas') }}">Sudah Lunas</a>
+                    </li>
+                </ul>
+
                 <div class="card">
                     <div class="card-header">
                         <div class="d-flex justify-content-between align-items-center">
                             <div>
-                                <h5 class="card-title">Hutang Piutang</h5>
-                                <h6 class="card-subtitle mb-2 text-muted">Manage your hutang/piutang here.</h6>
+                                <h5 class="card-title">Hutang Piutang - Belum Lunas</h5>
+                                <h6 class="card-subtitle mb-2 text-muted">Daftar hutang/piutang yang belum lunas.</h6>
                             </div>
                             <div>
                                 <a href="{{ route('hutang.create', ['jenis' => 'hutang']) }}" class="btn btn-primary">Hutang
@@ -24,14 +34,32 @@
                             <div class="alert alert-success">{{ session('success') }}</div>
                         @endif
 
+                        {{-- Filter by Jenis --}}
+                        <div class="mb-3">
+                            <form action="{{ route('hutang.belumLunas') }}" method="GET" class="d-flex align-items-center gap-2">
+                                <label for="jenis" class="form-label mb-0 me-2">Filter Jenis:</label>
+                                <select name="jenis" id="jenis" class="form-select" style="width: auto;" onchange="this.form.submit()">
+                                    <option value="">Semua</option>
+                                    <option value="hutang" {{ ($jenisFilter ?? '') == 'hutang' ? 'selected' : '' }}>Hutang</option>
+                                    <option value="piutang" {{ ($jenisFilter ?? '') == 'piutang' ? 'selected' : '' }}>Piutang</option>
+                                    <option value="lembur" {{ ($jenisFilter ?? '') == 'lembur' ? 'selected' : '' }}>Lembur</option>
+                                    <option value="upah" {{ ($jenisFilter ?? '') == 'upah' ? 'selected' : '' }}>Upah</option>
+                                </select>
+                                @if($jenisFilter ?? null)
+                                    <a href="{{ route('hutang.belumLunas') }}" class="btn btn-outline-secondary btn-sm">Reset</a>
+                                @endif
+                            </form>
+                        </div>
+
                         <table class="table table-bordered table-striped">
                             <thead>
                                 <tr>
                                     <th>Tanggal</th>
                                     <th>Kontak</th>
                                     <th>Jumlah</th>
+                                    <th>Sisa</th>
                                     <th>Jenis</th>
-                                    <th>Status</th>
+                                    <th>Aksi</th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -56,24 +84,18 @@
                                             @endif
                                         </td>
                                         <td>Rp {{ number_format($hutang->jumlah, 0, ',', '.') }}</td>
-                                        <td>{{ $hutang->jenis }}</td>
+                                        <td>Rp {{ number_format($hutang->sisa, 0, ',', '.') }}</td>
+                                        <td>{{ ucfirst($hutang->jenis) }}</td>
                                         <td>
-                                            @if ($hutang->sisa <= 0)
-                                                <a href="{{ route('hutang.detail', $hutang) }}"
-                                                    class="btn btn-sm btn-success">
-                                                    Lunas
-                                                </a>
-                                            @else
-                                                <a href="{{ route('hutang.bayar', $hutang) }}"
-                                                    class="btn btn-sm btn-warning">
-                                                    Belum Lunas
-                                                </a>
-                                            @endif
+                                            <a href="{{ route('hutang.bayar', $hutang) }}"
+                                                class="btn btn-sm btn-warning">
+                                                Bayar
+                                            </a>
                                         </td>
                                     </tr>
                                 @empty
                                     <tr>
-                                        <td colspan="8" class="text-center">Tidak ada data</td>
+                                        <td colspan="6" class="text-center">Tidak ada data</td>
                                     </tr>
                                 @endforelse
                             </tbody>
@@ -88,3 +110,4 @@
         </div>
     </div>
 @endsection
+

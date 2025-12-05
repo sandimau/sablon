@@ -5,8 +5,14 @@ namespace App\Http\Controllers\Admin;
 use Gate;
 use App\Models\User;
 use App\Models\Hutang;
+use App\Models\HutangDetail;
 use App\Models\Absensi;
 use App\Models\Freelance;
+use App\Models\Kasbon;
+use App\Models\FreelanceOvertime;
+use App\Models\AkunDetail;
+use App\Models\BukuBesar;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use App\Http\Controllers\Controller;
@@ -22,6 +28,40 @@ class FreelanceController extends Controller
     {
         abort_if(Gate::denies('freelance_access'), Response::HTTP_FORBIDDEN, '403 Forbidden');
         $freelances = Freelance::all();
+
+        // Tambahkan data untuk setiap freelance
+        $freelances->each(function($freelance) {
+            // Total upah belum dibayar bulan ini
+            $hutangUpah = Hutang::where('jenis', 'upah')
+                ->where('kontak_id', $freelance->id)
+                ->with('details')
+                ->get();
+            $totalUpah = $hutangUpah->sum('jumlah');
+            $totalBayarUpah = $hutangUpah->sum(function($h) { return $h->details->sum('jumlah'); });
+            $freelance->upah_belum_dibayar = $totalUpah - $totalBayarUpah;
+
+            // Total lembur belum dibayar bulan ini
+            $hutangLembur = Hutang::where('jenis', 'lembur')
+                ->where('kontak_id', $freelance->id)
+                ->with('details')
+                ->get();
+            $totalLembur = $hutangLembur->sum('jumlah');
+            $totalBayarLembur = $hutangLembur->sum(function($h) { return $h->details->sum('jumlah'); });
+            $freelance->lembur_belum_dibayar = $totalLembur - $totalBayarLembur;
+
+            // Total kehadiran bulan sekarang
+            $freelance->total_kehadiran = Absensi::where('name', 'like', '%' . $freelance->nama . '%')
+                ->whereYear('tanggal', now()->year)
+                ->whereMonth('tanggal', now()->month)
+                ->count();
+
+            // Total kasbon belum lunas
+            $kasbonTerakhir = Kasbon::where('freelance_id', $freelance->id)
+                ->orderBy('id', 'DESC')
+                ->first();
+            $freelance->kasbon_belum_lunas = $kasbonTerakhir ? $kasbonTerakhir->saldo : 0;
+        });
+
         return view('admin.freelances.index', compact('freelances'));
     }
 
@@ -111,6 +151,94 @@ class FreelanceController extends Controller
         $total_sisa = $total_tagihan - $total_bayar;
 
         return view('admin.freelances.keuangan', compact('tagihans', 'thn', 'bln', 'total_tagihan', 'total_bayar', 'total_sisa', 'all_freelances', 'kontak_id', 'jenis_filter'));
+    }
+
+    /**
+     * Display the specified resource.
+     */
+    public function show(Request $request, Freelance $freelance)
+    {
+        abort_if(Gate::denies('freelance_access'), Response::HTTP_FORBIDDEN, '403 Forbidden');
+
+        // Ambil tahun dan bulan dari request, default ke bulan dan tahun saat ini
+        $thn = $request->get('tahun', date('Y'));
+        $bln = $request->get('bulan', date('m'));
+        $tab = $request->get('tab', 'profil');
+
+        // Ambil data hutang upah freelance ini
+        $hutangUpah = Hutang::where('jenis', 'upah')
+            ->where('kontak_id', $freelance->id)
+            ->with('details')
+            ->whereYear('tanggal', $thn)
+            ->whereMonth('tanggal', $bln)
+            ->orderBy('tanggal', 'desc')
+            ->get();
+
+        // Ambil data hutang lembur freelance ini
+        $hutangLembur = Hutang::where('jenis', 'lembur')
+            ->where('kontak_id', $freelance->id)
+            ->with('details')
+            ->whereYear('tanggal', $thn)
+            ->whereMonth('tanggal', $bln)
+            ->orderBy('tanggal', 'desc')
+            ->get();
+
+        // Ambil data kehadiran freelance ini
+        $absensis = Absensi::where('name', 'like', '%' . $freelance->nama . '%')
+            ->whereYear('tanggal', $thn)
+            ->whereMonth('tanggal', $bln)
+            ->orderBy('tanggal', 'desc')
+            ->get();
+
+        // Ambil data kasbon freelance ini
+        $kasbons = Kasbon::where('freelance_id', $freelance->id)
+            ->orderBy('created_at', 'desc')
+            ->get();
+
+        // Hitung total
+        $totalUpah = $hutangUpah->sum('jumlah');
+        $totalLembur = $hutangLembur->sum('jumlah');
+        $totalBayarUpah = $hutangUpah->sum(function($h) { return $h->details->sum('jumlah'); });
+        $totalBayarLembur = $hutangLembur->sum(function($h) { return $h->details->sum('jumlah'); });
+
+        // Hitung sisa yang belum dibayar
+        $sisaUpah = $totalUpah - $totalBayarUpah;
+        $sisaLembur = $totalLembur - $totalBayarLembur;
+
+        // Ambil hutang upah dan lembur yang belum lunas untuk tombol bayar
+        $hutangUpahBelumLunas = $hutangUpah->filter(function($h) {
+            return ($h->jumlah - $h->details->sum('jumlah')) > 0;
+        });
+        $hutangLemburBelumLunas = $hutangLembur->filter(function($h) {
+            return ($h->jumlah - $h->details->sum('jumlah')) > 0;
+        });
+
+        // Hitung saldo kasbon terakhir
+        $saldoKasbon = $kasbons->first() ? $kasbons->first()->saldo : 0;
+
+        // Cek apakah bulan ini sudah ada pembayaran (untuk print slip)
+        $sudahDibayar = ($totalBayarUpah > 0 || $totalBayarLembur > 0);
+
+        return view('admin.freelances.show', compact(
+            'freelance',
+            'hutangUpah',
+            'hutangLembur',
+            'absensis',
+            'kasbons',
+            'thn',
+            'bln',
+            'tab',
+            'totalUpah',
+            'totalLembur',
+            'totalBayarUpah',
+            'totalBayarLembur',
+            'sisaUpah',
+            'sisaLembur',
+            'hutangUpahBelumLunas',
+            'hutangLemburBelumLunas',
+            'saldoKasbon',
+            'sudahDibayar'
+        ));
     }
 
     /**
@@ -325,6 +453,291 @@ class FreelanceController extends Controller
         });
 
         return view('admin.freelances.kehadiran', compact('dataAbsensi'));
+    }
+
+    /**
+     * Menampilkan slip pembayaran freelance per bulan
+     */
+    public function slip(Request $request, Freelance $freelance)
+    {
+        abort_if(Gate::denies('freelance_access'), Response::HTTP_FORBIDDEN, '403 Forbidden');
+
+        $thn = $request->get('tahun', date('Y'));
+        $bln = $request->get('bulan', date('m'));
+
+        // Ambil data hutang upah freelance ini
+        $hutangUpah = Hutang::where('jenis', 'upah')
+            ->where('kontak_id', $freelance->id)
+            ->with('details')
+            ->whereYear('tanggal', $thn)
+            ->whereMonth('tanggal', $bln)
+            ->orderBy('tanggal', 'desc')
+            ->get();
+
+        // Ambil data hutang lembur freelance ini
+        $hutangLembur = Hutang::where('jenis', 'lembur')
+            ->where('kontak_id', $freelance->id)
+            ->with('details')
+            ->whereYear('tanggal', $thn)
+            ->whereMonth('tanggal', $bln)
+            ->orderBy('tanggal', 'desc')
+            ->get();
+
+        // Ambil data kehadiran freelance ini
+        $absensis = Absensi::where('name', 'like', '%' . $freelance->nama . '%')
+            ->whereYear('tanggal', $thn)
+            ->whereMonth('tanggal', $bln)
+            ->orderBy('tanggal', 'asc')
+            ->get();
+
+        // Hitung total jam lembur dari tabel freelance_overtimes
+        $totalJamLembur = FreelanceOvertime::where('freelance_id', $freelance->id)
+            ->whereYear('created_at', $thn)
+            ->whereMonth('created_at', $bln)
+            ->sum('jam_lembur');
+
+        // Hitung jumlah hari kerja (kehadiran)
+        $jumlahHariKerja = $absensis->count();
+
+        // Hitung total
+        $totalUpah = $hutangUpah->sum('jumlah');
+        $totalLembur = $hutangLembur->sum('jumlah');
+        $totalBayarUpah = $hutangUpah->sum(function($h) { return $h->details->sum('jumlah'); });
+        $totalBayarLembur = $hutangLembur->sum(function($h) { return $h->details->sum('jumlah'); });
+
+        // Total keseluruhan
+        $totalPendapatan = $totalUpah + $totalLembur;
+        $totalDibayar = $totalBayarUpah + $totalBayarLembur;
+
+        // Ambil potongan kasbon bulan ini (jika ada)
+        $kasbonBulanIni = Kasbon::where('freelance_id', $freelance->id)
+            ->whereYear('created_at', $thn)
+            ->whereMonth('created_at', $bln)
+            ->where('pengeluaran', '>', 0)
+            ->sum('pengeluaran');
+
+        // Total bersih yang diterima
+        $totalBersih = $totalDibayar - $kasbonBulanIni;
+
+        // Nama bulan
+        $namaBulan = \Carbon\Carbon::create()->month($bln)->translatedFormat('F');
+
+        return view('admin.freelances.slip', compact(
+            'freelance',
+            'hutangUpah',
+            'hutangLembur',
+            'absensis',
+            'thn',
+            'bln',
+            'namaBulan',
+            'totalUpah',
+            'totalLembur',
+            'totalBayarUpah',
+            'totalBayarLembur',
+            'totalPendapatan',
+            'totalDibayar',
+            'kasbonBulanIni',
+            'totalBersih',
+            'totalJamLembur',
+            'jumlahHariKerja'
+        ));
+    }
+
+    /**
+     * Form bayar semua (upah + lembur - kasbon)
+     */
+    public function bayarSemua(Request $request, Freelance $freelance)
+    {
+        abort_if(Gate::denies('freelance_access'), Response::HTTP_FORBIDDEN, '403 Forbidden');
+
+        $thn = $request->get('tahun', date('Y'));
+        $bln = $request->get('bulan', date('m'));
+
+        // Ambil data hutang upah yang belum lunas
+        $hutangUpah = Hutang::where('jenis', 'upah')
+            ->where('kontak_id', $freelance->id)
+            ->with('details')
+            ->whereYear('tanggal', $thn)
+            ->whereMonth('tanggal', $bln)
+            ->get()
+            ->filter(function($h) {
+                return ($h->jumlah - $h->details->sum('jumlah')) > 0;
+            });
+
+        // Ambil data hutang lembur yang belum lunas
+        $hutangLembur = Hutang::where('jenis', 'lembur')
+            ->where('kontak_id', $freelance->id)
+            ->with('details')
+            ->whereYear('tanggal', $thn)
+            ->whereMonth('tanggal', $bln)
+            ->get()
+            ->filter(function($h) {
+                return ($h->jumlah - $h->details->sum('jumlah')) > 0;
+            });
+
+        // Hitung sisa upah dan lembur
+        $sisaUpah = $hutangUpah->sum(function($h) {
+            return $h->jumlah - $h->details->sum('jumlah');
+        });
+        $sisaLembur = $hutangLembur->sum(function($h) {
+            return $h->jumlah - $h->details->sum('jumlah');
+        });
+
+        // Ambil saldo kasbon terakhir
+        $kasbonTerakhir = Kasbon::where('freelance_id', $freelance->id)
+            ->orderBy('id', 'DESC')
+            ->first();
+        $saldoKasbon = $kasbonTerakhir ? $kasbonTerakhir->saldo : 0;
+
+        // Total sebelum potongan
+        $totalSebelumPotongan = $sisaUpah + $sisaLembur;
+
+        // Total setelah potongan kasbon
+        $potonganKasbon = min($saldoKasbon, $totalSebelumPotongan);
+        $totalDiterima = $totalSebelumPotongan - $potonganKasbon;
+
+        // Ambil daftar kas
+        $kas = AkunDetail::pluck('nama', 'id')->toArray();
+
+        // Nama bulan
+        $namaBulan = Carbon::create()->month($bln)->translatedFormat('F');
+
+        return view('admin.freelances.bayar_semua', compact(
+            'freelance',
+            'hutangUpah',
+            'hutangLembur',
+            'sisaUpah',
+            'sisaLembur',
+            'saldoKasbon',
+            'potonganKasbon',
+            'totalSebelumPotongan',
+            'totalDiterima',
+            'kas',
+            'thn',
+            'bln',
+            'namaBulan'
+        ));
+    }
+
+    /**
+     * Proses bayar semua (upah + lembur - kasbon)
+     */
+    public function bayarSemuaStore(Request $request, Freelance $freelance)
+    {
+        $request->validate([
+            'akun_detail_id' => 'required',
+            'tanggal' => 'required|date',
+        ]);
+
+        $thn = $request->tahun;
+        $bln = $request->bulan;
+
+        DB::transaction(function () use ($request, $freelance, $thn, $bln) {
+            $tanggal = $request->tanggal;
+            $akunDetailId = $request->akun_detail_id;
+
+            // Ambil hutang upah yang belum lunas
+            $hutangUpah = Hutang::where('jenis', 'upah')
+                ->where('kontak_id', $freelance->id)
+                ->with('details')
+                ->whereYear('tanggal', $thn)
+                ->whereMonth('tanggal', $bln)
+                ->get()
+                ->filter(function($h) {
+                    return ($h->jumlah - $h->details->sum('jumlah')) > 0;
+                });
+
+            // Ambil hutang lembur yang belum lunas
+            $hutangLembur = Hutang::where('jenis', 'lembur')
+                ->where('kontak_id', $freelance->id)
+                ->with('details')
+                ->whereYear('tanggal', $thn)
+                ->whereMonth('tanggal', $bln)
+                ->get()
+                ->filter(function($h) {
+                    return ($h->jumlah - $h->details->sum('jumlah')) > 0;
+                });
+
+            $totalBayarUpah = 0;
+            $totalBayarLembur = 0;
+
+            // Bayar semua hutang upah
+            foreach ($hutangUpah as $hutang) {
+                $sisa = $hutang->jumlah - $hutang->details->sum('jumlah');
+                if ($sisa > 0) {
+                    HutangDetail::create([
+                        'hutang_id' => $hutang->id,
+                        'tanggal' => $tanggal,
+                        'jumlah' => $sisa,
+                        'keterangan' => 'Pembayaran upah bulan ' . Carbon::create()->month($bln)->translatedFormat('F') . ' ' . $thn,
+                        'akun_detail_id' => $akunDetailId,
+                    ]);
+                    $totalBayarUpah += $sisa;
+                }
+            }
+
+            // Bayar semua hutang lembur
+            foreach ($hutangLembur as $hutang) {
+                $sisa = $hutang->jumlah - $hutang->details->sum('jumlah');
+                if ($sisa > 0) {
+                    HutangDetail::create([
+                        'hutang_id' => $hutang->id,
+                        'tanggal' => $tanggal,
+                        'jumlah' => $sisa,
+                        'keterangan' => 'Pembayaran lembur bulan ' . Carbon::create()->month($bln)->translatedFormat('F') . ' ' . $thn,
+                        'akun_detail_id' => $akunDetailId,
+                    ]);
+                    $totalBayarLembur += $sisa;
+                }
+            }
+
+            $totalPembayaran = $totalBayarUpah + $totalBayarLembur;
+
+            // Potong kasbon jika ada dan diminta
+            $potonganKasbon = $request->potongan_kasbon ?? 0;
+            if ($potonganKasbon > 0) {
+                // Ambil saldo kasbon terakhir
+                $kasbonTerakhir = Kasbon::where('freelance_id', $freelance->id)
+                    ->orderBy('id', 'DESC')
+                    ->first();
+                $saldoKasbon = $kasbonTerakhir ? $kasbonTerakhir->saldo : 0;
+
+                if ($saldoKasbon > 0 && $potonganKasbon <= $saldoKasbon) {
+                    // Insert kasbon pembayaran
+                    Kasbon::create([
+                        'freelance_id' => $freelance->id,
+                        'pengeluaran' => $potonganKasbon,
+                        'pemasukan' => 0,
+                        'saldo' => $saldoKasbon - $potonganKasbon,
+                        'keterangan' => 'Potongan kasbon dari gaji bulan ' . Carbon::create()->month($bln)->translatedFormat('F') . ' ' . $thn,
+                        'created_at' => $tanggal,
+                    ]);
+                }
+            }
+
+            // Update saldo akun detail (kas keluar)
+            $totalKeluar = $totalPembayaran - $potonganKasbon;
+            if ($totalKeluar > 0) {
+                $akunDetail = AkunDetail::find($akunDetailId);
+                if ($akunDetail) {
+                    $saldoBaru = $akunDetail->saldo - $totalKeluar;
+                    $akunDetail->update(['saldo' => $saldoBaru]);
+
+                    // Insert buku besar
+                    BukuBesar::create([
+                        'akun_detail_id' => $akunDetailId,
+                        'ket' => 'Pembayaran gaji freelance ' . $freelance->nama . ' bulan ' . Carbon::create()->month($bln)->translatedFormat('F') . ' ' . $thn,
+                        'kredit' => $totalKeluar,
+                        'debet' => 0,
+                        'saldo' => $saldoBaru,
+                        'created_at' => $tanggal,
+                    ]);
+                }
+            }
+        });
+
+        return redirect()->route('freelances.show', ['freelance' => $freelance->id, 'tab' => 'profil', 'bulan' => $bln, 'tahun' => $thn])
+            ->withSuccess('Pembayaran berhasil dilakukan.');
     }
 
 }

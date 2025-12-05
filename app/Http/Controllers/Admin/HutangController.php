@@ -13,10 +13,9 @@ use App\Http\Controllers\Controller;
 
 class HutangController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
-        $hutangs = Hutang::with('kontak')->latest()->paginate(10);
-        return view('admin.hutang.index', compact('hutangs'));
+        return redirect()->route('hutang.belumLunas', $request->query());
     }
 
     public function create()
@@ -143,5 +142,63 @@ class HutangController extends Controller
     public function detail(Hutang $hutang)
     {
         return view('admin.hutang.detail', compact('hutang'));
+    }
+
+    public function belumLunas(Request $request)
+    {
+        $query = Hutang::with(['kontak', 'freelance', 'details'])->latest();
+
+        if ($request->filled('jenis')) {
+            $query->where('jenis', $request->jenis);
+        }
+
+        // Filter yang belum lunas (sisa > 0)
+        $hutangs = $query->get()->filter(function ($hutang) {
+            return $hutang->sisa > 0;
+        });
+
+        // Paginate manually
+        $page = $request->get('page', 1);
+        $perPage = 10;
+        $hutangs = new \Illuminate\Pagination\LengthAwarePaginator(
+            $hutangs->forPage($page, $perPage),
+            $hutangs->count(),
+            $perPage,
+            $page,
+            ['path' => $request->url(), 'query' => $request->query()]
+        );
+
+        $jenisFilter = $request->jenis;
+
+        return view('admin.hutang.belum-lunas', compact('hutangs', 'jenisFilter'));
+    }
+
+    public function sudahLunas(Request $request)
+    {
+        $query = Hutang::with(['kontak', 'freelance', 'details'])->latest();
+
+        if ($request->filled('jenis')) {
+            $query->where('jenis', $request->jenis);
+        }
+
+        // Filter yang sudah lunas (sisa <= 0)
+        $hutangs = $query->get()->filter(function ($hutang) {
+            return $hutang->sisa <= 0;
+        });
+
+        // Paginate manually
+        $page = $request->get('page', 1);
+        $perPage = 10;
+        $hutangs = new \Illuminate\Pagination\LengthAwarePaginator(
+            $hutangs->forPage($page, $perPage),
+            $hutangs->count(),
+            $perPage,
+            $page,
+            ['path' => $request->url(), 'query' => $request->query()]
+        );
+
+        $jenisFilter = $request->jenis;
+
+        return view('admin.hutang.sudah-lunas', compact('hutangs', 'jenisFilter'));
     }
 }

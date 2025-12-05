@@ -291,6 +291,8 @@ Route::group(['namespace' => 'App\Http\Controllers'], function () {
 
             // hutang
             Route::get('/hutang', 'HutangController@index')->name('hutang.index');
+            Route::get('/hutang/belum-lunas', 'HutangController@belumLunas')->name('hutang.belumLunas');
+            Route::get('/hutang/sudah-lunas', 'HutangController@sudahLunas')->name('hutang.sudahLunas');
             Route::get('/hutang/create/{jenis}', 'HutangController@create')->name('hutang.create');
             Route::post('/hutang', 'HutangController@store')->name('hutang.store');
             Route::get('/hutang/{hutang}/detail', 'HutangController@detail')->name('hutang.detail');
@@ -310,6 +312,19 @@ Route::group(['namespace' => 'App\Http\Controllers'], function () {
             Route::get('/fingerspot/tarik', 'FreelanceController@tarikData');
             Route::get('/freelance/upah', 'FreelanceController@upah')->name('freelance.upah');
             Route::get('/freelance/kehadiran', 'FreelanceController@kehadiran')->name('freelance.kehadiran');
+
+            //freelance kasbon
+            Route::get('/freelances/{freelance}/kasbon', 'FreelanceKasbonController@create')->name('freelance_kasbon.create');
+            Route::post('/freelance_kasbon/create', 'FreelanceKasbonController@store')->name('freelance_kasbon.store');
+            Route::get('/freelances/{freelance}/bayar', 'FreelanceKasbonController@bayar')->name('freelance_kasbon.bayar');
+            Route::post('/freelance_kasbon/bayarStore', 'FreelanceKasbonController@bayarStore')->name('freelance_kasbon.bayarStore');
+
+            //freelance slip pembayaran
+            Route::get('/freelances/{freelance}/slip', 'FreelanceController@slip')->name('freelance.slip');
+
+            //freelance bayar semua
+            Route::get('/freelances/{freelance}/bayar-semua', 'FreelanceController@bayarSemua')->name('freelance.bayar_semua');
+            Route::post('/freelances/{freelance}/bayar-semua', 'FreelanceController@bayarSemuaStore')->name('freelance.bayar_semua.store');
         });
     });
 });

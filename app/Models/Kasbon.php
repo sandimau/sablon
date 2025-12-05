@@ -35,4 +35,9 @@ class Kasbon extends Model
     {
         return $this->belongsTo(Member::class, 'member_id');
     }
+
+    public function freelance()
+    {
+        return $this->belongsTo(Freelance::class, 'freelance_id');
+    }
 }
