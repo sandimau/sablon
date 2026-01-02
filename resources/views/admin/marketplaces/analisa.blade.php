@@ -8,7 +8,21 @@
     <div class="bg-light rounded">
         <div class="card">
             <div class="card-header">
-                <h5 class="mb-0">Analisa Marketplace Tahun {{ date('Y') }}</h5>
+                <div class="d-flex justify-content-between align-items-center">
+                    <h5 class="mb-0">Analisa Marketplace Tahun {{ $tahunDipilih }}</h5>
+                    <form method="GET" action="{{ route('marketplaces.analisa') }}" class="d-inline">
+                        <div class="input-group">
+                            <label for="tahun" class="input-group-text">Tahun:</label>
+                            <select name="tahun" id="tahun" class="form-select" onchange="this.form.submit()" style="width: auto;">
+                                @for ($tahun = $tahunTerakhir; $tahun >= $tahunPertama; $tahun--)
+                                    <option value="{{ $tahun }}" {{ $tahun == $tahunDipilih ? 'selected' : '' }}>
+                                        {{ $tahun }}
+                                    </option>
+                                @endfor
+                            </select>
+                        </div>
+                    </form>
+                </div>
             </div>
             <div class="card-body">
                 <div class="mt-2">
@@ -36,8 +50,8 @@
                                     @foreach ($data as $bulan => $bulanData)
                                         <tr>
                                             <td>{{ $bulanData['nama'] }}</td>
-                                            <td><a href="{{ route('marketplaces.analisaDetail', [$bulan, $marketplace->kontak->id]) }}">{{ number_format($bulanData['omzet'][$marketplace->kontak->id] ?? 0, 0, ',', '.') }}</a></td>
-                                            <td><a href="{{ route('marketplaces.bayarDetail', [$bulan, $marketplace->kontak->id]) }}">{{ number_format($bulanData['bayar'][$marketplace->kontak->id] ?? 0, 0, ',', '.') }}</a></td>
+                                            <td><a href="{{ route('marketplaces.analisaDetail', [$bulan, $marketplace->kontak->id]) }}?tahun={{ $tahunDipilih }}">{{ number_format($bulanData['omzet'][$marketplace->kontak->id] ?? 0, 0, ',', '.') }}</a></td>
+                                            <td><a href="{{ route('marketplaces.bayarDetail', [$bulan, $marketplace->kontak->id]) }}?tahun={{ $tahunDipilih }}">{{ number_format($bulanData['bayar'][$marketplace->kontak->id] ?? 0, 0, ',', '.') }}</a></td>
                                             <td>{{ number_format($bulanData['hpp'][$marketplace->kontak->id] ?? 0, 0, ',', '.') }}</td>
                                             @php
                                                 $potongan = ($bulanData['total'][$marketplace->kontak->id] ?? 0) - ($bulanData['bayar'][$marketplace->kontak->id] ?? 0);

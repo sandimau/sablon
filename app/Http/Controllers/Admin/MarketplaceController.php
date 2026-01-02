@@ -615,8 +615,42 @@ class MarketplaceController extends Controller
             $query->whereNotNull('marketplace');
         }])->get();
 
-        $tahun_skr = date('Y');
-        $bulan_skr = date('n');
+        // Ambil tahun pertama dari order
+        $tahunPertama = DB::table('orders')
+            ->selectRaw('YEAR(MIN(created_at)) as tahun_pertama')
+            ->value('tahun_pertama');
+
+        // Ambil tahun terakhir dari order
+        $tahunTerakhirDB = DB::table('orders')
+            ->selectRaw('YEAR(MAX(created_at)) as tahun_terakhir')
+            ->value('tahun_terakhir');
+
+        // Ambil tahun sekarang
+        $tahunSekarang = date('Y');
+
+        // Jika tidak ada data order, gunakan tahun sekarang
+        if (!$tahunPertama) {
+            $tahunPertama = $tahunSekarang;
+        }
+
+        // Tahun terakhir adalah yang terbesar antara tahun terakhir di DB atau tahun sekarang
+        $tahunTerakhir = max($tahunTerakhirDB ?: $tahunSekarang, $tahunSekarang);
+
+        // Ambil tahun yang dipilih dari request, default tahun sekarang
+        $tahunDipilih = $request->get('tahun', date('Y'));
+
+        // Validasi tahun yang dipilih
+        if ($tahunDipilih < $tahunPertama || $tahunDipilih > $tahunTerakhir) {
+            $tahunDipilih = date('Y');
+        }
+
+        // Tentukan bulan maksimal berdasarkan tahun yang dipilih
+        if ($tahunDipilih == date('Y')) {
+            $bulan_skr = date('n');
+        } else {
+            $bulan_skr = 12; // Jika tahun lalu, tampilkan semua bulan
+        }
+
         $data = [];
 
         for ($i = 1; $i <= $bulan_skr; $i++) {
@@ -625,7 +659,7 @@ class MarketplaceController extends Controller
 
             $omzet = DB::table('orders')
                 ->selectRaw('sum(total) as omzet, kontak_id')
-                ->whereYear('created_at', $tahun_skr)
+                ->whereYear('created_at', $tahunDipilih)
                 ->whereMonth('created_at', $i)
                 ->groupBy('kontak_id')
                 ->get()
@@ -633,7 +667,7 @@ class MarketplaceController extends Controller
 
             $bayar = DB::table('orders')
                 ->selectRaw('sum(total) as total,sum(bayar) as bayar, kontak_id')
-                ->whereYear('created_at', $tahun_skr)
+                ->whereYear('created_at', $tahunDipilih)
                 ->whereMonth('created_at', $i)
                 ->where('bayar', '>', 0)
                 ->groupBy('kontak_id')
@@ -644,7 +678,7 @@ class MarketplaceController extends Controller
             $hpp = DB::table('orders')
                 ->join('order_details', 'orders.id', '=', 'order_details.order_id')
                 ->selectRaw('sum(order_details.hpp*order_details.jumlah) as hpp, orders.kontak_id')
-                ->whereYear('orders.created_at', $tahun_skr)
+                ->whereYear('orders.created_at', $tahunDipilih)
                 ->whereMonth('orders.created_at', $i)
                 ->groupBy('orders.kontak_id')
                 ->get()
@@ -659,7 +693,7 @@ class MarketplaceController extends Controller
             $iklan = DB::table('belanjas')
                 ->selectRaw('sum(belanja_details.harga * belanja_details.jumlah) as potongan, belanjas.kontak_id as kontak_id')
                 ->join('belanja_details', 'belanjas.id', '=', 'belanja_details.belanja_id')
-                ->whereYear('belanjas.created_at', $tahun_skr)
+                ->whereYear('belanjas.created_at', $tahunDipilih)
                 ->whereMonth('belanjas.created_at', $i)
                 ->whereIn('belanja_details.produk_id', $produkIklan)
                 ->groupBy('belanjas.kontak_id')
@@ -676,24 +710,26 @@ class MarketplaceController extends Controller
             ];
         }
 
-        return view('admin.marketplaces.analisa', compact('marketplaces', 'data'));
+        return view('admin.marketplaces.analisa', compact('marketplaces', 'data', 'tahunPertama', 'tahunTerakhir', 'tahunDipilih'));
     }
 
     public function analisaDetail($bulan, $kontak_id, Request $request)
     {
         $marketplace = Kontak::find($kontak_id);
-        $data = Order::whereYear('created_at', date('Y'))
+        $tahun = $request->get('tahun', date('Y'));
+        $data = Order::whereYear('created_at', $tahun)
             ->whereMonth('created_at', $bulan)
             ->where('kontak_id', $kontak_id)
             ->orderBy('id', 'desc')->paginate(15);
-        return view('admin.marketplaces.analisaDetail', compact('data', 'marketplace', 'bulan'));
+        return view('admin.marketplaces.analisaDetail', compact('data', 'marketplace', 'bulan', 'tahun'));
     }
 
     public function bayarDetail($bulan, $kontak_id, Request $request)
     {
         $marketplace = Kontak::find($kontak_id);
+        $tahun = $request->get('tahun', date('Y'));
 
-        $query = Order::whereYear('created_at', date('Y'))
+        $query = Order::whereYear('created_at', $tahun)
             ->whereMonth('created_at', $bulan)
             ->where('kontak_id', $kontak_id)
             ->where('bayar', '>', 0)
@@ -710,6 +746,6 @@ class MarketplaceController extends Controller
         }
 
         $data = $query->paginate(15);
-        return view('admin.marketplaces.bayarDetail', compact('data', 'marketplace', 'bulan'));
+        return view('admin.marketplaces.bayarDetail', compact('data', 'marketplace', 'bulan', 'tahun'));
     }
 }

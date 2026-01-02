@@ -7,7 +7,12 @@
 @section('content')
     <header class="header mb-4">
         <div class="container-fluid">
-            <h5 class="card-title">Sudah Bayar {{ $marketplace->nama }} - {{ \Carbon\Carbon::create()->month($bulan)->locale('id')->monthName }} {{ date('Y') }}</h5>
+            <h5 class="card-title">
+                <a href="{{ route('marketplaces.analisa', ['tahun' => $tahun ?? date('Y')]) }}" class="text-decoration-none">
+                    <i class="bi bi-arrow-left me-2"></i>
+                </a>
+                Sudah Bayar {{ $marketplace->nama }} - {{ \Carbon\Carbon::create()->month($bulan)->locale('id')->monthName }} {{ $tahun ?? date('Y') }}
+            </h5>
         </div>
     </header>
     <div class="bg-light rounded">
