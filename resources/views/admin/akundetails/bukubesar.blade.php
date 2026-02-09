@@ -40,7 +40,7 @@
                             @foreach ($bukubesars as $bukubesar)
                                 <tr>
                                     <td>{{ $bukubesar->created_at }}</td>
-                                    <td>{{ $bukubesar->ket }}</td>
+                                    <td>{!! $bukubesar->ket !!}</td>
                                     <td>{{ number_format($bukubesar->debet, 0, ',', '.') }}</td>
                                     <td>{{ number_format($bukubesar->kredit, 0, ',', '.') }}</td>
                                     <td>{{ number_format($bukubesar->saldo, 0, ',', '.') }}</td>

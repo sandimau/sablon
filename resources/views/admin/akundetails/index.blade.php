@@ -55,8 +55,3 @@
         </div>
     </div>
 @endsection
-@push('after-scripts')
-    <script>
-        let table = new DataTable('#myTable');
-    </script>
-@endpush

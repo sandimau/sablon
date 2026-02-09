@@ -301,6 +301,7 @@ class OrderController extends Controller
                 'kredit' => 0,
                 'kode' => 'byr',
                 'debet' => request()->jumlah,
+                'detail_id' => $order->id,
             ]);
         });
 

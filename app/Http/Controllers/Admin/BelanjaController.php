@@ -104,6 +104,7 @@ class BelanjaController extends Controller
                         'kredit' => $request->pembayaran,
                         'debet' => 0,
                         'kode' => 'blj',
+                        'detail_id' => $belanja->id,
                     ]);
                 }
             }
